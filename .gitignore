@@ -1,0 +1,21 @@
+build/bin
+build/darwin
+build/windows/installer/tmp
+frontend/dist
+frontend/node_modules
+vendor
+
+node_modules
+
+# Editor directories and files
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Idea directories
+.idea
+.idea_modules
+

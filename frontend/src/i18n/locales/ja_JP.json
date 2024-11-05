@@ -1,0 +1,34 @@
+{
+  "guide": {
+    "name": "ガイド",
+    "state": {
+      "name": "状態：",
+      "connected": "拡張機能有効",
+      "disconnected": "未有効化"
+    },
+    "tooltip": {
+      "need_restart": "Steam の設定が完了しました。Steam クライアントを再起動して拡張機能を開始してください。",
+      "connected": "Steam 拡張機能が有効です。ご活用ください！",
+      "cef_failed": "Steam クライアントがインストールされていることを確認してください。"
+    }
+  },
+  "setting": {
+    "name": "設定",
+    "regular": {
+      "title": "一般",
+      "language": "インターフェース言語",
+      "auto_run": "起動時に実行"
+    },
+    "translation": {
+      "title": "翻訳",
+      "target_language": "目標言語",
+      "engine_provider": "翻訳エンジン"
+    }
+  },
+  "about": {
+    "name": "概要",
+    "software_name": "ソフトウェア名：Steam コンパニオン",
+    "current_version": "現在のバージョン",
+    "software_description": "Steam コンパニオンは Steam クライアントの機能を拡張し、よりスムーズなユーザー体験を提供します。"
+  }
+}

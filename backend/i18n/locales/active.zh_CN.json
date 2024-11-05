@@ -1,0 +1,8 @@
+{
+    "app": {
+        "title": "Steam伴侣"
+    },
+    "tray": {
+        "exit": "退出"
+    }
+}
