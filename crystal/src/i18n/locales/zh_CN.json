@@ -1,0 +1,16 @@
+{
+    "guide": {
+        "name": "引导",
+        "state": {
+            "running": "运行中",
+            "not-connected": "未连接"
+        }
+    },
+    "setting": {
+        "name": "设置"
+    },
+    "about": {
+        "name": "关于",
+        "version": "版本"
+    }
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Steam伴侣价格插件</title>
+    <style>
+      body {
+        background-color: #1b2838;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <div id="root"></div>
+    <div id="game_area_description" style="width: 616px">
+      <h2>关于这款游戏</h2>
+      <div>Death is like the wind; always by my side.</div>
+      <div>A sword's poor company for a long road.</div>
+      <div>No-one is promised tomorrow.</div>
+      <div>Sleep is for the guiltless.</div>
+      <div>死は風のようにいつも私とともにある</div>
+    </div>
+    <div id="game_area_purchase" style="width: 616px">
+      <h3>挂载点</h3>
+    </div>
+    <script>
+      async function _crystalImport() {
+        try {
+          const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha12/crystal.es.js");
+          crystal.run("store", {"gamePanel": {"debug": true}, "blockTranslate": {"contentSelector": "#game_area_description"}, "selectionTranslate": {}});
+        } catch (error) {
+          console.error('Dynamic import is not supported:', error);
+        }
+      }
+
+      _crystalImport();
+    </script>
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.3/libs/cn/index.js"></script>
+    <script>
+      new CozeWebSDK.WebChatClient({
+        config: {
+          bot_id: '7477549753925419044',
+        },
+        componentProps: {
+          title: 'Steam伴侣智能助手',
+        },
+        auth: {
+          type: 'token',
+          token: 'pat_v5h1acjI6OLFJNXdxtlPAbOLAm1V5gyssqjOvHvAZhNOwP1FO7T4lVPdrXXyoZl9',
+          onRefreshToken: function () {
+            return 'pat_v5h1acjI6OLFJNXdxtlPAbOLAm1V5gyssqjOvHvAZhNOwP1FO7T4lVPdrXXyoZl9'
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

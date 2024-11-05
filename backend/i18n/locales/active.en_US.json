@@ -1,0 +1,8 @@
+{
+    "app": {
+        "title": "Steam Meta"
+    },
+    "tray": {
+        "exit": "Exit"
+    }
+}

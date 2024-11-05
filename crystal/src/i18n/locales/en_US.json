@@ -1,0 +1,16 @@
+{
+    "guide": {
+        "name": "Guide",
+        "state": {
+            "running": "Running",
+            "not-connected": "Not Connected"
+        }
+    },
+    "setting": {
+        "name": "Setting"
+    },
+    "about": {
+        "name": "About",
+        "version": "Version"
+    }
+}

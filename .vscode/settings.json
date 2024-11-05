@@ -1,0 +1,5 @@
+{
+    "deno.enable": true,
+    "go.useLanguageServer": true,
+    "makefile.configureOnOpen": false
+}
