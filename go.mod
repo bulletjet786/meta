@@ -2,14 +2,19 @@ module meta
 
 go 1.23
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20241022234722-4d5d5faf59fb
 	github.com/chromedp/chromedp v0.11.1
+	github.com/denisbrodbeck/machineid v1.0.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
+	github.com/shirou/gopsutil/v4 v4.24.9
 	github.com/wailsapp/wails/v2 v2.9.2
 	golang.org/x/net v0.27.0
-	github.com/denisbrodbeck/machineid v1.0.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
+	google.golang.org/grpc v1.65.0
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
@@ -20,7 +25,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect

@@ -9,19 +9,27 @@ import (
 	"strings"
 	"time"
 
-	"wails-demo/client"
-
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 )
 
 const (
 	storeUrlPrefix     = "https://store.steampowered.com/app/"
-	consoleLogMagicStr = "Meta-NNJJ: "
+	lowestJsCode = `
+	async function _crystalImport() {
+		try {
+			const crystal = await import("$crystalModuleUrl");
+			crystal.run({"useDebugAppId": null, "enableHistoryPriceCharts": true});
+		} catch (error) {
+			console.error('Dynamic import is not supported:', error);
+		}
+	}
+	
+	_crystalImport();
+	`
 )
 
-//go:embed lowest.js
-var lowestJsPluginCode string
+
 
 type SteamLowestPriceStorePlugin struct {
 	lowestJsCode string
@@ -29,7 +37,7 @@ type SteamLowestPriceStorePlugin struct {
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
 	return &SteamLowestPriceStorePlugin{
-		lowestJsCode: lowestJsPluginCode,
+		lowestJsCode: lowestJsCode,
 	}
 }
 
@@ -96,12 +104,6 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 		return err
 	}
 
-	if err := chromedp.Run(ctx,
-		chromedp.Evaluate(
-			`MetaLowestPriceStorePlugin.consoleLogMagicStr = "`+consoleLogMagicStr+`"`, nil)); err != nil {
-		return err
-	}
-
 	// Check if the page is already injected
 	// TODO: EvaluateAsDevTools?
 	var pageInjected bool
@@ -114,13 +116,6 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 	}
 
 	logger.Info("Page not inject, start injecting ...")
-	// Get AppID
-	appId, err := p.extractAppIdFromUrl(url)
-	if err != nil {
-		return err
-	}
-	logger = logger.With("appId", appId)
-	logger.Info("Injecting: extract appId success")
 
 	// Get game data from ITAD API
 	itadApi := &client.ItadApi{}
