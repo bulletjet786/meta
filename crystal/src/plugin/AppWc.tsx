@@ -25,6 +25,7 @@ export class HuluLowestPriceExtension {
 
     static itadClient: ItadClient = new ItadClient();
     static gaClient: GAClient = new GAClient();
+    static appId: string;
 
     static async injectLowestPricePanel(options: CrystalRunOptions) {
         dayjs.extend(timezone)
@@ -36,13 +37,13 @@ export class HuluLowestPriceExtension {
         }
         window.__crystal_injected = true
 
-        let appId = options.useDebugAppId != null? options.useDebugAppId : 
+        this.appId = options.useDebugAppId != null? options.useDebugAppId : 
             this.extractAppIdFromUrl(document.URL, "https://store.steampowered.com/app/")
-        console.log(`Extract appId is ${appId}`)
+        console.log(`Extract appId is ${this.appId}`)
 
-        let aggGameInfo = await this.fetchAggGameInfo(appId)
+        let aggGameInfo = await this.fetchAggGameInfo(this.appId)
         if (aggGameInfo == null) {
-            console.warn(`Can't fetch lowest price for ${appId}`)
+            console.warn(`Can't fetch lowest price for ${this.appId}`)
             return;
         }
 
@@ -54,8 +55,8 @@ export class HuluLowestPriceExtension {
         const panel = this.makeLowestPricePanel(aggGameInfo.storeLow.price, aggGameInfo.storeLow.cut)
         injectPoint.insertAdjacentHTML("afterbegin", panel)
         this.fillPriceCharts(aggGameInfo.historyLogs)
-        console.info(`Inject for ${appId} Success`)
-        await this.gaClient.sendEvents("Deck:Unknown", [this.makeHuluInjectEvent(appId)])
+        console.info(`Inject for ${this.appId} Success`)
+        await this.gaClient.sendEvents("Deck:Unknown", [this.makeHuluInjectEvent(this.appId)])
     }
 
     static extractAppIdFromUrl(url: string, storeUrlPrefix: string): string {
@@ -103,19 +104,19 @@ export class HuluLowestPriceExtension {
                     <h1>宝葫芦提醒您 </h1>
                     <div>Steam史低价格为 <b>¥${price}</b>${cutDesc}</b></div>
                     <div style="padding: 5px 0">
-                        <a class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://2game.hk/cn">去 2Game 看看价格</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://2game.hk/cn">去 2Game 看看价格</a>
                     </div>
                     <div style="padding: 5px 0">
-                        <a class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.sonkwo.cn">去 杉果 看看价格</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.sonkwo.cn">去 杉果 看看价格</a>
                     </div>
                     <div style="padding: 5px 0">
-                        <a class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xbgame.net">去 小白游戏网 找找学习版</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xbgame.net">搜索学习版: 小白游戏网</a>
                     </div>
                     <div style="padding: 5px 0">
-                        <a class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xianyudanji.net?aff=270876">去 咸鱼单机 找找学习版</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xianyudanji.net?aff=270876">搜索学习版: 咸鱼单机</a>
                     </div>
                     <div style="padding: 5px 0">
-                        <a class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.kkyx.net?aff=8119">去 游戏仓库 找找学习版</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.kkyx.net?aff=8119">搜索学习版: 游戏仓库</a>
                     </div>
                     <div id="crystal-price-chart-ctr-btn" style="padding: 5px 0">
                         <a class="Focusable" style="${this.compileCss(huluButtonInfo)}">查看最近一年历史价格图表</a>
@@ -126,6 +127,22 @@ export class HuluLowestPriceExtension {
                 </div>
             </div>
         `
+    }
+
+    static onButtonClick() {
+        let buttons = document.querySelectorAll("a[data-hulu-price-injector-panel-button]")
+        if (buttons == null) {
+            return
+        }
+        buttons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                HuluLowestPriceExtension.gaClient.sendEvents(
+                    "Deck:Unknown",
+                    [HuluLowestPriceExtension.makeHuluClickEvent(HuluLowestPriceExtension.appId, this.href)]
+                )
+            });
+          });
+
     }
 
     static onCrystalPriceChartButton() {
