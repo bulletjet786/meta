@@ -4,23 +4,17 @@ import './App.css';
 import {Greet} from "../wailsjs/go/main/App";
 
 function App() {
-    const [resultText, setResultText] = useState("Please enter your name below 👇");
-    const [name, setName] = useState('');
-    const updateName = (e: any) => setName(e.target.value);
-    const updateResultText = (result: string) => setResultText(result);
 
-    function greet() {
-        Greet(name).then(updateResultText);
-    }
+    // const steamControllerState, setSteamControllerStateState = useState("Disconnected")
 
     return (
         <div id="App">
-            <img src={logo} id="logo" alt="logo"/>
-            <div id="result" className="result">{resultText}</div>
-            <div id="input" className="input-box">
-                <input id="name" className="input" onChange={updateName} autoComplete="off" name="input" type="text"/>
-                <button className="btn" onClick={greet}>Greet</button>
-            </div>
+            <h1>Steam伴侣</h1>
+            <p>状态：steamControllerState</p>
+            <p>如何连接上Steam</p>
+            <p>1. 在Steam快捷方式中添加启动选项：--，如图：</p>
+            <p>2. 重新启动Steam。</p>
+            <p>3. 启动Steam后等待半分钟，如果正常连接，则上面的按钮将会变为绿色。</p>
         </div>
     )
 }

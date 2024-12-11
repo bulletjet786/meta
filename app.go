@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"plugin"
 
 	"github.com/denisbrodbeck/machineid"
 )
@@ -13,7 +12,7 @@ import (
 type App struct {
 	machineId string
 	ctx context.Context
-	steamController *plugin.steamController
+	// steamController *plugin.steamController
 }
 
 // NewApp creates a new App application struct
@@ -23,7 +22,7 @@ func NewApp() *App {
 		slog.Error("Get machine id failed", "err", err.Error())
 		// os.Fatal(1)
 	}
-	slog.Info("Get machine id: %s", "machineId", machineId)
+	slog.Info("Get machine id", "machineId", machineId)
 	return &App{
 		machineId: machineId,
 		ctx: context.Background(),

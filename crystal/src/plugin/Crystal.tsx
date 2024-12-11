@@ -12,8 +12,8 @@ export class AppWc extends r2wc(App, {
 
     private static styles: string = ""
 
-    static initStyle(style: string) {
-        AppWc.styles = style
+    static initStyle(styles: string) {
+        AppWc.styles = styles
     }
 
     static name() {

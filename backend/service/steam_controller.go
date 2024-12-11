@@ -11,6 +11,9 @@ import (
 	"meta/backend/service/plugin"
 )
 
+const SteamControllerStatusDisconnected = "Disconnected"
+const SteamControllerStatusConnected = "Connected"
+
 type SteamPlugin interface {
 	Name() string
 	Init() error
@@ -22,6 +25,7 @@ type SteamController struct {
 	remoteUrl    string
 	chromeCtx    context.Context
 	chromeCancel func()
+	status 	     Status
 
 	plugins []SteamPlugin
 }
@@ -72,3 +76,14 @@ func (s *SteamController) Run() {
 		}
 	}
 }
+
+func (a *SteamController) Status() Status {
+	return Status{
+		State: SteamControllerStatusDisconnected,
+	}
+}
+
+type Status struct {
+	State string "json:state"
+}
+

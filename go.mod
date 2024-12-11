@@ -9,7 +9,6 @@ require (
 	github.com/chromedp/chromedp v0.11.1
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
-	github.com/shirou/gopsutil/v4 v4.24.9
 	github.com/wailsapp/wails/v2 v2.9.2
 	golang.org/x/net v0.27.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
@@ -41,6 +40,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/samber/lo v1.38.1 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
@@ -50,4 +50,5 @@ require (
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 )

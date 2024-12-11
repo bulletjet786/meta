@@ -3,11 +3,8 @@ package plugin
 import (
 	"context"
 	_ "embed"
-	"fmt"
 	"log/slog"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
