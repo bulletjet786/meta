@@ -2,12 +2,13 @@ package service
 
 import (
 	"log/slog"
-	"wails-demo/service/plugin"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/net/context"
+
+	"meta/backend/service/plugin"
 )
 
 type SteamPlugin interface {

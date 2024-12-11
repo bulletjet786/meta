@@ -1,4 +1,4 @@
-CRYSTAL_VERSION = 0.0.1.beta1
+CRYSTAL_VERSION = 0.0.2.alpha1
 
 .PHONY:
 upload_wc:

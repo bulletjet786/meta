@@ -9,27 +9,36 @@ declare const window: {
     __crystal_injected: boolean;
 } & Window;
 
+dayjs.extend(timezone)
+dayjs.extend(utc)
+
 export function run(options: CrystalRunOptions) {
-    HuluLowestPriceExtension.injectLowestPricePanel(options)
+    const extension = new HuluLowestPriceExtension(options)
+    extension.injectLowestPricePanel(options)
 }
 
 export class CrystalRunOptions {
     constructor(
         public useDebugAppId: string | null = null,
         public enableHistoryPriceCharts: boolean = true, // 是否启用价格图表
+        public deckSN: string = "deck:Unknown"
     ) {
     }
 }
 
 export class HuluLowestPriceExtension {
 
-    static itadClient: ItadClient = new ItadClient();
-    static gaClient: GAClient = new GAClient();
-    static appId: string;
+    itadClient: ItadClient = new ItadClient();
+    gaClient: GAClient = new GAClient();
+    appId: string = "";
 
-    static async injectLowestPricePanel(options: CrystalRunOptions) {
-        dayjs.extend(timezone)
-        dayjs.extend(utc)
+    constructor(
+        public options: CrystalRunOptions
+    ) {
+
+    }
+
+    async injectLowestPricePanel(options: CrystalRunOptions) {
 
         if (window.__crystal_injected) {
             console.info(`injected for ${document.URL}, skipped`)
@@ -56,10 +65,10 @@ export class HuluLowestPriceExtension {
         injectPoint.insertAdjacentHTML("afterbegin", panel)
         this.fillPriceCharts(aggGameInfo.historyLogs)
         console.info(`Inject for ${this.appId} Success`)
-        await this.gaClient.sendEvents("Deck:Unknown", [this.makeHuluInjectEvent(this.appId)])
+        await this.gaClient.sendEvents(this.options.deckSN, [this.makeHuluInjectEvent(this.appId)])
     }
 
-    static extractAppIdFromUrl(url: string, storeUrlPrefix: string): string {
+    extractAppIdFromUrl(url: string, storeUrlPrefix: string): string {
         // 移除前缀并分割路径
         const paths = url.replace(storeUrlPrefix, '').split('/');
 
@@ -77,11 +86,11 @@ export class HuluLowestPriceExtension {
         return appId.toString();
     }
 
-    static compileCss(css: any) {
+    compileCss(css: any) {
         return Object.entries(css).map(line => line[0] + ": " + line[1]).join(";")
     }
 
-    static makeLowestPricePanel(price: number, cut: number) {
+    makeLowestPricePanel(price: number, cut: number) {
         const huluButtonInfo = {
             "padding": "6px 12px",
             "color": "#fff",
@@ -129,23 +138,23 @@ export class HuluLowestPriceExtension {
         `
     }
 
-    static onButtonClick() {
+    onButtonClick() {
         let buttons = document.querySelectorAll("a[data-hulu-price-injector-panel-button]")
         if (buttons == null) {
             return
         }
+        const self = this;
         buttons.forEach(button => {
             button.addEventListener('click', function(event) {
-                HuluLowestPriceExtension.gaClient.sendEvents(
-                    "Deck:Unknown",
-                    [HuluLowestPriceExtension.makeHuluClickEvent(HuluLowestPriceExtension.appId, this.href)]
+                self.gaClient.sendEvents(
+                    self.options.deckSN,
+                    [self.makeHuluClickEvent(self.appId, (event.target as HTMLAnchorElement).href)]
                 )
             });
           });
-
     }
 
-    static onCrystalPriceChartButton() {
+    onCrystalPriceChartButton() {
         const crystalPriceChartContainer = document.querySelector("#crystal-price-chart")
         if (crystalPriceChartContainer == null) {
             return
@@ -158,7 +167,7 @@ export class HuluLowestPriceExtension {
         }
     }
 
-    static fillPriceCharts(historyLogs: HistoryLogs) {
+    fillPriceCharts(historyLogs: HistoryLogs) {
         const xAxisData: Array<string> = [];
         const priceSeriesData: Array<number> = [];
         historyLogs.reverse().forEach(function(stage) {
@@ -204,13 +213,13 @@ export class HuluLowestPriceExtension {
         this.onCrystalPriceChartButton();
     }
 
-    static minPrice(arr: Array<number>) {
+    minPrice(arr: Array<number>) {
         return arr.reduce(function (p, v) {
             return ( p < v ? p : v );
         });
     }
 
-    static makeHuluInjectEvent(appId: string): Event {
+    makeHuluInjectEvent(appId: string): Event {
         return {
             "name": "extensionLowestPriceDomainEvent",
             "params": {
@@ -223,7 +232,7 @@ export class HuluLowestPriceExtension {
         }
     }
 
-    static makeHuluClickEvent(appId: string, targetUrl: string): Event {
+    makeHuluClickEvent(appId: string, targetUrl: string): Event {
         return {
             "name": "extensionLowestPriceDomainEvent",
             "params": {
@@ -236,7 +245,7 @@ export class HuluLowestPriceExtension {
         }
     }
 
-    static async fetchAggGameInfo(appId: string): Promise<AggGameInfo | null>  {
+    async fetchAggGameInfo(appId: string): Promise<AggGameInfo | null>  {
         try {
             // 获取游戏信息
             const gameInfo = await this.itadClient.lookup(appId);
