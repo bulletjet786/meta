@@ -3,12 +3,14 @@ export class GAClient {
     private static host: string = "https://p.deckz.fun"
 
     async sendEvents(clientId: string, events: Event[]) {
+        const body = JSON.stringify(
+                this.events(clientId, events)
+            )
         const requestOptions = {
             method: 'POST',
-            body: JSON.stringify([
-                this.events(clientId, events)
-            ]),
+            body: body,
         };
+        console.info(`will send event body: ${body}`)
         await fetch(`${GAClient.host}/ga/mp/collect`, requestOptions);
     }
 
