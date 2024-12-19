@@ -91,6 +91,19 @@ export class HuluLowestPriceExtension {
     }
 
     makeLowestPricePanel(price: number, cut: number) {
+        const gameNameNode = document.querySelector(`span[itemprop="name"]`)
+        let xbgameUrl = "https://www.xbgame.net"
+        if (gameNameNode != null) {
+            xbgameUrl = xbgameUrl + `?s=${(gameNameNode as HTMLSpanElement).innerText}`
+        }
+        let xianyudanjiUrl = "https://www.xianyudanji.net?aff=270876"
+        if (gameNameNode != null) {
+            xianyudanjiUrl = xianyudanjiUrl + `&s=${(gameNameNode as HTMLSpanElement).innerText}`
+        }
+        let kkyxUrl = "https://www.kkyx.net?aff=8119"
+        if (gameNameNode != null) {
+            kkyxUrl = kkyxUrl + `&s=${(gameNameNode as HTMLSpanElement).innerText}`
+        }
         const huluButtonInfo = {
             "padding": "6px 12px",
             "color": "#fff",
@@ -113,19 +126,19 @@ export class HuluLowestPriceExtension {
                     <h1>宝葫芦提醒您 </h1>
                     <div>Steam史低价格为 <b>¥${price}</b>${cutDesc}</b></div>
                     <div style="padding: 5px 0">
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${xbgameUrl}">搜索学习版: 小白游戏网</a>
+                    </div>
+                    <div style="padding: 5px 0">
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${xianyudanjiUrl}">搜索学习版: 咸鱼单机</a>
+                    </div>
+                    <div style="padding: 5px 0">
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${kkyxUrl}">搜索学习版: 游戏仓库</a>
+                    </div>
+                    <div style="padding: 5px 0">
                         <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://2game.hk/cn">去 2Game 看看价格</a>
                     </div>
                     <div style="padding: 5px 0">
                         <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.sonkwo.cn">去 杉果 看看价格</a>
-                    </div>
-                    <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xbgame.net">搜索学习版: 小白游戏网</a>
-                    </div>
-                    <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.xianyudanji.net?aff=270876">搜索学习版: 咸鱼单机</a>
-                    </div>
-                    <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.kkyx.net?aff=8119">搜索学习版: 游戏仓库</a>
                     </div>
                     <div id="crystal-price-chart-ctr-btn" style="padding: 5px 0">
                         <a class="Focusable" style="${this.compileCss(huluButtonInfo)}">查看最近一年历史价格图表</a>
