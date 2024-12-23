@@ -5,6 +5,7 @@ import (
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
+	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/net/context"
 
@@ -51,8 +52,6 @@ func (s *SteamController) Init() error {
 
 func (s *SteamController) start() {
 	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.remoteUrl)
-	// Disable game details page csp
-	page.SetBypassCSP(true)
 	if err := chromedp.Run(s.chromeCtx,
 		page.Enable(),
 		runtime.Enable(),
@@ -66,15 +65,21 @@ func (s *SteamController) start() {
 }
 
 func (s *SteamController) Run() {
-	for {
-		select {
-		case <-s.chromeCtx.Done():
-			for _, p := range s.plugins {
-				p.Stop()
+	// go func ()  {
+	// 	for {
+	// 	}
+	// }()
+	go func ()  {
+		for {
+			select {
+			case <-s.chromeCtx.Done():
+				for _, p := range s.plugins {
+					p.Stop()
+				}
+				s.start()
 			}
-			s.start()
 		}
-	}
+	}()
 }
 
 func (a *SteamController) Status() Status {
@@ -84,6 +89,6 @@ func (a *SteamController) Status() Status {
 }
 
 type Status struct {
-	State string "json:state"
+	State string `json:"state"`
 }
 
