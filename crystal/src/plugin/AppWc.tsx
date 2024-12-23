@@ -30,7 +30,6 @@ export class HuluLowestPriceExtension {
 
     itadClient: ItadClient = new ItadClient();
     gaClient: GAClient = new GAClient();
-    appId: string = "";
 
     constructor(
         public options: CrystalRunOptions
@@ -46,13 +45,13 @@ export class HuluLowestPriceExtension {
         }
         window.__crystal_injected = true
 
-        this.appId = options.useDebugAppId != null? options.useDebugAppId : 
+        const appId = options.useDebugAppId != null? options.useDebugAppId :
             this.extractAppIdFromUrl(document.URL, "https://store.steampowered.com/app/")
-        console.log(`Extract appId is ${this.appId}`)
+        console.log(`Extract appId is ${appId}`)
 
-        let aggGameInfo = await this.fetchAggGameInfo(this.appId)
+        let aggGameInfo = await this.fetchAggGameInfo(appId)
         if (aggGameInfo == null) {
-            console.warn(`Can't fetch lowest price for ${this.appId}`)
+            console.warn(`Can't fetch lowest price for ${appId}`)
             return;
         }
 
@@ -64,8 +63,9 @@ export class HuluLowestPriceExtension {
         const panel = this.makeLowestPricePanel(aggGameInfo.storeLow.price, aggGameInfo.storeLow.cut)
         injectPoint.insertAdjacentHTML("afterbegin", panel)
         this.fillPriceCharts(aggGameInfo.historyLogs)
-        console.info(`Inject for ${this.appId} Success`)
-        await this.gaClient.sendEvents(this.options.deckSN, [this.makeHuluInjectEvent(this.appId)])
+        this.onButtonClick(appId)
+        console.info(`Inject for ${appId} Success`)
+        await this.gaClient.sendEvents(this.options.deckSN, [this.makeHuluInjectEvent(appId, document.URL)])
     }
 
     extractAppIdFromUrl(url: string, storeUrlPrefix: string): string {
@@ -151,7 +151,7 @@ export class HuluLowestPriceExtension {
         `
     }
 
-    onButtonClick() {
+    onButtonClick(appId: string) {
         let buttons = document.querySelectorAll("a[data-hulu-price-injector-panel-button]")
         if (buttons == null) {
             return
@@ -161,7 +161,7 @@ export class HuluLowestPriceExtension {
             button.addEventListener('click', function(event) {
                 self.gaClient.sendEvents(
                     self.options.deckSN,
-                    [self.makeHuluClickEvent(self.appId, (event.target as HTMLAnchorElement).href)]
+                    [self.makeHuluClickEvent(appId, (event.target as HTMLAnchorElement).href)]
                 )
             });
           });
@@ -232,14 +232,14 @@ export class HuluLowestPriceExtension {
         });
     }
 
-    makeHuluInjectEvent(appId: string): Event {
+    makeHuluInjectEvent(appId: string, targetUrl: string): Event {
         return {
             "name": "extensionLowestPriceDomainEvent",
             "params": {
                 "type": "extensionLowestPriceDomainEvent",
                 "actionType": "Inject",
                 "appId": appId,
-                "target": null,
+                "target": targetUrl,
                 "occurAt": new Date().toISOString()
             }
         }
