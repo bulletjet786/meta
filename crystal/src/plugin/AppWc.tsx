@@ -125,9 +125,7 @@ export class HuluLowestPriceExtension {
                 <div class="game_area_purchase_game">
                     <h1>宝葫芦提醒您 </h1>
                     <div>Steam史低价格为 <b>¥${price}</b>${cutDesc}</b></div>
-                    <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${xbgameUrl}">搜索学习版: 小白游戏网</a>
-                    </div>
+
                     <div style="padding: 5px 0">
                         <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${xianyudanjiUrl}">搜索学习版: 咸鱼单机</a>
                     </div>
@@ -135,10 +133,7 @@ export class HuluLowestPriceExtension {
                         <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${kkyxUrl}">搜索学习版: 游戏仓库</a>
                     </div>
                     <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://2game.hk/cn">去 2Game 看看价格</a>
-                    </div>
-                    <div style="padding: 5px 0">
-                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="https://www.sonkwo.cn">去 杉果 看看价格</a>
+                        <a data-hulu-price-injector-panel-button class="Focusable" style="${this.compileCss(huluButtonInfo)}" href="${xbgameUrl}">搜索学习版: 小白游戏网</a>
                     </div>
                     <div id="crystal-price-chart-ctr-btn" style="padding: 5px 0">
                         <a class="Focusable" style="${this.compileCss(huluButtonInfo)}">查看最近一年历史价格图表</a>
