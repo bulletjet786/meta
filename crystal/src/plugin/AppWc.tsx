@@ -13,7 +13,7 @@ dayjs.extend(timezone)
 dayjs.extend(utc)
 
 export function run(options: CrystalRunOptions) {
-    const extension = new HuluLowestPriceExtension(options)
+    const extension = new HuluLowestPriceExtension()
     extension.injectLowestPricePanel(options)
 }
 
@@ -30,12 +30,7 @@ export class HuluLowestPriceExtension {
 
     itadClient: ItadClient = new ItadClient();
     gaClient: GAClient = new GAClient();
-
-    constructor(
-        public options: CrystalRunOptions
-    ) {
-
-    }
+    options: CrystalRunOptions = new CrystalRunOptions();
 
     async injectLowestPricePanel(options: CrystalRunOptions) {
 
@@ -45,6 +40,7 @@ export class HuluLowestPriceExtension {
         }
         window.__crystal_injected = true
 
+        this.options = options
         const appId = options.useDebugAppId != null? options.useDebugAppId :
             this.extractAppIdFromUrl(document.URL, "https://store.steampowered.com/app/")
         console.log(`Extract appId is ${appId}`)
