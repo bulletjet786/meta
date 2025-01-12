@@ -4,15 +4,23 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"runtime"
 
 	"github.com/denisbrodbeck/machineid"
 )
 
 // App struct
 type App struct {
-	machineId string
 	ctx context.Context
+
+	machine Machine
 	// steamController *plugin.steamController
+}
+
+type Machine struct {
+	Id   string `json:"id"`
+	Os   string `json:"os"`
+	Arch string `json:"arch"`
 }
 
 // NewApp creates a new App application struct
@@ -24,7 +32,11 @@ func NewApp() *App {
 	}
 	slog.Info("Get machine id", "machineId", machineId)
 	return &App{
-		machineId: machineId,
+		machine: Machine{
+			Id:   machineId,
+			Os:   runtime.GOOS,
+			Arch: runtime.GOARCH,
+		},
 		ctx: context.Background(),
 	}
 }
