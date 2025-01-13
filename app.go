@@ -3,42 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
-	"runtime"
-
-	"github.com/denisbrodbeck/machineid"
 )
 
 // App struct
 type App struct {
 	ctx context.Context
-
-	machine Machine
-	// steamController *plugin.steamController
-}
-
-type Machine struct {
-	Id   string `json:"id"`
-	Os   string `json:"os"`
-	Arch string `json:"arch"`
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	machineId, err := machineid.ID()
-	if err != nil {
-		slog.Error("Get machine id failed", "err", err.Error())
-		// os.Fatal(1)
-	}
-	slog.Info("Get machine id", "machineId", machineId)
-	return &App{
-		machine: Machine{
-			Id:   machineId,
-			Os:   runtime.GOOS,
-			Arch: runtime.GOARCH,
-		},
-		ctx: context.Background(),
-	}
+
+	return &App{}
 }
 
 // startup is called when the app starts. The context is saved

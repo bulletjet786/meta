@@ -1,39 +1,48 @@
-import React, {useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import {Button, Card, Steps, Typography} from 'antd';
+import {EnableSteamCEFRemoteDebugging, Status} from "../../../wailsjs/go/steam/Service";
 
 const {Title, Paragraph} = Typography;
 const {Step} = Steps;
 
+function guideStateReducer(state: any, action: any): any {
+    switch (action.type) {
+        case 'enableSteamCEFRemoteDebugging':
+            EnableSteamCEFRemoteDebugging()
+                .then()
+            return {
+                ...state,
+            };
+        case 'load':
+            Status().then(status => {state.status = status.state});
+            return state;
+    }
+    return state
+}
+
+
 const SteamConnectionGuide = () => {
 
-    const [steamControllerState, setSteamControllerStateState] = useState("Disconnected")
-    const os = "Windows"
+    const [state, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
+
+    useEffect(
+        () => { dispatch( { type: 'load'} )   }
+    )
+
+    function handleEnabledButton(e: any) {
+        return dispatch({type: 'enableSteamCEFRemoteDebugging'});
+    }
 
     return (
         <Card title={<Title level={2}>Steam伴侣</Title>} style={{width: '100%'}}>
-            <Paragraph strong>状态：${steamControllerState}</Paragraph>
+            <Paragraph strong>状态：{state.status}</Paragraph>
             <Title level={3}>如何连接上Steam</Title>
             <Steps direction="vertical">
-                {os === 'Windows' && (
+                <Step title="启动CEF远程调试" description={
                     <>
-                        <Step title="添加启动选项" description={
-                            <p>在Steam快捷方式中添加启动选项：<code>--</code>。</p>
-                        } />
-                        <Step title="重新启动Steam" description="点击Steam客户端的重启按钮或者关闭后手动开启。" />
-                        <Step title="等待半分钟" description={
-                            <p>启动Steam后请耐心等待大约30秒。如果一切正常，连接成功后，您将看到上方按钮变为绿色。</p>
-                        } />
+                        <Button type="primary" onClick={e => handleEnabledButton(e)}>启动CEF远程调试</Button>
                     </>
-                )}
-                {os === 'SteamOS' && (
-                    <>
-                        <Step title="打开终端" description="使用Spotlight搜索快速打开终端。" />
-                        <Step title="输入命令" description={
-                            <p>在终端中输入您的特定启动命令，例如：<code>open /Applications/Steam.app --args --</code></p>
-                        } />
-                        <Step title="等待半分钟" description="启动Steam后请耐心等待大约30秒。检查连接状态。" />
-                    </>
-                )}
+                } />
                 <Step title="重新启动Steam" description="点击Steam客户端的重启按钮或者关闭后手动开启。"/>
                 <Step title="等待半分钟" description={
                     <>

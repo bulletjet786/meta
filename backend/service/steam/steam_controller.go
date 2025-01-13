@@ -1,45 +1,48 @@
-package service
+package steam
 
 import (
 	"log/slog"
+	plugin2 "meta/backend/service/steam/plugin"
+	"os"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
-	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/net/context"
 
-	"meta/backend/service/plugin"
+	"meta/backend/constants"
+	"meta/backend/service/steam/plugin"
 )
 
 const SteamControllerStatusDisconnected = "Disconnected"
 const SteamControllerStatusConnected = "Connected"
 
-type SteamPlugin interface {
-	Name() string
-	Init() error
-	Run(chromeCtx context.Context)
-	Stop()
-}
-
-type SteamController struct {
+type Service struct {
 	remoteUrl    string
 	chromeCtx    context.Context
 	chromeCancel func()
-	status 	     Status
 
-	plugins []SteamPlugin
+	os      string
+	plugins []plugin.SteamPlugin
+
+	status Status
 }
 
-func NewSteamController(url string) *SteamController {
-	return &SteamController{
-		remoteUrl: url,
+type ServiceOptions struct {
+	RemoteUrl string
+	Os        string
+}
+
+func NewService(options ServiceOptions) *Service {
+	return &Service{
+		remoteUrl: options.RemoteUrl,
+		os:        options.Os,
 	}
 }
 
-func (s *SteamController) Init() error {
-	s.plugins = []SteamPlugin{
-		plugin.NewSteamLowestPriceStorePlugin(),
+func (s *Service) Init() error {
+	s.plugins = []plugin.SteamPlugin{
+		plugin2.NewSteamLowestPriceStorePlugin(),
 	}
 	for _, p := range s.plugins {
 		if err := p.Init(); err != nil {
@@ -50,7 +53,7 @@ func (s *SteamController) Init() error {
 	return nil
 }
 
-func (s *SteamController) start() {
+func (s *Service) start() {
 	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.remoteUrl)
 	if err := chromedp.Run(s.chromeCtx,
 		page.Enable(),
@@ -64,12 +67,12 @@ func (s *SteamController) start() {
 	}
 }
 
-func (s *SteamController) Run() {
+func (s *Service) Run() {
 	// go func ()  {
 	// 	for {
 	// 	}
 	// }()
-	go func ()  {
+	go func() {
 		for {
 			select {
 			case <-s.chromeCtx.Done():
@@ -82,13 +85,29 @@ func (s *SteamController) Run() {
 	}()
 }
 
-func (a *SteamController) Status() Status {
+func (s *Service) Status() Status {
 	return Status{
 		State: SteamControllerStatusDisconnected,
 	}
 }
 
+func (s *Service) EnableSteamCEFRemoteDebugging() error {
+	homePath, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	cefEnableRemoteDebugging := homePath + "/.steam/steam/.cef-enable-remote-debugging"
+
+	if s.os == constants.OsLinux {
+		fileHandler, err := os.Create(cefEnableRemoteDebugging)
+		if nil != err {
+			return err
+		}
+		defer fileHandler.Close()
+	}
+	return nil
+}
+
 type Status struct {
 	State string `json:"state"`
 }
-

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	storeUrlPrefix     = "https://store.steampowered.com/app/"
-	lowestJsCode = `
+	storeUrlPrefix = "https://store.steampowered.com/app/"
+	lowestJsCode   = `
 	async function _crystalImport() {
 		try {
 			const crystal = await import("$crystalModuleUrl");
@@ -25,8 +25,6 @@ const (
 	_crystalImport();
 	`
 )
-
-
 
 type SteamLowestPriceStorePlugin struct {
 	lowestJsCode string
@@ -79,5 +77,6 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 	if err := chromedp.Run(ctx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
 		return err
 	}
-}
+	return nil
 
+}
