@@ -46,6 +46,7 @@ func (p *SteamLowestPriceStorePlugin) Init() error {
 
 func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
 	// just install listener to watch new target creation events
+	// when chromeCtx cancelled, listening will exit
 	chromedp.ListenTarget(chromeCtx, func(ev interface{}) {
 		switch ev.(type) {
 		case *target.EventTargetCreated:
@@ -57,10 +58,6 @@ func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
 			}()
 		}
 	})
-
-}
-
-func (p *SteamLowestPriceStorePlugin) Stop() {
 }
 
 func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context, eventTargetCreated *target.Info) error {

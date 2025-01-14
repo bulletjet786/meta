@@ -2,13 +2,14 @@ package steam
 
 import (
 	"log/slog"
-	plugin2 "meta/backend/service/steam/plugin"
 	"os"
+	"time"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/net/context"
+	"github.com/chromedp/cdproto/browser"
 
 	"meta/backend/constants"
 	"meta/backend/service/steam/plugin"
@@ -16,14 +17,15 @@ import (
 
 type Service struct {
 	remoteUrl    string
-	chromeCtx    context.Context
-	chromeCancel func()
-
 	os      string
 	plugins []plugin.SteamPlugin
 
-	statusLock sync.Mutex
-	status Status
+	ctxLock      sync.Mutex
+	chromeCtx    context.Context
+	chromeCancel func()
+
+	status 		 Status
+	statusLock   sync.Mutex
 }
 
 type ServiceOptions struct {
@@ -40,7 +42,7 @@ func NewService(options ServiceOptions) *Service {
 
 func (s *Service) Init() error {
 	s.plugins = []plugin.SteamPlugin{
-		plugin2.NewSteamLowestPriceStorePlugin(),
+		plugin.NewSteamLowestPriceStorePlugin(),
 	}
 	for _, p := range s.plugins {
 		if err := p.Init(); err != nil {
@@ -51,7 +53,60 @@ func (s *Service) Init() error {
 	return nil
 }
 
-func (s *Service) start() {
+func (s *Service) Run() {
+	go s.watchdog()
+	go s.startPlugins()
+}
+
+
+func (s *Service) watchdog() {
+	c := time.NewTicker(5 * time.Second)
+	for {
+		<-c.C
+		if err := browser.GetVersion(); err != nil {
+			s.chromeCancel()
+			s.rebuildConnection()
+			s.startPlugins()
+			s.status = Status{
+				State: StatusDisconnected,
+			}
+		} else {
+			s.statusLock.Lock() // 写锁
+			s.status = Status{
+				State: StatusConnected,
+			}
+			s.statusLock.UnLock()
+		}
+	}
+}
+
+func (s *Service) startPlugins() {
+	s.ctxLock.Lock() // 读锁
+	ctx := s.chromeCtx
+	s.ctxLock.UnLock()
+
+	for _, p := range s.plugins {
+	
+		go p.Run(ctx)
+	}
+}
+
+func (s *Service) rebuildConnection() {
+	s.ctxLock.Lock() // 写锁
+	s.chromeCtx = nil
+	s.chromeCancel = nil
+	s.ctxLock.UnLock()
+	// 尝试建立新的连接
+	c := time.NewTicker(5 * time.Second)
+	for {
+		<-c.C
+		s.buildConnection()
+	}
+}
+
+func (s *Service) buildConnection() {
+	s.ctxLock.Lock() // 写锁
+	defer s.ctxLock.UnLock()
 	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.remoteUrl)
 	if err := chromedp.Run(s.chromeCtx,
 		page.Enable(),
@@ -59,28 +114,15 @@ func (s *Service) start() {
 		page.SetBypassCSP(true),
 	); err != nil {
 		slog.Error("Start chrome debugger config failed", "err", err)
-	}
-	for _, p := range s.plugins {
-		go p.Run(s.chromeCtx)
+		s.chromeCtx = nil
+		s.chromeCancel = nil
 	}
 }
-
-func (s *Service) Run() {
-	go func ()  {
-		for {
-			// 
-		}
-	}()
-	go func() {
-		for {
-			
-		}
-	}()
-}
-
-func (s *Service) 
 
 func (s *Service) Status() Status {
+	s.statusLock.Lock() // 读锁
+	defer s.statusLock.UnLock() // 读锁
+
 	return Status{
 		State: StatusDisconnected,
 	}
