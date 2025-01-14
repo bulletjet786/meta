@@ -14,9 +14,6 @@ import (
 	"meta/backend/service/steam/plugin"
 )
 
-const SteamControllerStatusDisconnected = "Disconnected"
-const SteamControllerStatusConnected = "Connected"
-
 type Service struct {
 	remoteUrl    string
 	chromeCtx    context.Context
@@ -25,6 +22,7 @@ type Service struct {
 	os      string
 	plugins []plugin.SteamPlugin
 
+	statusLock sync.Mutex
 	status Status
 }
 
@@ -68,26 +66,23 @@ func (s *Service) start() {
 }
 
 func (s *Service) Run() {
-	// go func ()  {
-	// 	for {
-	// 	}
-	// }()
+	go func ()  {
+		for {
+			// 
+		}
+	}()
 	go func() {
 		for {
-			select {
-			case <-s.chromeCtx.Done():
-				for _, p := range s.plugins {
-					p.Stop()
-				}
-				s.start()
-			}
+			
 		}
 	}()
 }
 
+func (s *Service) 
+
 func (s *Service) Status() Status {
 	return Status{
-		State: SteamControllerStatusDisconnected,
+		State: StatusDisconnected,
 	}
 }
 
@@ -107,6 +102,11 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	}
 	return nil
 }
+
+const (
+	StatusDisconnected = "Disconnected"
+	StatusConnected = "Connected"
+)
 
 type Status struct {
 	State string `json:"state"`
