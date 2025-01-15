@@ -7,3 +7,7 @@ const (
 	OsWindows = "windows"
 	ArchAmd64 = "amd64"
 )
+
+const (
+	EventForStatusChange = "steam.connection.status"
+)

@@ -1,9 +1,12 @@
 import React, {useEffect, useReducer, useState} from 'react';
 import {Button, Card, Steps, Typography} from 'antd';
 import {EnableSteamCEFRemoteDebugging, Status} from "../../../wailsjs/go/steam/Service";
+import { EventsOff, EventsOn } from "../../../wailsjs/runtime/runtime";
 
 const {Title, Paragraph} = Typography;
 const {Step} = Steps;
+
+const SteamConnectionStatusEventName = "steam.connection.status"
 
 function guideStateReducer(state: any, action: any): any {
     switch (action.type) {
@@ -26,7 +29,12 @@ const SteamConnectionGuide = () => {
     const [state, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
 
     useEffect(
-        () => { dispatch( { type: 'load'} )   }
+        () => { 
+            dispatch( { type: 'load'} );
+            EventsOn(SteamConnectionStatusEventName, (status) => {
+                dispatch( { type: 'load'} )
+            });
+        }
     )
 
     function handleEnabledButton(e: any) {

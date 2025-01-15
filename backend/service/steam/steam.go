@@ -5,20 +5,22 @@ import (
 	"os"
 	"sync"
 	"time"
+	"context"
 
 	"github.com/chromedp/cdproto/browser"
 	"github.com/chromedp/cdproto/page"
-	"github.com/chromedp/cdproto/runtime"
+	cdpruntime "github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
-	"golang.org/x/net/context"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"meta/backend/constants"
 	"meta/backend/service/steam/plugin"
 )
 
 type Service struct {
-	remoteUrl string
-	os        string
+	ctx context.Context
+
+	options ServiceOptions
 	plugins   []plugin.SteamPlugin
 
 	ctxLock      sync.RWMutex
@@ -35,28 +37,24 @@ type ServiceOptions struct {
 }
 
 func NewService(options ServiceOptions) *Service {
-	s := &Service{
-		remoteUrl: options.RemoteUrl,
-		os:        options.Os,
-	}
+	return &Service{}
+}
+
+
+func (s *Service) Start(ctx context.Context, options ServiceOptions) {
+	s.ctx = ctx
+	s.options = options
+
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
 	}
 	for _, p := range s.plugins {
 		if err := p.Init(); err != nil {
 			slog.Error("Init steam plugin failed", "name", p.Name(), "err", err)
+			os.Exit(1)
 		}
 	}
 
-	return s
-}
-
-func (s *Service) init() error {
-	s.Run()
-	return nil
-}
-
-func (s *Service) Run() {
 	go s.watchdog()
 	go s.startPlugins()
 }
@@ -69,21 +67,26 @@ func (s *Service) watchdog() {
 			s.chromeCancel()
 			s.rebuildConnection()
 			s.startPlugins()
-			s.status = Status{
+			s.updateStatus(Status{
 				State: StatusDisconnected,
-			}
+			})
 		} else {
-			s.statusLock.Lock() // 写锁
-			s.status = Status{
+			s.updateStatus(Status{
 				State: StatusConnected,
-			}
-			s.statusLock.Unlock()
+			})
 		}
 	}
 }
 
+func (s *Service) updateStatus(status Status) {
+	s.statusLock.Lock()
+	s.status = status
+	wailsruntime.EventsEmit(s.ctx, constants.EventForStatusChange, status)
+	s.statusLock.Unlock()
+}
+
 func (s *Service) startPlugins() {
-	s.ctxLock.RLock() // 读锁
+	s.ctxLock.RLock()
 	ctx := s.chromeCtx
 	s.ctxLock.RUnlock()
 
@@ -94,7 +97,7 @@ func (s *Service) startPlugins() {
 }
 
 func (s *Service) rebuildConnection() {
-	s.ctxLock.Lock() // 写锁
+	s.ctxLock.Lock()
 	s.chromeCtx = nil
 	s.chromeCancel = nil
 	s.ctxLock.Unlock()
@@ -107,12 +110,12 @@ func (s *Service) rebuildConnection() {
 }
 
 func (s *Service) buildConnection() {
-	s.ctxLock.Lock() // 写锁
+	s.ctxLock.Lock()
 	defer s.ctxLock.Unlock()
-	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.remoteUrl)
+	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.options.RemoteUrl)
 	if err := chromedp.Run(s.chromeCtx,
 		page.Enable(),
-		runtime.Enable(),
+		cdpruntime.Enable(),
 		page.SetBypassCSP(true),
 	); err != nil {
 		slog.Error("Start chrome debugger config failed", "err", err)
@@ -122,8 +125,8 @@ func (s *Service) buildConnection() {
 }
 
 func (s *Service) Status() Status {
-	s.statusLock.RLock()         // 读锁
-	defer s.statusLock.RUnlock() // 读锁
+	s.statusLock.RLock()
+	defer s.statusLock.RUnlock()
 
 	return Status{
 		State: StatusDisconnected,
@@ -137,7 +140,7 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	}
 	cefEnableRemoteDebugging := homePath + "/.steam/steam/.cef-enable-remote-debugging"
 
-	if s.os == constants.OsLinux {
+	if s.options.Os == constants.OsLinux {
 		fileHandler, err := os.Create(cefEnableRemoteDebugging)
 		if nil != err {
 			return err
