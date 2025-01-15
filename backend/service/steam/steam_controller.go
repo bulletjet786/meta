@@ -3,29 +3,30 @@ package steam
 import (
 	"log/slog"
 	"os"
+	"sync"
 	"time"
 
+	"github.com/chromedp/cdproto/browser"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/net/context"
-	"github.com/chromedp/cdproto/browser"
 
 	"meta/backend/constants"
 	"meta/backend/service/steam/plugin"
 )
 
 type Service struct {
-	remoteUrl    string
-	os      string
-	plugins []plugin.SteamPlugin
+	remoteUrl string
+	os        string
+	plugins   []plugin.SteamPlugin
 
-	ctxLock      sync.Mutex
+	ctxLock      sync.RWMutex
 	chromeCtx    context.Context
 	chromeCancel func()
 
-	status 		 Status
-	statusLock   sync.Mutex
+	status     Status
+	statusLock sync.RWMutex
 }
 
 type ServiceOptions struct {
@@ -34,13 +35,10 @@ type ServiceOptions struct {
 }
 
 func NewService(options ServiceOptions) *Service {
-	return &Service{
+	s := &Service{
 		remoteUrl: options.RemoteUrl,
 		os:        options.Os,
 	}
-}
-
-func (s *Service) Init() error {
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
 	}
@@ -49,6 +47,11 @@ func (s *Service) Init() error {
 			slog.Error("Init steam plugin failed", "name", p.Name(), "err", err)
 		}
 	}
+
+	return s
+}
+
+func (s *Service) init() error {
 	s.Run()
 	return nil
 }
@@ -57,7 +60,6 @@ func (s *Service) Run() {
 	go s.watchdog()
 	go s.startPlugins()
 }
-
 
 func (s *Service) watchdog() {
 	c := time.NewTicker(5 * time.Second)
@@ -75,18 +77,18 @@ func (s *Service) watchdog() {
 			s.status = Status{
 				State: StatusConnected,
 			}
-			s.statusLock.UnLock()
+			s.statusLock.Unlock()
 		}
 	}
 }
 
 func (s *Service) startPlugins() {
-	s.ctxLock.Lock() // 读锁
+	s.ctxLock.RLock() // 读锁
 	ctx := s.chromeCtx
-	s.ctxLock.UnLock()
+	s.ctxLock.RUnlock()
 
 	for _, p := range s.plugins {
-	
+
 		go p.Run(ctx)
 	}
 }
@@ -95,7 +97,7 @@ func (s *Service) rebuildConnection() {
 	s.ctxLock.Lock() // 写锁
 	s.chromeCtx = nil
 	s.chromeCancel = nil
-	s.ctxLock.UnLock()
+	s.ctxLock.Unlock()
 	// 尝试建立新的连接
 	c := time.NewTicker(5 * time.Second)
 	for {
@@ -106,7 +108,7 @@ func (s *Service) rebuildConnection() {
 
 func (s *Service) buildConnection() {
 	s.ctxLock.Lock() // 写锁
-	defer s.ctxLock.UnLock()
+	defer s.ctxLock.Unlock()
 	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.remoteUrl)
 	if err := chromedp.Run(s.chromeCtx,
 		page.Enable(),
@@ -120,8 +122,8 @@ func (s *Service) buildConnection() {
 }
 
 func (s *Service) Status() Status {
-	s.statusLock.Lock() // 读锁
-	defer s.statusLock.UnLock() // 读锁
+	s.statusLock.RLock()         // 读锁
+	defer s.statusLock.RUnlock() // 读锁
 
 	return Status{
 		State: StatusDisconnected,
@@ -147,7 +149,7 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 
 const (
 	StatusDisconnected = "Disconnected"
-	StatusConnected = "Connected"
+	StatusConnected    = "Connected"
 )
 
 type Status struct {

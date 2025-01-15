@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"meta/backend/service/steam"
 )
 
 // App struct
 type App struct {
 	ctx context.Context
+
+	steamService *steam.Service
 }
 
 // NewApp creates a new App application struct
-func NewApp() *App {
+func NewApp(
+	steamService *steam.Service) *App {
 
 	return &App{}
 }
@@ -20,6 +24,8 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+
+	a.steamService.Run()
 }
 
 // Greet returns a greeting for the given name
