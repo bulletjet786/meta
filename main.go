@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"log/slog"
+	"os"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -52,5 +53,6 @@ func main() {
 
 	if err != nil {
 		slog.Error("Wails run error: %s", err)
+		os.Exit(1)
 	}
 }

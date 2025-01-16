@@ -12,10 +12,6 @@ function guideStateReducer(state: any, action: any): any {
     switch (action.type) {
         case 'enableSteamCEFRemoteDebugging':
             EnableSteamCEFRemoteDebugging()
-                .then()
-            return {
-                ...state,
-            };
         case 'load':
             Status().then(status => {state.status = status.state});
             return state;
@@ -27,6 +23,7 @@ function guideStateReducer(state: any, action: any): any {
 const SteamConnectionGuide = () => {
 
     const [state, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
+    const [guideCurrent, setGuideCurrent] = useState(0);
 
     useEffect(
         () => { 
@@ -34,6 +31,9 @@ const SteamConnectionGuide = () => {
             EventsOn(SteamConnectionStatusEventName, (status) => {
                 dispatch( { type: 'load'} )
             });
+            return () => {
+                EventsOff(SteamConnectionStatusEventName);
+            }
         }
     )
 
@@ -51,7 +51,11 @@ const SteamConnectionGuide = () => {
                         <Button type="primary" onClick={e => handleEnabledButton(e)}>启动CEF远程调试</Button>
                     </>
                 } />
-                <Step title="重新启动Steam" description="点击Steam客户端的重启按钮或者关闭后手动开启。"/>
+                <Step title="重新启动Steam" description={
+                    <>
+                        "点击Steam客户端的重启按钮或者关闭后手动开启。"
+                    </>
+                } />
                 <Step title="等待半分钟" description={
                     <>
                         <p>启动Steam后请耐心等待大约30秒。</p>
@@ -59,8 +63,6 @@ const SteamConnectionGuide = () => {
                     </>
                 }/>
             </Steps>
-            {/* 这里可以根据实际情况添加更多交互元素，比如检查连接状态的按钮 */}
-            <Button type="primary" style={{marginTop: '24px'}}>检查连接状态</Button>
         </Card>
     );
 };

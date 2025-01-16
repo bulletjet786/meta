@@ -37,7 +37,7 @@ func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
 }
 
 func (p *SteamLowestPriceStorePlugin) Name() string {
-	return "lowestPriceStorePlugin"
+	return "LowestPriceStorePlugin"
 }
 
 func (p *SteamLowestPriceStorePlugin) Init() error {
@@ -76,5 +76,4 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 		return err
 	}
 	return nil
-
 }
