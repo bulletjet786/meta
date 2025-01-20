@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/chromedp/cdproto/page"
+	cdpruntime "github.com/chromedp/cdproto/runtime"
+	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 )
 
@@ -77,6 +80,26 @@ func (c *ChromeHolder) connectionAvailable() bool {
 	return true
 }
 
+func (c *ChromeHolder) sharedJsContextTargetId() (target.ID, error) {
+	c.chromeCtxLock.RLock()
+	defer c.chromeCtxLock.RUnlock()
+	if c.chromeCtx == nil {
+		return "", fmt.Errorf("no available chrome ctx")
+	}
+
+	targets, err := chromedp.Targets(c.chromeCtx)
+	if err != nil {
+		slog.Error("Get targets failed", "err", err)
+		return "", err
+	}
+	for _, t := range targets {
+		if t.Title == "SharedJSContext" {
+			return t.TargetID, nil
+		}
+	}
+	return "", fmt.Errorf("no SharedJSContext target")
+}
+
 func (c *ChromeHolder) makeConnection() {
 	c.chromeCtxLock.Lock()
 	defer c.chromeCtxLock.Unlock()
@@ -101,16 +124,25 @@ func (c *ChromeHolder) buildConnection() error {
 	slog.Info("Steam connection checked", "url", c.remoteUrl)
 
 	// init chrome connection configuration
-	//if err := chromedp.Run(c.chromeCtx,
-	//	page.Enable(),
-	//	cdpruntime.Enable(),
-	//	page.SetBypassCSP(true),
-	//); err != nil {
-	//	c.cleanChromeContext()
-	//	slog.Error("Start chrome debugger config failed", "err", err)
-	//	return err
-	//}
-	//slog.Info("Start steam connection connected")
+	sharedJsContextTargetId, err := c.sharedJsContextTargetId()
+	if err != nil {
+		return err
+	}
+
+	// 2025/01/21 00:36:58 -> {"id":3,"method":"Target.createTarget","params":{"url":"about:blank"}}
+	//2025/01/21 00:36:58 <- {"id":3,"error":{"code":-32000,"message":"Not supported"}}
+	//2025/01/21 00:36:58 ERROR Start chrome debugger config failed err="Not supported (-32000)"
+	//2025/01/21 00:36:58 ERROR Build steam connection failed err="Not supported (-32000)"
+	if err := chromedp.Run(c.chromeCtx,
+		target.ActivateTarget(sharedJsContextTargetId),
+		page.Enable(),
+		cdpruntime.Enable(),
+		page.SetBypassCSP(true),
+	); err != nil {
+		c.cleanChromeContext()
+		slog.Error("Start chrome debugger config failed", "err", err)
+		return err
+	}
 	return nil
 }
 
