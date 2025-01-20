@@ -6,12 +6,8 @@ export function EnableSteamCEFRemoteDebugging() {
   return window['go']['steam']['Service']['EnableSteamCEFRemoteDebugging']();
 }
 
-export function Init() {
-  return window['go']['steam']['Service']['Init']();
-}
-
-export function Run() {
-  return window['go']['steam']['Service']['Run']();
+export function Start(arg1, arg2) {
+  return window['go']['steam']['Service']['Start'](arg1, arg2);
 }
 
 export function Status() {

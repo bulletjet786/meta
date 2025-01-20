@@ -5,7 +5,7 @@ import "context"
 type SteamPlugin interface {
 	Name() string
 	Init() error
-	// Plugin must handler chrome cannel event
-	// Run must be called multitimes with diffenert context
+	// Run must be called multi times with different context
+	// Plugin must handler chrome cancel event
 	Run(chromeCtx context.Context)
 }

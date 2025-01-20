@@ -10,7 +10,6 @@ require (
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
 	github.com/wailsapp/wails/v2 v2.9.2
-	golang.org/x/net v0.27.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
@@ -48,6 +47,7 @@ require (
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect

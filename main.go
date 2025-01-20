@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log/slog"
-	"context"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -17,7 +17,7 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-const defaultRemoteDebuggingUrl = "https://127.0..0.11:8080"
+const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 func main() {
 
@@ -38,14 +38,13 @@ func main() {
 			machineService,
 			steamService,
 		},
-		OnStartup:        func(ctx context.Context) {
-			machineService.Start(ctx),
+		OnStartup: func(ctx context.Context) {
+			machineService.Start(ctx)
 			steamService.Start(ctx, steam.ServiceOptions{
 				RemoteUrl: defaultRemoteDebuggingUrl,
 				Os:        machineService.GetMachineInfo().Os,
 			})
 		},
-
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId: constants.SingleInstanceLockUniqueId,
 		},

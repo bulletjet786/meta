@@ -1,34 +1,21 @@
 package steam
 
 import (
+	"context"
 	"log/slog"
 	"os"
-	"sync"
-	"time"
-	"context"
-
-	"github.com/chromedp/cdproto/browser"
-	"github.com/chromedp/cdproto/page"
-	cdpruntime "github.com/chromedp/cdproto/runtime"
-	"github.com/chromedp/chromedp"
-	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"meta/backend/constants"
 	"meta/backend/service/steam/plugin"
 )
 
 type Service struct {
-	ctx context.Context
+	wailsCtx context.Context
 
 	options ServiceOptions
-	plugins   []plugin.SteamPlugin
+	plugins []plugin.SteamPlugin
 
-	ctxLock      sync.RWMutex
-	chromeCtx    context.Context
-	chromeCancel func()
-
-	status     Status
-	statusLock sync.RWMutex
+	chromeHolder ChromeHolder
 }
 
 type ServiceOptions struct {
@@ -36,13 +23,12 @@ type ServiceOptions struct {
 	Os        string
 }
 
-func NewService(options ServiceOptions) *Service {
+func NewService() *Service {
 	return &Service{}
 }
 
-
 func (s *Service) Start(ctx context.Context, options ServiceOptions) {
-	s.ctx = ctx
+	s.wailsCtx = ctx
 	s.options = options
 
 	s.plugins = []plugin.SteamPlugin{
@@ -54,83 +40,31 @@ func (s *Service) Start(ctx context.Context, options ServiceOptions) {
 			os.Exit(1)
 		}
 	}
-
-	go s.watchdog()
-	go s.startPlugins()
-}
-
-func (s *Service) watchdog() {
-	c := time.NewTicker(5 * time.Second)
-	for {
-		<-c.C
-		if err := browser.GetVersion(); err != nil {
-			s.chromeCancel()
-			s.rebuildConnection()
-			s.startPlugins()
-			s.updateStatus(Status{
-				State: StatusDisconnected,
-			})
-		} else {
-			s.updateStatus(Status{
-				State: StatusConnected,
-			})
-		}
-	}
-}
-
-func (s *Service) updateStatus(status Status) {
-	s.statusLock.Lock()
-	s.status = status
-	wailsruntime.EventsEmit(s.ctx, constants.EventForStatusChange, status)
-	s.statusLock.Unlock()
+	s.chromeHolder = NewChromeHolder(options.RemoteUrl)
+	s.chromeHolder.Run()
+	s.startPlugins()
 }
 
 func (s *Service) startPlugins() {
-	s.ctxLock.RLock()
-	ctx := s.chromeCtx
-	s.ctxLock.RUnlock()
-
-	for _, p := range s.plugins {
-
-		go p.Run(ctx)
-	}
-}
-
-func (s *Service) rebuildConnection() {
-	s.ctxLock.Lock()
-	s.chromeCtx = nil
-	s.chromeCancel = nil
-	s.ctxLock.Unlock()
-	// 尝试建立新的连接
-	c := time.NewTicker(5 * time.Second)
-	for {
-		<-c.C
-		s.buildConnection()
-	}
-}
-
-func (s *Service) buildConnection() {
-	s.ctxLock.Lock()
-	defer s.ctxLock.Unlock()
-	s.chromeCtx, s.chromeCancel = chromedp.NewRemoteAllocator(context.Background(), s.options.RemoteUrl)
-	if err := chromedp.Run(s.chromeCtx,
-		page.Enable(),
-		cdpruntime.Enable(),
-		page.SetBypassCSP(true),
-	); err != nil {
-		slog.Error("Start chrome debugger config failed", "err", err)
-		s.chromeCtx = nil
-		s.chromeCancel = nil
-	}
+	go func() {
+		lastState := StatusDisconnected
+		for status := range s.chromeHolder.statusChannel {
+			slog.Info("Receive status", "status", status)
+			if lastState == StatusDisconnected && status.State == StatusConnected {
+				slog.Info("Found status change to connected", "status", status)
+				if chromeCtx := s.chromeHolder.ChromeCtx(); chromeCtx != nil {
+					for _, p := range s.plugins {
+						go p.Run(*chromeCtx)
+					}
+				}
+			}
+			lastState = status.State
+		}
+	}()
 }
 
 func (s *Service) Status() Status {
-	s.statusLock.RLock()
-	defer s.statusLock.RUnlock()
-
-	return Status{
-		State: StatusDisconnected,
-	}
+	return s.chromeHolder.Status()
 }
 
 func (s *Service) EnableSteamCEFRemoteDebugging() error {
@@ -148,13 +82,4 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 		defer fileHandler.Close()
 	}
 	return nil
-}
-
-const (
-	StatusDisconnected = "Disconnected"
-	StatusConnected    = "Connected"
-)
-
-type Status struct {
-	State string `json:"state"`
 }

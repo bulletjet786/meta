@@ -48,6 +48,7 @@ func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
 	// just install listener to watch new target creation events
 	// when chromeCtx cancelled, listening will exit
 	chromedp.ListenTarget(chromeCtx, func(ev interface{}) {
+		slog.Info("listened target event", "event", ev)
 		switch ev.(type) {
 		case *target.EventTargetCreated:
 			go func() {

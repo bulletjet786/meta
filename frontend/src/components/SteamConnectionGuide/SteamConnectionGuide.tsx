@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer, useState} from 'react';
 import {Button, Card, Steps, Typography} from 'antd';
 import {EnableSteamCEFRemoteDebugging, Status} from "../../../wailsjs/go/steam/Service";
-import { EventsOff, EventsOn } from "../../../wailsjs/runtime/runtime";
+import { EventsOff, EventsOn } from "../../../wailsjs/runtime";
 
 const {Title, Paragraph} = Typography;
 const {Step} = Steps;

@@ -21,6 +21,20 @@ export namespace machine {
 
 export namespace steam {
 	
+	export class ServiceOptions {
+	    RemoteUrl: string;
+	    Os: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ServiceOptions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.RemoteUrl = source["RemoteUrl"];
+	        this.Os = source["Os"];
+	    }
+	}
 	export class Status {
 	    state: string;
 	
