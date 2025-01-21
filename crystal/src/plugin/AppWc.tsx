@@ -21,7 +21,7 @@ export class CrystalRunOptions {
     constructor(
         public useDebugAppId: string | null = null,
         public enableHistoryPriceCharts: boolean = true, // 是否启用价格图表
-        public deckSN: string = "deck:Unknown"
+        public deckSN: string = "deck:Unknown",
     ) {
     }
 }
