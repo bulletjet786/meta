@@ -79,12 +79,16 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	}
 	cefEnableRemoteDebugging := homePath + "/.steam/steam/.cef-enable-remote-debugging"
 
-	if s.options.Os == constants.OsLinux {
+	switch s.options.Os {
+	case constants.OsLinux:
 		fileHandler, err := os.Create(cefEnableRemoteDebugging)
 		if nil != err {
 			return err
 		}
 		defer fileHandler.Close()
+	case constants.OsWindows:
+		// TODO: windows
+		
 	}
 	return nil
 }

@@ -236,6 +236,13 @@ Steam伴侣功能：
 4. 申请杉果或其他平台的分销渠道（购买）
 5. 自己去做CDKEY买卖
 
+https://blog.csdn.net/csd_ct/article/details/107132679
+
+https://blog.csdn.net/weixin_40188817/article/details/118380865
+
+https://www.cnblogs.com/stulzq/p/6121576.html
+
+
 
 
 
