@@ -3,13 +3,11 @@ package steam
 import (
 	"context"
 	"fmt"
-	"log"
-	"log/slog"
-	"sync"
-	"time"
-
 	"github.com/chromedp/cdproto/page"
 	cdpruntime "github.com/chromedp/cdproto/runtime"
+	"log/slog"
+	"time"
+
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 )
@@ -26,7 +24,7 @@ type Status struct {
 type ChromeHolder struct {
 	remoteUrl string
 
-	chromeCtxLock sync.RWMutex
+	//chromeCtxLock sync.RWMutex
 	chromeCtx     context.Context
 	chromeCancel  func()
 	status        Status
@@ -46,8 +44,8 @@ func NewChromeHolder(remoteUrl string) ChromeHolder {
 func (c *ChromeHolder) ChromeCancel() {}
 
 func (c *ChromeHolder) cleanChromeContext() {
-	c.chromeCtxLock.Lock()
-	defer c.chromeCtxLock.Unlock()
+	//c.chromeCtxLock.Lock()
+	//defer c.chromeCtxLock.Unlock()
 
 	if c.chromeCtx != nil {
 		c.chromeCancel()
@@ -58,16 +56,16 @@ func (c *ChromeHolder) cleanChromeContext() {
 
 func (c *ChromeHolder) updateStatus(status Status) {
 	slog.Info("Updating steam status", "status", status)
-	c.chromeCtxLock.Lock()
-	defer c.chromeCtxLock.Unlock()
+	//c.chromeCtxLock.Lock()
+	//defer c.chromeCtxLock.Unlock()
 
 	c.status = status
 	c.statusChannel <- c.status
 }
 
 func (c *ChromeHolder) connectionAvailable() bool {
-	c.chromeCtxLock.RLock()
-	defer c.chromeCtxLock.RUnlock()
+	//c.chromeCtxLock.RLock()
+	//defer c.chromeCtxLock.RUnlock()
 	if c.chromeCtx == nil {
 		return false
 	}
@@ -80,14 +78,12 @@ func (c *ChromeHolder) connectionAvailable() bool {
 	return true
 }
 
-func (c *ChromeHolder) sharedJsContextTargetId() (target.ID, error) {
-	c.chromeCtxLock.RLock()
-	defer c.chromeCtxLock.RUnlock()
-	if c.chromeCtx == nil {
+func (c *ChromeHolder) sharedJsContextTargetId(ctx context.Context) (target.ID, error) {
+	if ctx == nil {
 		return "", fmt.Errorf("no available chrome ctx")
 	}
 
-	targets, err := chromedp.Targets(c.chromeCtx)
+	targets, err := chromedp.Targets(ctx)
 	if err != nil {
 		slog.Error("Get targets failed", "err", err)
 		return "", err
@@ -100,41 +96,29 @@ func (c *ChromeHolder) sharedJsContextTargetId() (target.ID, error) {
 	return "", fmt.Errorf("no SharedJSContext target")
 }
 
-func (c *ChromeHolder) makeConnection() {
-	c.chromeCtxLock.Lock()
-	defer c.chromeCtxLock.Unlock()
-
+func (c *ChromeHolder) makeConnection(id *target.ID) (context.Context, context.CancelFunc) {
 	allocatorContext, _ := chromedp.NewRemoteAllocator(context.Background(), c.remoteUrl)
 
 	// build context options
 	var opts = []chromedp.ContextOption{
-		chromedp.WithDebugf(log.Printf),
+		//chromedp.WithDebugf(log.Printf),
 	}
-	c.chromeCtx, c.chromeCancel = chromedp.NewContext(allocatorContext, opts...)
+	if id != nil {
+		opts = append(opts, chromedp.WithTargetID(*id))
+	}
+	return chromedp.NewContext(allocatorContext, opts...)
 }
 
 func (c *ChromeHolder) buildConnection() error {
-	c.makeConnection()
-
-	// init check connection
-	if !c.connectionAvailable() {
-		c.cleanChromeContext()
-		return fmt.Errorf("steam connection check failed")
-	}
-	slog.Info("Steam connection checked", "url", c.remoteUrl)
-
-	// init chrome connection configuration
-	sharedJsContextTargetId, err := c.sharedJsContextTargetId()
+	tempChromeCtx, _ := c.makeConnection(nil)
+	sharedJsContextTargetId, err := c.sharedJsContextTargetId(tempChromeCtx)
 	if err != nil {
 		return err
 	}
 
-	// 2025/01/21 00:36:58 -> {"id":3,"method":"Target.createTarget","params":{"url":"about:blank"}}
-	//2025/01/21 00:36:58 <- {"id":3,"error":{"code":-32000,"message":"Not supported"}}
-	//2025/01/21 00:36:58 ERROR Start chrome debugger config failed err="Not supported (-32000)"
-	//2025/01/21 00:36:58 ERROR Build steam connection failed err="Not supported (-32000)"
+	slog.Info("sharedJsContextTargetId found", "id", sharedJsContextTargetId)
+	c.chromeCtx, c.chromeCancel = c.makeConnection(&sharedJsContextTargetId)
 	if err := chromedp.Run(c.chromeCtx,
-		target.ActivateTarget(sharedJsContextTargetId),
 		page.Enable(),
 		cdpruntime.Enable(),
 		page.SetBypassCSP(true),
@@ -143,6 +127,15 @@ func (c *ChromeHolder) buildConnection() error {
 		slog.Error("Start chrome debugger config failed", "err", err)
 		return err
 	}
+
+	chromedp.ListenTarget(c.chromeCtx, func(ev interface{}) {
+		slog.Info("listened target event", "event", ev)
+		switch ev.(type) {
+		case *target.EventTargetCreated:
+			slog.Info("target event created", "event", ev)
+		}
+	})
+
 	return nil
 }
 
