@@ -24,7 +24,6 @@ type Status struct {
 type ChromeHolder struct {
 	remoteUrl string
 
-	//chromeCtxLock sync.RWMutex
 	chromeCtx     context.Context
 	chromeCancel  func()
 	status        Status
@@ -44,9 +43,6 @@ func NewChromeHolder(remoteUrl string) ChromeHolder {
 func (c *ChromeHolder) ChromeCancel() {}
 
 func (c *ChromeHolder) cleanChromeContext() {
-	//c.chromeCtxLock.Lock()
-	//defer c.chromeCtxLock.Unlock()
-
 	if c.chromeCtx != nil {
 		c.chromeCancel()
 	}
@@ -56,16 +52,12 @@ func (c *ChromeHolder) cleanChromeContext() {
 
 func (c *ChromeHolder) updateStatus(status Status) {
 	slog.Info("Updating steam status", "status", status)
-	//c.chromeCtxLock.Lock()
-	//defer c.chromeCtxLock.Unlock()
 
 	c.status = status
 	c.statusChannel <- c.status
 }
 
 func (c *ChromeHolder) connectionAvailable() bool {
-	//c.chromeCtxLock.RLock()
-	//defer c.chromeCtxLock.RUnlock()
 	if c.chromeCtx == nil {
 		return false
 	}
@@ -128,13 +120,13 @@ func (c *ChromeHolder) buildConnection() error {
 		return err
 	}
 
-	chromedp.ListenTarget(c.chromeCtx, func(ev interface{}) {
-		slog.Info("listened target event", "event", ev)
-		switch ev.(type) {
-		case *target.EventTargetCreated:
-			slog.Info("target event created", "event", ev)
-		}
-	})
+	//chromedp.ListenTarget(c.chromeCtx, func(ev interface{}) {
+	//	slog.Info("listened target event", "event", ev)
+	//	switch ev.(type) {
+	//	case *target.EventTargetCreated:
+	//		slog.Info("target event created", "event", ev)
+	//	}
+	//})
 
 	return nil
 }

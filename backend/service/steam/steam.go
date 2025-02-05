@@ -7,6 +7,8 @@ import (
 
 	"meta/backend/constants"
 	"meta/backend/service/steam/plugin"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Service struct {
@@ -50,6 +52,9 @@ func (s *Service) startPlugins() {
 		lastState := StatusDisconnected
 		for status := range s.chromeHolder.statusChannel {
 			slog.Info("Receive status", "status", status)
+
+			runtime.EventsEmit(s.wailsCtx, constants.EventForStatusChange, status)
+
 			if lastState == StatusDisconnected && status.State == StatusConnected {
 				slog.Info("Found status change to connected", "status", status)
 				if chromeCtx := s.chromeHolder.ChromeCtx(); chromeCtx != nil {
