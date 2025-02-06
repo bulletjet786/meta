@@ -48,3 +48,10 @@ export default tseslint.config({
   },
 })
 ```
+
+# How to test Plugin
+```
+
+```
+
+# How to test Injector

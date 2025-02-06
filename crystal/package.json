@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --mode development --config vite.config.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "build:wc": "vite build --mode development --config vite.wc.config.ts",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@r2wc/react-to-web-component": "^2.0.3",
+    "antd": "^5.23.2",
     "dayjs": "^1.11.13",
     "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
