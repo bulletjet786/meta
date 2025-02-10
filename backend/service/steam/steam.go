@@ -88,3 +88,9 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	}
 	return nil
 }
+
+const (
+	LinuxCEFDebuggingFilePathName = ".cef-enable-remote-debugging"
+	WindowsCEFDebuggingFileName   = ".cef-enable-debugging"
+	WindowsCEFDebuggingFilePath   = "C:\\Program Files (x86)\\Steam"
+)
