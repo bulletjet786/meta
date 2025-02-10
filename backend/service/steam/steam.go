@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"meta/backend/constants"
+	"meta/backend/service/steam/discovery"
 	"meta/backend/service/steam/plugin"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -73,28 +74,14 @@ func (s *Service) Status() Status {
 }
 
 func (s *Service) EnableSteamCEFRemoteDebugging() error {
-	homePath, err := os.UserHomeDir()
+	cefEnableDebugging, err := discovery.LookUpSteamCEFDebuggingFilePath()
 	if err != nil {
 		return err
 	}
-	cefEnableRemoteDebugging := homePath + "/.steam/steam/.cef-enable-remote-debugging"
-
-	switch s.options.Os {
-	case constants.OsLinux:
-		fileHandler, err := os.Create(cefEnableRemoteDebugging)
-		if nil != err {
-			return err
-		}
-		defer fileHandler.Close()
-	case constants.OsWindows:
-		// TODO: windows
-		
+	fileHandler, err := os.Create(cefEnableDebugging)
+	if nil != err {
+		return err
 	}
+	defer fileHandler.Close()
 	return nil
 }
-
-const (
-	LinuxCEFDebuggingFilePathName = ".cef-enable-remote-debugging"
-	WindowsCEFDebuggingFileName   = ".cef-enable-debugging"
-	WindowsCEFDebuggingFilePath   = "C:\\Program Files (x86)\\Steam"
-)
