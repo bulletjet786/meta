@@ -53,7 +53,7 @@ const SteamConnectionGuide = () => {
                 } />
                 <Step title="重新启动Steam" description={
                     <>
-                        "点击Steam客户端的重启按钮或者关闭后手动开启。"
+                        "点击Steam客户端的重启按钮或者关闭后手动启动Steam。"
                     </>
                 } />
                 <Step title="等待半分钟" description={
