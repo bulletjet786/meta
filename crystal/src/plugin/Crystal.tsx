@@ -1,5 +1,5 @@
 import r2wc from "@r2wc/react-to-web-component"
-import App from "../components/App/App.tsx"
+import App from "../components/GamePanel/GamePanel.tsx"
 
 declare const window: {
     __crystal_injected: boolean;

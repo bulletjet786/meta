@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom/client';
+import GamePanel from './components/GamePanel/GamePanel';
 
 // async function _crystalImport() {
 //     try {
@@ -11,7 +13,10 @@
 //
 // _crystalImport();
 
-const crystal = await import("http://localhost:5173/build/crystal.es.js");
-crystal.run({"useDebugAppId": "548430", "enableHistoryPriceCharts": true});
+// const crystal = await import("http://localhost:5173/crystal.es.js");
+// crystal.run({"useDebugAppId": "548430", "enableHistoryPriceCharts": true});
 
-console.log("Hello World!")
+// console.log("Hello World!")
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<GamePanel></GamePanel>);
