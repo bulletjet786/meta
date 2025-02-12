@@ -120,14 +120,6 @@ func (c *ChromeHolder) buildConnection() error {
 		return err
 	}
 
-	//chromedp.ListenTarget(c.chromeCtx, func(ev interface{}) {
-	//	slog.Info("listened target event", "event", ev)
-	//	switch ev.(type) {
-	//	case *target.EventTargetCreated:
-	//		slog.Info("target event created", "event", ev)
-	//	}
-	//})
-
 	return nil
 }
 
@@ -154,8 +146,7 @@ func (c *ChromeHolder) watchdog() {
 
 	ticker := time.NewTicker(5 * time.Second)
 	for {
-		t := <-ticker.C
-		slog.Info("Steam connection watchdog ticked", "t", t)
+		<-ticker.C
 		needRebuild := false
 		if !c.connectionAvailable() {
 			c.cleanChromeContext()

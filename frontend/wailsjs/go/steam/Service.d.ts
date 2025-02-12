@@ -3,6 +3,8 @@
 import {context} from '../models';
 import {steam} from '../models';
 
+export function DisableSteamCEFRemoteDebugging():Promise<void>;
+
 export function EnableSteamCEFRemoteDebugging():Promise<void>;
 
 export function Start(arg1:context.Context,arg2:steam.ServiceOptions):Promise<void>;

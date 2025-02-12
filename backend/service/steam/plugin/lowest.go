@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"github.com/chromedp/cdproto/page"
 	"html/template"
 	"log/slog"
 	"reflect"
@@ -14,7 +15,8 @@ import (
 )
 
 const (
-	storeUrlPrefix       = "https://store.steampowered.com/app/"
+	storeUrlPrefix       = "https://store.steampowered.com/"
+	storeAppUrlPrefix    = "https://store.steampowered.com/app/"
 	lowestJsCodeTemplate = `
 	async function _crystalImport() {
 		try {
@@ -41,7 +43,7 @@ func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
 	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(lowestJsCodeTemplate)
 	var buf bytes.Buffer
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
-		CrystalUrl: "https://package.hulu.deckz.fun/crystal/0.0.2.beta1/crystal.es.js",
+		CrystalUrl: "https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js",
 	})
 	lowestJsCode := buf.String()
 
@@ -56,6 +58,10 @@ func (p *SteamLowestPriceStorePlugin) Name() string {
 
 func (p *SteamLowestPriceStorePlugin) Init() error {
 	return nil
+}
+
+func (p *SteamLowestPriceStorePlugin) SubType() string {
+	return SubTypeForStore
 }
 
 func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
@@ -78,12 +84,26 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 	go func() {
 		err := func() error {
 			logger := slog.With(ctx, "plugin_name", p.Name())
-
 			url := targetInfo.URL
-			if !strings.HasPrefix(url, storeUrlPrefix) {
+			logger = logger.With("url", url)
+
+			if strings.HasPrefix(url, storeUrlPrefix) {
+				if err := chromedp.Run(ctx,
+					chromedp.ActionFunc(func(ctx context.Context) error {
+						target.AttachToTarget(targetInfo.TargetID)
+						return nil
+					}),
+					page.SetBypassCSP(true),
+				); err != nil {
+					logger.Error("SetBypassCSP failed", "err", err)
+					return err
+				}
+				slog.Info("SetBypassCSP success", "id", targetInfo.TargetID, "url", targetInfo.URL)
+			}
+
+			if !strings.HasPrefix(url, storeAppUrlPrefix) {
 				return nil
 			}
-			logger = logger.With("url", url)
 
 			logger.Info("Found store page, try to inject ...")
 			// Inject the JavaScript code

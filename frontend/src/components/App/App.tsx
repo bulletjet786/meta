@@ -1,15 +1,15 @@
-import {useState} from 'react';
-import logo from './assets/images/logo-universal.png';
 import './App.css';
 import SteamConnectionGuide from "../SteamConnectionGuide/SteamConnectionGuide";
+import {ConfigProvider, theme} from "antd";
 
 function App() {
 
     return (
-        <SteamConnectionGuide />
+        <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
+            <SteamConnectionGuide />
+        </ConfigProvider>
     )
 }
 
 export default App
-
 

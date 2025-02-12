@@ -39,6 +39,7 @@ export class HuluLowestPriceExtension {
             return
         }
         window.__crystal_injected = true
+        console.log(`Start inject crystal lowest code for ${document.URL}`)
 
         this.options = options
         const appId = options.useDebugAppId != null? options.useDebugAppId :
