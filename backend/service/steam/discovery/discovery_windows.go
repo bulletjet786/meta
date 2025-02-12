@@ -9,17 +9,17 @@ import (
 	registry "golang.org/x/sys/windows/registry"
 )
 
-var (
+const (
 	// 我们不考虑windows 32位系统
-    steamSoftwareRegistryKeyForWindows = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam"
+	steamSoftwareRegistryKeyForWindows = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam"
 )
 
 var (
-	ErrorSteamNotFound = fmt.Errorf("Steam not found")
+	ErrorSteamNotFound = fmt.Errorf("steam not found")
 )
 
 func LookUpSteamCEFDebuggingFilePath() (string, error) {
-	key, err := registry.OpenKey(registry.LOCAL_MACHINE, "SOFTWARE\\Valve\\Steam", registry.QUERY_VALUE)
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, steamSoftwareRegistryKeyForWindows, registry.QUERY_VALUE)
 	if err != nil {
 		return "", ErrorSteamNotFound
 	}
@@ -34,7 +34,7 @@ func LookUpSteamCEFDebuggingFilePath() (string, error) {
 	if steamRegistry.UninstallString == "" {
 		return "", ErrorSteamNotFound
 	}
-	
+
 	if !strings.HasSuffix(steamRegistry.UninstallString, "\\uninstall.exe") {
 		return "", ErrorSteamNotFound
 	}
@@ -42,9 +42,9 @@ func LookUpSteamCEFDebuggingFilePath() (string, error) {
 }
 
 type SteamSoftwareRegistryInfo struct {
-	DisplayName string
-	DisplayIcon string
-	DisplayVersion string
-	Publisher string
+	DisplayName     string
+	DisplayIcon     string
+	DisplayVersion  string
+	Publisher       string
 	UninstallString string
 }
