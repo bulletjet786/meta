@@ -85,3 +85,14 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	defer fileHandler.Close()
 	return nil
 }
+
+func (s *Service) DisableSteamCEFRemoteDebugging() error {
+	cefEnableDebugging, err := discovery.LookUpSteamCEFDebuggingFilePath()
+	if err != nil {
+		return err
+	}
+	if err = os.Remove(cefEnableDebugging); nil != err {
+		return err
+	}
+	return nil
+}
