@@ -8,7 +8,6 @@ type SteamPlugin interface {
 	// Run must be called multi times with different context
 	// Plugin must handler chrome cancel event
 	Run(chromeCtx context.Context)
-	SubType() string
 }
 
 const (

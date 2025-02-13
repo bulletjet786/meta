@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"github.com/chromedp/cdproto/page"
 	"html/template"
 	"log/slog"
 	"reflect"
 	"strings"
 
+	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 )
@@ -60,10 +60,6 @@ func (p *SteamLowestPriceStorePlugin) Init() error {
 	return nil
 }
 
-func (p *SteamLowestPriceStorePlugin) SubType() string {
-	return SubTypeForStore
-}
-
 func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
 	// just install listener to watch new target creation events
 	// when chromeCtx cancelled, listening will exit
@@ -87,12 +83,9 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 			url := targetInfo.URL
 			logger = logger.With("url", url)
 
+			storeCtx, _ := chromedp.NewContext(ctx, chromedp.WithTargetID(targetInfo.TargetID))
 			if strings.HasPrefix(url, storeUrlPrefix) {
-				if err := chromedp.Run(ctx,
-					chromedp.ActionFunc(func(ctx context.Context) error {
-						target.AttachToTarget(targetInfo.TargetID)
-						return nil
-					}),
+				if err := chromedp.Run(storeCtx,
 					page.SetBypassCSP(true),
 				); err != nil {
 					logger.Error("SetBypassCSP failed", "err", err)
@@ -107,7 +100,7 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 
 			logger.Info("Found store page, try to inject ...")
 			// Inject the JavaScript code
-			if err := chromedp.Run(ctx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
+			if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
 				return err
 			}
 			return nil

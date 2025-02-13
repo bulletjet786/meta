@@ -38,7 +38,7 @@ const SteamConnectionGuide = () => {
     )
 
     function handleEnabledButton(e: any) {
-        return dispatch({type: 'enableSteamCEFRemoteDebugging'});
+        return dispatch({type: 'enableSteamCEFDebugging'});
     }
 
     return (
@@ -53,7 +53,7 @@ const SteamConnectionGuide = () => {
                 } />
                 <Step title="重新启动Steam" description={
                     <>
-                        "点击Steam客户端的重启按钮或者关闭后手动启动Steam。"
+                        点击Steam客户端的重启按钮或者关闭后手动启动Steam。
                     </>
                 } />
                 <Step title="等待半分钟" description={
