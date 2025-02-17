@@ -1,6 +1,6 @@
 #app {
-    height: 100vh;
-    width: 100vh;
+    height: 760px;
+    width: 100%;
     text-align: center;
-    background-image: 'assets/images/background.png';
+    background-color: red;
 }
