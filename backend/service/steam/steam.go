@@ -73,7 +73,7 @@ func (s *Service) Status() Status {
 	return s.chromeHolder.Status()
 }
 
-func (s *Service) EnableSteamCEFRemoteDebugging() error {
+func (s *Service) EnableSteamCEFDebugging() error {
 	cefEnableDebugging, err := discovery.LookUpSteamCEFDebuggingFilePath()
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (s *Service) EnableSteamCEFRemoteDebugging() error {
 	return nil
 }
 
-func (s *Service) DisableSteamCEFRemoteDebugging() error {
+func (s *Service) DisableSteamCEFDebugging() error {
 	cefEnableDebugging, err := discovery.LookUpSteamCEFDebuggingFilePath()
 	if err != nil {
 		return err

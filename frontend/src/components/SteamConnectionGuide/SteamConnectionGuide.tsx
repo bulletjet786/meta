@@ -1,32 +1,36 @@
 import React, {useEffect, useReducer} from 'react';
 import {Button, Card, Typography} from 'antd';
-import {EnableSteamCEFRemoteDebugging} from "../../../wailsjs/go/steam/Service";
+import {EnableSteamCEFDebugging} from "../../../wailsjs/go/steam/Service";
 import { EventsOff, EventsOn } from "../../../wailsjs/runtime";
-import staticMethods from 'antd/es/message';
 
 const {Title, Paragraph} = Typography;
 
 const SteamConnectionStatusEventName = "steam.connection.status"
 
 function guideStateReducer(model: any, action: any): any {
+    console.log("Do state reducer for model: %s, with: %s, ", JSON.stringify(model), JSON.stringify(action))
     switch (action.type) {
         case 'enableSteamCEFDebugging':
-            EnableSteamCEFRemoteDebugging()
+            EnableSteamCEFDebugging();
+            break
         case 'load':
             const payload = action.payload;
             if (model.state != payload.state) {
                 let stateDesc = "未连接"
-                switch (model.state) {
+                switch (payload.state) {
                     case 'Disconnected':
                         stateDesc = "未连接"
+                        break
                     case 'Connected':
                         stateDesc = "运行中"
+                        break
                 }
                 return {
                     state: payload.state,
                     stateDesc: stateDesc
                 }
             }
+            break
     }
     return model;
 }
@@ -39,7 +43,7 @@ const SteamConnectionGuide = () => {
     useEffect(
         () => { 
             EventsOn(SteamConnectionStatusEventName, (status) => {
-                console.log("Received SteamConnectionStatus Event: $status")
+                console.log("Received SteamConnectionStatus Event: " + JSON.stringify(status))
                 dispatch( { type: 'load', payload: status} )
             });
             return () => {

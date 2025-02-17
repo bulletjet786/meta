@@ -10,6 +10,9 @@ body {
     font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+    height: 760px;
+    width: 100%;
+    background-color: #141414;
 }
 
 @font-face {
