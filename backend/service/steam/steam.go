@@ -91,8 +91,24 @@ func (s *Service) DisableSteamCEFDebugging() error {
 	if err != nil {
 		return err
 	}
-	if err = os.Remove(cefEnableDebugging); nil != err {
+	if err = os.Remove(cefEnableDebugging); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (s *Service) SteamCEFDebuggingEnabled() bool {
+	cefEnableDebugging, err := discovery.LookUpSteamCEFDebuggingFilePath()
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(cefEnableDebugging)
+	slog.Info("SteamCEFDebuggingEnabled err", "err", err)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
+	return false
 }

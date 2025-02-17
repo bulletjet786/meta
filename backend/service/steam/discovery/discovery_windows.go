@@ -4,14 +4,13 @@ package discovery
 
 import (
 	"fmt"
-	"strings"
-
 	registry "golang.org/x/sys/windows/registry"
+	"log/slog"
 )
 
 const (
 	// 我们不考虑windows 32位系统
-	steamSoftwareRegistryKeyForWindows = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam"
+	steamSoftwareRegistryKeyForWindows = "SOFTWARE\\WOW6432Node\\Valve\\Steam"
 )
 
 var (
@@ -21,30 +20,24 @@ var (
 func LookUpSteamCEFDebuggingFilePath() (string, error) {
 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, steamSoftwareRegistryKeyForWindows, registry.QUERY_VALUE)
 	if err != nil {
+		slog.Error("open windows registry key failed", "key", steamSoftwareRegistryKeyForWindows)
 		return "", ErrorSteamNotFound
 	}
 
 	steamRegistry := SteamSoftwareRegistryInfo{}
-	steamRegistry.DisplayName, _, err = key.GetStringValue("DisplayName")
-	steamRegistry.DisplayIcon, _, err = key.GetStringValue("DisplayIcon")
-	steamRegistry.DisplayVersion, _, err = key.GetStringValue("DisplayVersion")
-	steamRegistry.Publisher, _, err = key.GetStringValue("Publisher")
-	steamRegistry.UninstallString, _, err = key.GetStringValue("UninstallString")
+	steamRegistry.InstallPath, _, err = key.GetStringValue("InstallPath")
+	steamRegistry.Language, _, err = key.GetStringValue("Language")
 
-	if steamRegistry.UninstallString == "" {
+	if steamRegistry.InstallPath == "" {
+		slog.Error("windows registry steam install path empty")
 		return "", ErrorSteamNotFound
 	}
+	slog.Info("found steam string path", "path", steamRegistry.InstallPath)
 
-	if !strings.HasSuffix(steamRegistry.UninstallString, "\\uninstall.exe") {
-		return "", ErrorSteamNotFound
-	}
-	return strings.TrimSuffix(steamRegistry.UninstallString, "\\uninstall.exe") + ".cef-enable-debugging", nil
+	return steamRegistry.InstallPath + "\\.cef-enable-debugging", nil
 }
 
 type SteamSoftwareRegistryInfo struct {
-	DisplayName     string
-	DisplayIcon     string
-	DisplayVersion  string
-	Publisher       string
-	UninstallString string
+	InstallPath string
+	Language    string
 }

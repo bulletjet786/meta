@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer} from 'react';
-import {Button, Card, Typography} from 'antd';
-import {EnableSteamCEFDebugging} from "../../../wailsjs/go/steam/Service";
+import {Card, Switch, Typography} from 'antd';
 import { EventsOff, EventsOn } from "../../../wailsjs/runtime";
+import useCEFDebuggingStore from "../../context/cef_debugging";
 
 const {Title, Paragraph} = Typography;
 
@@ -10,9 +10,6 @@ const SteamConnectionStatusEventName = "steam.connection.status"
 function guideStateReducer(model: any, action: any): any {
     console.log("Do state reducer for model: %s, with: %s, ", JSON.stringify(model), JSON.stringify(action))
     switch (action.type) {
-        case 'enableSteamCEFDebugging':
-            EnableSteamCEFDebugging();
-            break
         case 'load':
             const payload = action.payload;
             if (model.state != payload.state) {
@@ -40,20 +37,31 @@ const SteamConnectionGuide = () => {
 
     const [model, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected', stateDesc: "未连接" });
 
+    const cefState = useCEFDebuggingStore((state: any) => state.enabled)
+    const cefLoad = useCEFDebuggingStore((state: any) => state.load)
+    const cefEnable = useCEFDebuggingStore((state: any) => state.enableCEFDebugging)
+    const cefDisable = useCEFDebuggingStore((state: any) => state.disableCEFDebugging)
+
     useEffect(
         () => { 
             EventsOn(SteamConnectionStatusEventName, (status) => {
                 console.log("Received SteamConnectionStatus Event: " + JSON.stringify(status))
                 dispatch( { type: 'load', payload: status} )
             });
+            cefLoad()
             return () => {
                 EventsOff(SteamConnectionStatusEventName);
             }
         }
     )
 
-    function handleEnabledButton(e: any) {
-        return dispatch({type: 'enableSteamCEFDebugging'});
+    function switchCEFDebuggingButton(e: any) {
+        console.log("Cef state now is ", cefState)
+        if (cefState.state) {
+            cefDisable()
+        } else {
+            cefEnable()
+        }
     }
 
     return (
@@ -62,7 +70,7 @@ const SteamConnectionGuide = () => {
             <Title level={3}>如何连接上Steam</Title>
                 <div>
                     <p>1. 启动CEF调试：</p>
-                    <Button type="primary" onClick={e => handleEnabledButton(e)}>启动CEF调试</Button>
+                    <Switch defaultChecked={ cefState } onClick={ switchCEFDebuggingButton } />
                 </div>
                 <div>
                     <p>2. 重新Steam客户端，耐心等待大约30秒，连接成功后，您将看到上方状态变为 运行中。</p>

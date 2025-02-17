@@ -10,3 +10,5 @@ export function EnableSteamCEFDebugging():Promise<void>;
 export function Start(arg1:context.Context,arg2:steam.ServiceOptions):Promise<void>;
 
 export function Status():Promise<steam.Status>;
+
+export function SteamCEFDebuggingEnabled():Promise<boolean>;

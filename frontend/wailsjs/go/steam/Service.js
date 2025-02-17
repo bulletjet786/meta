@@ -17,3 +17,7 @@ export function Start(arg1, arg2) {
 export function Status() {
   return window['go']['steam']['Service']['Status']();
 }
+
+export function SteamCEFDebuggingEnabled() {
+  return window['go']['steam']['Service']['SteamCEFDebuggingEnabled']();
+}
