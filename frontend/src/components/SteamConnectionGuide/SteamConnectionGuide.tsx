@@ -1,34 +1,38 @@
-import React, {useEffect, useReducer, useState} from 'react';
-import {Button, Card, Steps, Typography} from 'antd';
-import {EnableSteamCEFRemoteDebugging, Status} from "../../../wailsjs/go/steam/Service";
+import React, {useEffect, useReducer} from 'react';
+import {Button, Card, Typography} from 'antd';
+import {EnableSteamCEFRemoteDebugging} from "../../../wailsjs/go/steam/Service";
 import { EventsOff, EventsOn } from "../../../wailsjs/runtime";
 
 const {Title, Paragraph} = Typography;
-const {Step} = Steps;
 
 const SteamConnectionStatusEventName = "steam.connection.status"
 
-function guideStateReducer(state: any, action: any): any {
+function guideStateReducer(model: any, action: any): any {
     switch (action.type) {
         case 'enableSteamCEFDebugging':
             EnableSteamCEFRemoteDebugging()
         case 'load':
-            Status().then(status => {state.status = status.state});
-            return state;
+            const payload = action.payload;
+            if (model.state != payload.state) {
+                return {
+                    state: payload.state,
+                }
+            }
     }
-    return state
+    return model;
 }
 
 
 const SteamConnectionGuide = () => {
 
-    const [state, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
+    const [model, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
 
     useEffect(
         () => { 
             dispatch( { type: 'load'} );
             EventsOn(SteamConnectionStatusEventName, (status) => {
-                dispatch( { type: 'load'} )
+                console.log("Received SteamConnectionStatus Event: $status")
+                dispatch( { type: 'load', payload: status} )
             });
             return () => {
                 EventsOff(SteamConnectionStatusEventName);
@@ -42,7 +46,7 @@ const SteamConnectionGuide = () => {
 
     return (
         <Card title={<Title level={2}>Steam伴侣</Title>} style={{width: '100%'}}>
-            <Paragraph strong>状态：{state.status}</Paragraph>
+            <Paragraph strong>状态：{model.status}</Paragraph>
             <Title level={3}>如何连接上Steam</Title>
                 <div>
                     <p>1. 启动CEF调试：</p>

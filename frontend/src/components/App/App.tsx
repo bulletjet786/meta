@@ -5,7 +5,7 @@ import {ConfigProvider, theme} from "antd";
 function App() {
 
     return (
-        <div id='app'>
+        <div id='app' style={{height: '100%', width: '100%'}}>
             <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
                 <SteamConnectionGuide />
             </ConfigProvider>
