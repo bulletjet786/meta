@@ -2,6 +2,7 @@ import React, {useEffect, useReducer} from 'react';
 import {Button, Card, Typography} from 'antd';
 import {EnableSteamCEFRemoteDebugging} from "../../../wailsjs/go/steam/Service";
 import { EventsOff, EventsOn } from "../../../wailsjs/runtime";
+import staticMethods from 'antd/es/message';
 
 const {Title, Paragraph} = Typography;
 
@@ -14,8 +15,16 @@ function guideStateReducer(model: any, action: any): any {
         case 'load':
             const payload = action.payload;
             if (model.state != payload.state) {
+                let stateDesc = "未连接"
+                switch (model.state) {
+                    case 'Disconnected':
+                        stateDesc = "未连接"
+                    case 'Connected':
+                        stateDesc = "运行中"
+                }
                 return {
                     state: payload.state,
+                    stateDesc: stateDesc
                 }
             }
     }
@@ -25,11 +34,10 @@ function guideStateReducer(model: any, action: any): any {
 
 const SteamConnectionGuide = () => {
 
-    const [model, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected' });
+    const [model, dispatch] = useReducer(guideStateReducer, { state: 'Disconnected', stateDesc: "未连接" });
 
     useEffect(
         () => { 
-            dispatch( { type: 'load'} );
             EventsOn(SteamConnectionStatusEventName, (status) => {
                 console.log("Received SteamConnectionStatus Event: $status")
                 dispatch( { type: 'load', payload: status} )
@@ -46,7 +54,7 @@ const SteamConnectionGuide = () => {
 
     return (
         <Card title={<Title level={2}>Steam伴侣</Title>} style={{width: '100%'}}>
-            <Paragraph strong>状态：{model.status}</Paragraph>
+            <Paragraph strong>状态：{model.stateDesc}</Paragraph>
             <Title level={3}>如何连接上Steam</Title>
                 <div>
                     <p>1. 启动CEF调试：</p>
