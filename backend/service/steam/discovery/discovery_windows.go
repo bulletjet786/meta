@@ -34,7 +34,7 @@ func LookUpSteamCEFDebuggingFilePath() (string, error) {
 	}
 	slog.Info("found steam string path", "path", steamRegistry.InstallPath)
 
-	return steamRegistry.InstallPath + "\\.cef-enable-debugging", nil
+	return steamRegistry.InstallPath + "\\.cef-enable-remote-debugging", nil
 }
 
 type SteamSoftwareRegistryInfo struct {
