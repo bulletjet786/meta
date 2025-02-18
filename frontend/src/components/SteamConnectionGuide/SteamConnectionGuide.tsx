@@ -57,7 +57,7 @@ const SteamConnectionGuide = () => {
 
     function switchCEFDebuggingButton(e: any) {
         console.log("Cef state now is ", cefState)
-        if (cefState.state) {
+        if (cefState) {
             cefDisable()
         } else {
             cefEnable()
