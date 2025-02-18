@@ -70,7 +70,7 @@ const SteamConnectionGuide = () => {
             <Title level={3}>如何连接上Steam</Title>
                 <div>
                     <p>1. 启动CEF调试：</p>
-                    <Switch defaultChecked={ cefState } onClick={ switchCEFDebuggingButton } />
+                    <Switch checked={ cefState } onClick={ switchCEFDebuggingButton } />
                 </div>
                 <div>
                     <p>2. 重新Steam客户端，耐心等待大约30秒，连接成功后，您将看到上方状态变为 运行中。</p>
