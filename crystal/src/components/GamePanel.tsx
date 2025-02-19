@@ -20,6 +20,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
   const [tab, setTab] = useState(PriceHistoryTab)
   const [gameInfo, setGameInfo] = useState<AggGameInfo | null>(null);
   useEffect(() => {
+    console.log(`Start fetch aggGameInfo for ${props.appId}`);
     fetchAggGameInfo(props.appId).then(data => {
       if (data) {
         setGameInfo(data);

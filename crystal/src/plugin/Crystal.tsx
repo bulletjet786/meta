@@ -22,6 +22,9 @@ declare const window: {
 } & Window;
 
 export class CrystalGamePanelWc extends r2wc(CrystalGamePanel, {
+    props: {
+        appId: "string"
+    },
     shadow: "open", // must be open to inject styles
 }) {
 
@@ -56,7 +59,6 @@ function injectCrystalGamePanelWc(options: CrystalRunOptions) {
     }
 
     // Define the web component
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     if (customElements.get("crystal-game-panel")) {
         console.log("Crystal Game Panel Wc has been defined, skiped")
         return;
