@@ -11,8 +11,17 @@
     <div id="game_area_purchase">
       <h3>挂载点</h3>
     </div>
-    <script type="module" src="./src/main.jsx">
-      
+    <script>
+      async function _crystalImport() {
+        try {
+          const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha1/crystal.es.js");
+          crystal.run({"useDebugAppId": 292030, "enableHistoryPriceCharts": true});
+        } catch (error) {
+          console.error('Dynamic import is not supported:', error);
+        }
+      }
+
+      _crystalImport();
     </script>
   </body>
 </html>

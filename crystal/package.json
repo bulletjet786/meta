@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:wc": "vite build --mode development --config vite.wc.config.ts",
-    "build:wc:prod": "vite build --mode production --config vite.wc.config.ts"
+    "build:wc:prod": "vite build --mode production --config vite.wc.config.ts",
+    "build:crystal": "vite build --mode development --config vite.crystal.config.ts",
+    "build:crystal:prod": "vite build --mode production --config vite.crystal.config.ts"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",

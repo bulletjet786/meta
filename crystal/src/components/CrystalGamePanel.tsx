@@ -1,5 +1,4 @@
 import React from 'react';
-import GamePanel from "@/pages/CrystalGamePanel/components/GamePanel";
 
 // 模仿 小黑盒的布局
 
@@ -40,9 +39,7 @@ const CrystalGamePanel: React.FC = () => {
   }
 
   return (
-    <div style={containerCss}>
-      <GamePanel appId="548430"></GamePanel>
-    </div>
+    <div style={containerCss}></div>
   )
 };
 
