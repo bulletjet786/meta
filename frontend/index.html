@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Steam伴侣</title>
+</head>
+<body>
+<div id="root"></div>
+<script>
+    async function _crystalImport() {
+		try {
+			const crystal = await import("https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js");
+			crystal.run({"useDebugAppId": null, "enableHistoryPriceCharts": true});
+		} catch (error) {
+			console.error('Dynamic import is not supported:', error);
+		}
+	}
+	
+	_crystalImport();
+</script>
+</body>
+</html>
+
