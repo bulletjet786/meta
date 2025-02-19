@@ -5,16 +5,11 @@ import (
 	"log/slog"
 	"os"
 
-	"meta/backend/constants"
 	"meta/backend/service/steam/discovery"
 	"meta/backend/service/steam/plugin"
-
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Service struct {
-	wailsCtx context.Context
-
 	options ServiceOptions
 	plugins []plugin.SteamPlugin
 
@@ -24,14 +19,16 @@ type Service struct {
 type ServiceOptions struct {
 	RemoteUrl string
 	Os        string
+	Subscriber []StatusSubscriber
 }
+
+type StatusSubscriber func (status Status)
 
 func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) Start(ctx context.Context, options ServiceOptions) {
-	s.wailsCtx = ctx
+func (s *Service) Start(options ServiceOptions) {
 	s.options = options
 
 	s.plugins = []plugin.SteamPlugin{
@@ -54,7 +51,9 @@ func (s *Service) startPlugins() {
 		for status := range s.chromeHolder.statusChannel {
 			slog.Info("Receive status", "status", status)
 
-			runtime.EventsEmit(s.wailsCtx, constants.EventForStatusChange, status)
+			for _, sub := range s.options.Subscriber {
+				sub(status)
+			}
 
 			if lastState == StatusDisconnected && status.State == StatusConnected {
 				slog.Info("Found status change to connected", "status", status)

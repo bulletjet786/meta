@@ -80,7 +80,7 @@ function injectCrystalGamePanelWc(options: CrystalRunOptions) {
     }
 
     const gamePanel = document.createElement('crystal-game-panel');
-    gamePanel.setAttribute('appId', appId)
+    gamePanel.setAttribute('app-id', appId)
     const injectPoint = document.getElementById("game_area_purchase")
     if (injectPoint == null) {
         return;

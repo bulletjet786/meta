@@ -13,6 +13,7 @@ import (
 	"meta/backend/constants"
 	"meta/backend/service/machine"
 	"meta/backend/service/steam"
+	"meta/backend/service/steam/subscriber"
 )
 
 //go:embed all:frontend/dist
@@ -42,9 +43,12 @@ func main() {
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start(ctx)
-			steamService.Start(ctx, steam.ServiceOptions{
+			wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber(ctx)
+			steamService.Start(steam.ServiceOptions{
 				RemoteUrl: defaultRemoteDebuggingUrl,
 				Os:        machineService.GetMachineInfo().Os,
+				Subscriber: []steam.StatusSubscriber{wailsStatusSubscriber.RuntimePub},
+				
 			})
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{

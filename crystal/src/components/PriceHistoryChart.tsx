@@ -3,12 +3,8 @@ import React from 'react';
 import {AggGameInfo} from "../client/price";
 import dayjs from "dayjs";
 
-class PriceHistoryPanelProps {
+type PriceHistoryPanelProps = {
   gameInfo: AggGameInfo
-
-  constructor(gameInfo: AggGameInfo) {
-    this.gameInfo = gameInfo
-  }
 }
 
 function priceChartsData(gameInfo: AggGameInfo) {

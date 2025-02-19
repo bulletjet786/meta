@@ -4,12 +4,8 @@ import {AggGameInfo, fetchAggGameInfo} from "../client/price";
 import PriceHistoryPanel from "./PriceHistoryChart";
 import StudyResourcePanel from "./StudyResource";
 
-export class GamePanelProps {
+type GamePanelProps = {
   appId: string
-
-  constructor(appId: string) {
-    this.appId = appId;
-  }
 }
 
 const PriceHistoryTab = "PriceHistory"
