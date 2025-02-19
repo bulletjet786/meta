@@ -3,7 +3,7 @@ import CrystalGamePanel from '../components/CrystalGamePanel.tsx'
 
 export function run(options: CrystalRunOptions) {
     console.log("Start to inject crystal style ...")
-    injectCrystal()
+    injectCrystal(options)
 }
 
 export class CrystalRunOptions {
@@ -11,6 +11,7 @@ export class CrystalRunOptions {
         public useDebugAppId: string | null = null,
         public enableHistoryPriceCharts: boolean = true, // 是否启用价格图表
         public deckSN: string = "deck:Unknown",
+        public deviceId: string = "Unknown",
     ) {
     }
 }
@@ -48,34 +49,72 @@ export class CrystalGamePanelWc extends r2wc(CrystalGamePanel, {
     }
 }
 
-function injectCrystalAppWc() {
-    // 注入Web Component styles
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    CrystalGamePanelWc.initStyle(window.__crystal_styles)
-    customElements.define("crystal-game-panel", CrystalGamePanelWc)
+function injectCrystalGamePanelWc(options: CrystalRunOptions) {
+    if (window.__crystal_injected) {
+        console.log("Crystal Game Panel Wc has been injected")
+        return;
+    }
 
-    const crystalHost = document.createElement('div');
-    crystalHost.id = 'crystal-host'
-    crystalHost.textContent = '<crystal-game-panel></crystal-game-panel>';
+    // Define the web component
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    if (customElements.get("crystal-game-panel")) {
+        console.log("Crystal Game Panel Wc has been defined, skiped")
+        return;
+    } else {
+        console.log("Crystal Game Panel Wc will be defined ...")
+        CrystalGamePanelWc.initStyle(window.__crystal_styles)
+        customElements.define("crystal-game-panel", CrystalGamePanelWc)
+        console.log("Crystal Game Panel Wc has been defined")
+    }
+
+    console.log("Injecting Crystal Game Panel Wc ...")
+    let appId = ""
+    if (options.useDebugAppId) {
+        appId = options.useDebugAppId
+        console.log(`Inject Crystal Game Panel Wc for debug appId=${appId}`)
+    } else {
+        appId = extractAppIdFromUrl(document.URL, "https://store.steampowered.com/app/")
+        console.log(`Inject Crystal Game Panel Wc for appId=${appId} from url=${document.URL}`)
+    }
+
+    const gamePanel = document.createElement('crystal-game-panel');
+    gamePanel.setAttribute('appId', appId)
     const injectPoint = document.getElementById("game_area_purchase")
     if (injectPoint == null) {
         return;
     }
-    injectPoint.appendChild(crystalHost);
+    injectPoint.appendChild(gamePanel);
+    console.log("Inject Crystal Game Panel Wc Success")
 }
 
-
-export function injectCrystal() {
+function injectCrystal(options: CrystalRunOptions) {
     if (document.readyState === 'loading') {
         // 如果文档还在加载中，等待 DOMContentLoaded 事件
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded event fired');
-            injectCrystalAppWc();
+            injectCrystalGamePanelWc(options);
         });
     } else {
         // 如果文档已经加载完成或处于 interactive 状态
         console.log('Document is already loaded or interactive');
-        injectCrystalAppWc();
+        injectCrystalGamePanelWc(options);
     }
+}
+
+function extractAppIdFromUrl(url: string, storeUrlPrefix: string): string {
+    // 移除前缀并分割路径
+    const paths = url.replace(storeUrlPrefix, '').split('/');
+
+    // 检查路径是否有效
+    if (paths.length < 2) {
+        throw new Error(`GetGameAppId failed, url=${url} invalid`);
+    }
+
+    // 检查 appId 是否为整数
+    const appId = parseInt(paths[0], 10);
+    if (isNaN(appId)) {
+        throw new Error(`GetGameAppId failed, appId=${paths[0]} is not a valid integer`);
+    }
+
+    return appId.toString();
 }

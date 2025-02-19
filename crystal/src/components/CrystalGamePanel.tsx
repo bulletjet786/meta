@@ -31,7 +31,15 @@ import React from 'react';
 
 // 私服列表：维护者
 
-const CrystalGamePanel: React.FC = () => {
+export class CrystalGamePanelProps {
+  appId: string
+
+  constructor(appId: string) {
+    this.appId = appId;
+  }
+}
+
+const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePanelProps) => {
 
   const containerCss = {
     width: '800px',
@@ -39,7 +47,9 @@ const CrystalGamePanel: React.FC = () => {
   }
 
   return (
-    <div style={containerCss}></div>
+    <div style={containerCss}>
+      { props.appId }
+    </div>
   )
 };
 
