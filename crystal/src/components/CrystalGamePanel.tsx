@@ -45,7 +45,6 @@ const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePan
 
   return (
     <div style={containerCss}>
-      <p> { props.appId } </p>
       <GamePanel appId={ props.appId }></GamePanel>
     </div>
   )

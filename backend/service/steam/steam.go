@@ -1,8 +1,8 @@
 package steam
 
 import (
-	"context"
 	"log/slog"
+	"meta/backend/service/steam/common"
 	"os"
 
 	"meta/backend/service/steam/discovery"
@@ -17,20 +17,18 @@ type Service struct {
 }
 
 type ServiceOptions struct {
-	RemoteUrl string
-	Os        string
-	Subscriber []StatusSubscriber
+	RemoteUrl  string
+	Os         string
+	Subscriber []common.StatusSubscriber
 }
 
-type StatusSubscriber func (status Status)
-
-func NewService() *Service {
-	return &Service{}
+func NewService(options ServiceOptions) *Service {
+	return &Service{
+		options: options,
+	}
 }
 
-func (s *Service) Start(options ServiceOptions) {
-	s.options = options
-
+func (s *Service) Start() {
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
 	}
@@ -40,7 +38,7 @@ func (s *Service) Start(options ServiceOptions) {
 			os.Exit(1)
 		}
 	}
-	s.chromeHolder = NewChromeHolder(options.RemoteUrl)
+	s.chromeHolder = NewChromeHolder(s.options.RemoteUrl)
 	s.chromeHolder.Run()
 	s.startPlugins()
 }
@@ -68,7 +66,7 @@ func (s *Service) startPlugins() {
 	}()
 }
 
-func (s *Service) Status() Status {
+func (s *Service) Status() common.Status {
 	return s.chromeHolder.Status()
 }
 

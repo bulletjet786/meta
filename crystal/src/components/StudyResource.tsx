@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, Card, Space, Link } from 'antd';
+import { Tag, Card, Space, Typography } from 'antd';
 
 type StudyResourcePanelProps = {
   gameName: string
@@ -31,7 +31,7 @@ function buildItemProps(gameName: string): StudyResourceItemProps[]{
     },
     {
       name: "搜索学习版: 小白游戏网",
-      url: `https://www.xbgame.net?s=${encodeURIComponent(props.gameName)}`,
+      url: `https://www.xbgame.net?s=${encodeURIComponent(gameName)}`,
       tags: ["永久49", "签到+0.3", "百度网盘"],
     },
   ]
@@ -48,9 +48,9 @@ const StudyResourceItem: React.FC<StudyResourceItemProps> =
     return (
       <Card style={{ width: '100%', maxWidth: 500, margin: '0 auto' }}>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        <Link href={ props.url } target="_blank" style={{ fontSize: '18px', fontWeight: 'bold' }}>
+        <Typography.Link href={ props.url } target="_blank" style={{ fontSize: '18px', fontWeight: 'bold' }}>
           { props.name }
-        </Link>
+        </Typography.Link>
         <div>
           {props.tags.map((tag, index) => (
             <Tag key={index} color="blue" style={{ marginRight: '8px', marginBottom: '8px' }}>

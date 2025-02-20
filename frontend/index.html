@@ -7,18 +7,7 @@
 </head>
 <body>
 <div id="root"></div>
-<script>
-    async function _crystalImport() {
-		try {
-			const crystal = await import("https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js");
-			crystal.run({"useDebugAppId": null, "enableHistoryPriceCharts": true});
-		} catch (error) {
-			console.error('Dynamic import is not supported:', error);
-		}
-	}
-	
-	_crystalImport();
-</script>
+<script src="./src/main.tsx" type="module"></script>
 </body>
 </html>
 

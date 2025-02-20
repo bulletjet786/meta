@@ -3,11 +3,12 @@ package steam
 import (
 	"context"
 	"fmt"
-	"github.com/chromedp/cdproto/page"
-	cdpruntime "github.com/chromedp/cdproto/runtime"
 	"log/slog"
+	"meta/backend/service/steam/common"
 	"time"
 
+	"github.com/chromedp/cdproto/page"
+	cdpruntime "github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 )
@@ -17,17 +18,13 @@ const (
 	StatusConnected    = "Connected"
 )
 
-type Status struct {
-	State string `json:"state"`
-}
-
 type ChromeHolder struct {
 	remoteUrl string
 
 	chromeCtx     context.Context
 	chromeCancel  func()
-	status        Status
-	statusChannel chan Status
+	status        common.Status
+	statusChannel chan common.Status
 }
 
 func NewChromeHolder(remoteUrl string) ChromeHolder {
@@ -35,8 +32,8 @@ func NewChromeHolder(remoteUrl string) ChromeHolder {
 		remoteUrl:     remoteUrl,
 		chromeCtx:     nil,
 		chromeCancel:  nil,
-		status:        Status{StatusDisconnected},
-		statusChannel: make(chan Status, 100),
+		status:        common.Status{State: StatusDisconnected},
+		statusChannel: make(chan common.Status, 100),
 	}
 }
 
@@ -50,7 +47,7 @@ func (c *ChromeHolder) cleanChromeContext() {
 	c.chromeCancel = nil
 }
 
-func (c *ChromeHolder) updateStatus(status Status) {
+func (c *ChromeHolder) updateStatus(status common.Status) {
 	slog.Info("Updating steam status", "status", status)
 
 	c.status = status
@@ -130,11 +127,11 @@ func (c *ChromeHolder) ChromeCtx() *context.Context {
 	return nil
 }
 
-func (c *ChromeHolder) Status() Status {
+func (c *ChromeHolder) Status() common.Status {
 	return c.status
 }
 
-func (c *ChromeHolder) StatusEvent() <-chan Status {
+func (c *ChromeHolder) StatusEvent() <-chan common.Status {
 	return c.statusChannel
 }
 
@@ -150,10 +147,10 @@ func (c *ChromeHolder) watchdog() {
 		needRebuild := false
 		if !c.connectionAvailable() {
 			c.cleanChromeContext()
-			c.updateStatus(Status{StatusDisconnected})
+			c.updateStatus(common.Status{State: StatusDisconnected})
 			needRebuild = true
 		} else {
-			c.updateStatus(Status{StatusConnected})
+			c.updateStatus(common.Status{State: StatusConnected})
 		}
 		if needRebuild {
 			if err := c.buildConnection(); err != nil {
