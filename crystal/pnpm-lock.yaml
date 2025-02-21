@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ant-design/cssinjs':
+        specifier: ^1.23.0
+        version: 1.23.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/plots':
         specifier: ^2.3.3
         version: 2.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
