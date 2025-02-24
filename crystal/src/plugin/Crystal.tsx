@@ -25,7 +25,9 @@ export class CrystalGamePanelWc extends r2wc(CrystalGamePanel, {
     props: {
         appId: "string"
     },
-    shadow: "open", // must be open to inject styles
+    // null: don't use shadow, ant design can inject styles to head.style 
+    // open mode: we can inject styles
+    // shadow: "open", 
 }) {
 
     private static styles: string = ""

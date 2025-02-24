@@ -18,7 +18,7 @@ export default defineConfig({
             fileName: (format) => `crystal.${format}.js`, // 输出文件名
             formats: ['es'],
         },
-        outDir: "build",
+        outDir: "dist/crystal",
         sourcemap: false,
         minify: false
     },
