@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import { StyleProvider } from '@ant-design/cssinjs';
 import GamePanel from "./GamePanel.tsx";
 
@@ -39,15 +39,13 @@ type CrystalGamePanelProps = {
 
 const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePanelProps) => {
 
-  const styleProviderRef = useRef(null)
-
   const containerCss = {
     width: '800px',
     height: '400px',
   }
 
   return (
-    <div style={containerCss} ref={styleProviderRef}>
+    <div style={containerCss}>
       <StyleProvider>
         <GamePanel appId={ props.appId }></GamePanel>
       </StyleProvider>
