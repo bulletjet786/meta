@@ -40,7 +40,12 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
         },
       ],
     };
-    return <Line {...config} />;
+    return (
+      <>
+        <div>{props.gameInfo?.storeLow.price}</div>
+        <Line {...config} />
+      </>
+    );
   };
 
 export default PriceHistoryPanel;

@@ -42,6 +42,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
     <div>
       <div>
         <Segmented
+          block
           options={
             [
               {
@@ -50,7 +51,6 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
                     setTab(PriceHistoryTab)
                   }}>
                     <div>史低价格</div>
-                    <div>{gameInfo?.storeLow.price}</div>
                   </div>
                 ),
                 value: 'price',
@@ -61,7 +61,6 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
                     setTab(StudyResourceTab)
                   }}>
                     <div>学习研究</div>
-                    l
                   </div>
                 ),
                 value: 'online',

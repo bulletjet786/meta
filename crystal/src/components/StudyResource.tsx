@@ -22,7 +22,7 @@ function buildItemProps(gameName: string): StudyResourceItemProps[]{
     {
       name: "搜索学习版: 咸鱼单机",
       url: `https://www.xianyudanji.net?aff=270876&s=${encodeURIComponent(gameName)}`,
-      tags: ["免费","付费","百度网盘"],
+      tags: ["永久49", "签到+0.3", "百度网盘"],
     },
     {
       name: "搜索学习版: 游戏仓库",
