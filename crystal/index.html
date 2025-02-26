@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Steam伴侣价格插件</title>
+    <style>
+      body {
+        background-color: #1b2838;
+      }
+    </style>
   </head>
   <body>
     <h1>Hello World!</h1>
@@ -14,7 +19,7 @@
     <script>
       async function _crystalImport() {
         try {
-          const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha9/crystal.es.js");
+          const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha12/crystal.es.js");
           crystal.run({"useDebugAppId": 292030, "enableHistoryPriceCharts": true});
         } catch (error) {
           console.error('Dynamic import is not supported:', error);

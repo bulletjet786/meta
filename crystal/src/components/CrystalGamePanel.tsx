@@ -39,13 +39,14 @@ type CrystalGamePanelProps = {
 
 const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePanelProps) => {
 
-  const containerCss = {
-    width: '800px',
-    height: '400px',
-  }
+  // const containerCss = {
+  //   width: '800px',
+  //   height: '400px',
+  // }
 
   return (
-    <div style={containerCss}>
+      // <div style={containerCss}>
+    <div>
       <StyleProvider>
         <GamePanel appId={ props.appId }></GamePanel>
       </StyleProvider>
