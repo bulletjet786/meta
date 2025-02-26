@@ -21,6 +21,7 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
   (props) => {
     const data = priceChartsData(props.gameInfo);
 
+    // 如何处理时间：https://ant-design-charts.antgroup.com/zh/examples/statistics/line#connect-nulls
     const config = {
       data: data,
       title: '价格趋势',
@@ -42,7 +43,12 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
     };
     return (
       <>
-        <div>{props.gameInfo?.storeLow.price}</div>
+        <Typography.Text strong>
+          当前商品的史低价格为：
+          <Tag color="green">
+            {gameInfo?.storeLow.price ? `$${gameInfo.storeLow.price}` : '暂无数据'}
+          </Tag>
+        </Text>
         <Line {...config} />
       </>
     );
