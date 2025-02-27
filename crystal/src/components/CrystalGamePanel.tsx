@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleProvider } from '@ant-design/cssinjs';
 import GamePanel from "./GamePanel.tsx";
+import {ConfigProvider, theme} from "antd";
 
-import { StyleProvider } from '@ant-design/cssinjs';
 // 模仿 小黑盒的布局
 
 // [史低价格：xxx] [在线人数：xxx] [支持语言：xxx]
@@ -48,9 +47,9 @@ const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePan
   return (
       // <div style={containerCss}>
     <div>
-      <StyleProvider>
+      <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
         <GamePanel appId={ props.appId }></GamePanel>
-      </StyleProvider>
+      </ConfigProvider>
     </div>
   )
 };
