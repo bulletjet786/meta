@@ -2,9 +2,9 @@ package steam
 
 import (
 	"log/slog"
-	"meta/backend/service/steam/common"
 	"os"
 
+	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/discovery"
 	"meta/backend/service/steam/plugin"
 )
@@ -22,12 +22,13 @@ type ServiceOptions struct {
 	Subscriber []common.StatusSubscriber
 }
 
-func NewService() *Service {
-	return &Service{}
+func NewService(options ServiceOptions) *Service {
+	return &Service{
+		options: options,
+	}
 }
 
-func (s *Service) Start(options ServiceOptions) {
-	s.options = options
+func (s *Service) Start() {
 
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),

@@ -26,8 +26,14 @@ func main() {
 
 	// Create an instance of the app structure
 	machineService := machine.NewService()
-	steamService := steam.NewService()
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
+	steamService := steam.NewService(steam.ServiceOptions{
+		RemoteUrl: defaultRemoteDebuggingUrl,
+		Os:        machineService.GetMachineInfo().Os,
+		Subscriber: []common.StatusSubscriber{
+			wailsStatusSubscriber.RuntimePub,
+		},
+	})
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -46,13 +52,7 @@ func main() {
 		OnStartup: func(ctx context.Context) {
 			machineService.Start(ctx)
 			wailsStatusSubscriber.Start(ctx)
-			steamService.Start(steam.ServiceOptions{
-				RemoteUrl: defaultRemoteDebuggingUrl,
-				Os:        machineService.GetMachineInfo().Os,
-				Subscriber: []common.StatusSubscriber{
-					wailsStatusSubscriber.RuntimePub,
-				},
-			})
+			steamService.Start()
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId: constants.SingleInstanceLockUniqueId,
