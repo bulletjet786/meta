@@ -22,7 +22,6 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
   (props) => {
     const data = priceChartsData(props.gameInfo);
 
-    // 处理应用图标：https://www.zhihu.com/question/626108835，直接下载下来，截取一个位置（P0）
     // 选择一个好看的背景图（P1）
     // 正确处理主题色(P2)
     // 如何处理时间：https://ant-design-charts.antgroup.com/zh/examples/statistics/line#connect-nulls(P2)
