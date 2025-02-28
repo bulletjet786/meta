@@ -22,13 +22,13 @@ type ServiceOptions struct {
 	Subscriber []common.StatusSubscriber
 }
 
-func NewService(options ServiceOptions) *Service {
-	return &Service{
-		options: options,
-	}
+func NewService() *Service {
+	return &Service{}
 }
 
-func (s *Service) Start() {
+func (s *Service) Start(options ServiceOptions) {
+	s.options = options
+
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
 	}

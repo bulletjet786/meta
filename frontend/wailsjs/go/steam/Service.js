@@ -10,8 +10,8 @@ export function EnableSteamCEFDebugging() {
   return window['go']['steam']['Service']['EnableSteamCEFDebugging']();
 }
 
-export function Start() {
-  return window['go']['steam']['Service']['Start']();
+export function Start(arg1) {
+  return window['go']['steam']['Service']['Start'](arg1);
 }
 
 export function Status() {

@@ -6,8 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="ffba837a-adc6-4057-8774-de94445aa93d" name="Changes" comment="add appicon">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crystal/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/crystal/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crystal/src/components/PriceHistoryChart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/crystal/src/components/PriceHistoryChart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/cmd/meta-headless/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/cmd/meta-headless/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/service/steam/steam.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/steam/steam.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/service/steam/subscriber/wails_events.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/steam/subscriber/wails_events.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

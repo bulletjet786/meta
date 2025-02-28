@@ -12,10 +12,12 @@ type WailsEventsStatusSubscriber struct {
 	wailsCtx context.Context
 }
 
-func NewWailsEventsStatusSubscriber(wailsCtx context.Context) *WailsEventsStatusSubscriber {
-	return &WailsEventsStatusSubscriber{
-		wailsCtx: wailsCtx,
-	}
+func NewWailsEventsStatusSubscriber() *WailsEventsStatusSubscriber {
+	return &WailsEventsStatusSubscriber{}
+}
+
+func (s *WailsEventsStatusSubscriber) Start(wailsCtx context.Context) {
+	s.wailsCtx = wailsCtx
 }
 
 func (s *WailsEventsStatusSubscriber) RuntimePub(status common.Status) {

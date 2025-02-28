@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"log/slog"
-	"meta/backend/service/steam/common"
 	"os"
 
 	"github.com/wailsapp/wails/v2"
@@ -14,6 +13,8 @@ import (
 	"meta/backend/constants"
 	"meta/backend/service/machine"
 	"meta/backend/service/steam"
+	"meta/backend/service/steam/common"
+	"meta/backend/service/steam/subscriber"
 )
 
 //go:embed all:frontend/dist
@@ -25,11 +26,8 @@ func main() {
 
 	// Create an instance of the app structure
 	machineService := machine.NewService()
-	steamService := steam.NewService(steam.ServiceOptions{
-		RemoteUrl:  defaultRemoteDebuggingUrl,
-		Os:         machineService.GetMachineInfo().Os,
-		Subscriber: []common.StatusSubscriber{},
-	})
+	steamService := steam.NewService()
+	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -47,8 +45,14 @@ func main() {
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start(ctx)
-			//wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber(ctx)
-			steamService.Start()
+			wailsStatusSubscriber.Start(ctx)
+			steamService.Start(steam.ServiceOptions{
+				RemoteUrl: defaultRemoteDebuggingUrl,
+				Os:        machineService.GetMachineInfo().Os,
+				Subscriber: []common.StatusSubscriber{
+					wailsStatusSubscriber.RuntimePub,
+				},
+			})
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId: constants.SingleInstanceLockUniqueId,
@@ -56,7 +60,7 @@ func main() {
 	})
 
 	if err != nil {
-		slog.Error("Wails run error: %s", err)
+		slog.Error("Wails run error", "err", err)
 		os.Exit(1)
 	}
 }

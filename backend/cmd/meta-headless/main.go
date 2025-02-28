@@ -9,10 +9,10 @@ import (
 const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 func main() {
-	steamService := steam.NewService(steam.ServiceOptions{
+	steamService := steam.NewService()
+
+	steamService.Start(steam.ServiceOptions{
 		RemoteUrl: defaultRemoteDebuggingUrl,
 		Os:        runtime.GOOS,
 	})
-
-	steamService.Start()
 }
