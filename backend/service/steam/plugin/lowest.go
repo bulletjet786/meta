@@ -48,7 +48,7 @@ func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
 	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(lowestJsCodeTemplate)
 	var buf bytes.Buffer
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
-		CrystalUrl: newCrystalUrl,
+		CrystalUrl: oldCrystalUrl,
 	})
 	lowestJsCode := buf.String()
 

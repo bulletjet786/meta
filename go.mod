@@ -7,12 +7,12 @@ require (
 	github.com/chromedp/chromedp v0.11.1
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
+	github.com/supabase-community/supabase-go v0.0.4
 	github.com/wailsapp/wails/v2 v2.9.2
 	golang.org/x/sys v0.26.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
-	github.com/supabase-community/supabase-go v0.0.4
 )
 
 require (
@@ -44,7 +44,6 @@ require (
 	github.com/supabase-community/gotrue-go v1.2.0 // indirect
 	github.com/supabase-community/postgrest-go v0.0.11 // indirect
 	github.com/supabase-community/storage-go v0.7.0 // indirect
-	github.com/supabase-community/supabase-go v0.0.4 // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

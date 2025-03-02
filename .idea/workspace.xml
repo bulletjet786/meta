@@ -6,13 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="ffba837a-adc6-4057-8774-de94445aa93d" name="Changes" comment="add appicon">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/cmd/meta-headless/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/cmd/meta-headless/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/service/steam/steam.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/steam/steam.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/service/steam/subscriber/wails_events.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/steam/subscriber/wails_events.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/cmd/meta-headless/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/cmd/headless/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/integration/supabase.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/integration/supabase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/service/steam/plugin/lowest.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/steam/plugin/lowest.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json.md5" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/steam/Service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
