@@ -390,3 +390,29 @@ SteamDB上的图是什么样子的？
 --------------------------------------------------------------------------------
 
 购买建议（Deepseek R1）：
+
+
+1. Node如何初始化项目(v.20 v.18): pnpm init -y
+2. NodeJs接入扣子鉴权：https://www.coze.cn/open/docs/developer_guides/oauth_jwt_channel jwt生成、获取AccessToken、onRefreshToken
+3. 创建智能体应用：
+4. 注入到页面中：
+
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.3/libs/cn/index.js"></script>
+<script>
+  new CozeWebSDK.WebChatClient({
+    config: {
+      bot_id: '7477549753925419044',
+    },
+    componentProps: {
+      title: 'Coze',
+    },
+    auth: {
+      type: 'token',
+      token: 'pat_********',
+      onRefreshToken: function () {
+        return 'pat_********'
+      }
+    }
+  });
+</script>
