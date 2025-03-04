@@ -1,0 +1,13 @@
+package event
+
+import ()
+
+// app Events
+const (
+	EventTypeForApp = "app"
+	EventSubTypeForAppStart = "start"
+	EventSubTypeForAppStop = "stop"
+	EventSubTypeForAppUpdate = "update"
+)
+
+type AppStartTypeEventPayload struct {}

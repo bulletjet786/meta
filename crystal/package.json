@@ -16,6 +16,7 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
     "@ant-design/plots": "^2.3.3",
+    "@coze/api": "^1.1.0",
     "@emotion/css": "^11.13.5",
     "@r2wc/react-to-web-component": "^2.0.3",
     "antd": "^5.23.2",

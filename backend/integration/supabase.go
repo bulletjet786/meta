@@ -12,7 +12,9 @@ const (
 )
 
 func NewSupabaseClient() (*supabase.Client, error) {
-	client, err := supabase.NewClient(apiUrl, apiKey, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(apiUrl, apiKey, &supabase.ClientOptions{
+		Schema: "meta",
+	})
 	if err != nil {
 		return nil, fmt.Errorf("cannot initalize supabase client: %s", err)
 	}

@@ -12,6 +12,7 @@ import (
 
 	"meta/backend/constants"
 	"meta/backend/service/machine"
+	"meta/backend/service/event"
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
@@ -26,6 +27,9 @@ func main() {
 
 	// Create an instance of the app structure
 	machineService := machine.NewService()
+	eventService := event.NewService(event.ServiceOptions{
+		
+	})
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 	steamService := steam.NewService(steam.ServiceOptions{
 		RemoteUrl: defaultRemoteDebuggingUrl,

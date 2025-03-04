@@ -1,4 +1,4 @@
-package steam
+package coze
 
 import (
 	"math/rand"
@@ -72,9 +72,9 @@ func (s *Service) ClaimsForChat(sessionName string) jwt.MapClaims {
 		"iss": SteamMetaOAuthAppId,
 		"aud": SteamMetaOAuthAud,
 		"iat": time.Now().Add(-1*1*time.Minute).Unix(),
-		"exp": time.Now().Add(1*time.Minute),
+		"exp": time.Now().Add(1*time.Minute).Unix(),
 		"jti": randStr(32),
-		"session_name": sessionName, // 总是新启动一个新的对话
+		"session_name": randStr(32), // 现在我们总是新启动一个新的对话
 	}
 }
 

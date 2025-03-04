@@ -1,5 +1,5 @@
-import r2wc from '@r2wc/react-to-web-component'
-import CrystalGamePanel from '../components/CrystalGamePanel.tsx'
+import { CrystalGamePanelWc, CrystalGamePanelWcName,  } from "../ui/wc/StoreGamePanelWc";
+import { defineWc } from "../ui/wc/wc-utils";
 
 export function run(options: CrystalRunOptions) {
     console.log("Start to inject crystal style ...")
@@ -18,60 +18,18 @@ export class CrystalRunOptions {
 
 declare const window: {
     __crystal_injected: boolean;
-    __crystal_styles: any
 } & Window;
-
-export class CrystalGamePanelWc extends r2wc(CrystalGamePanel, {
-    props: {
-        appId: "string"
-    },
-    // null: don't use shadow, ant design can inject styles to head.style 
-    // open mode: we can inject styles
-    // shadow: "open", 
-}) {
-
-    private static styles: string = ""
-
-    static initStyle(styles: string) {
-        CrystalGamePanelWc.styles = styles
-    }
-
-    static webComponentName() {
-        return "crystal-game-panel"
-    }
-
-    connectedCallback() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        super.connectedCallback();
-        console.log("App Wc has been connected")
-        if (CrystalGamePanelWc.styles) {
-            console.log("App Wc Styles start injecting ...")
-            const template = document.createElement("template");
-            template.innerHTML = `<style id="app-wc-crystal-style">${CrystalGamePanelWc.styles}</style>`;
-            this.shadowRoot?.appendChild(template.content.cloneNode(true));
-        }
-    }
-}
 
 function injectCrystalGamePanelWc(options: CrystalRunOptions) {
     if (window.__crystal_injected) {
-        console.log("Crystal Game Panel Wc has been injected")
+        console.log("Crystal Extension has been injected")
         return;
     }
 
     // Define the web component
-    if (customElements.get("crystal-game-panel")) {
-        console.log("Crystal Game Panel Wc has been defined, skiped")
-        return;
-    } else {
-        console.log("Crystal Game Panel Wc will be defined ...")
-        CrystalGamePanelWc.initStyle(window.__crystal_styles)
-        customElements.define("crystal-game-panel", CrystalGamePanelWc)
-        console.log("Crystal Game Panel Wc has been defined")
-    }
+    defineWc(CrystalGamePanelWcName, CrystalGamePanelWc)
 
-    console.log("Injecting Crystal Game Panel Wc ...")
+    console.log("Injecting Crystal Extension ...")
     let appId = ""
     if (options.useDebugAppId) {
         appId = options.useDebugAppId

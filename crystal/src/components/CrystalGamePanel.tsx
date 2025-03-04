@@ -47,7 +47,7 @@ const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePan
   return (
       // <div style={containerCss}>
     <div>
-      <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
+      <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
         <GamePanel appId={ props.appId }></GamePanel>
       </ConfigProvider>
     </div>
