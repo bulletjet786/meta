@@ -23,7 +23,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
         setLoading(false)
       }
     });
-  });
+  },[]);
 
   if (loading) {
     return <div>loading...</div>
