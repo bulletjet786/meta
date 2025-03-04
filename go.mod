@@ -6,6 +6,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20241022234722-4d5d5faf59fb
 	github.com/chromedp/chromedp v0.11.1
 	github.com/denisbrodbeck/machineid v1.0.1
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
 	github.com/supabase-community/supabase-go v0.0.4
 	github.com/wailsapp/wails/v2 v2.9.2
