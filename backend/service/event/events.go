@@ -10,4 +10,7 @@ const (
 	EventSubTypeForAppUpdate = "update"
 )
 
-type AppStartTypeEventPayload struct {}
+type AppStartTypeEventPayload struct {
+	Success bool `json:"success"`
+	Reason string `json:"reason"`
+}

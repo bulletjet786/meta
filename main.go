@@ -27,9 +27,14 @@ func main() {
 
 	// Create an instance of the app structure
 	machineService := machine.NewService()
-	eventService := event.NewService(event.ServiceOptions{
-		
+	eventService, err := event.NewService(event.ServiceOptions{
+		DeviceId: machineService.GetMachineInfo().DeviceId,
+		LaunchId: machineService.GetMachineInfo().LaunchId,
 	})
+	if err != nil {
+		slog.Error("Event service init error", "err", err)
+		os.Exit(1)
+	}
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 	steamService := steam.NewService(steam.ServiceOptions{
 		RemoteUrl: defaultRemoteDebuggingUrl,
@@ -40,7 +45,7 @@ func main() {
 	})
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:  "Steam伴侣",
 		Width:  1280,
 		Height: 800,
@@ -55,16 +60,30 @@ func main() {
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start(ctx)
+			eventService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
+		},
+		OnDomReady: func(ctx context.Context) {
+			// Send app start Event: success
+			eventService.Send(event.EventTypeForApp, event.EventSubTypeForAppStart, event.AppStartTypeEventPayload{
+				Success: true,
+			})
+		},
+		OnBeforeClose: func(ctx context.Context) (prevent bool) {
+			
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId: constants.SingleInstanceLockUniqueId,
 		},
 	})
-
 	if err != nil {
 		slog.Error("Wails run error", "err", err)
+		// Send app start event: failed
+		eventService.Send(event.EventTypeForApp, event.EventSubTypeForAppStart, event.AppStartTypeEventPayload{
+			Success: false,
+			Reason:  err.Error(),
+		})
 		os.Exit(1)
 	}
 }

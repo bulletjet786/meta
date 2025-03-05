@@ -7,6 +7,7 @@ import (
 	"runtime"
 
 	"github.com/denisbrodbeck/machineid"
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -21,13 +22,16 @@ func NewService() *Service {
 
 func (s *Service) Start(ctx context.Context) {
 	s.ctx = ctx
-	machineId, err := machineid.ID()
+	deviceId, err := machineid.ID()
 	if err != nil {
 		slog.Error("Get machine id failed", "err", err.Error())
 		os.Exit(1)
 	}
+	launchId := uuid.NewString()
+
 	info := Info{
-		Id:   machineId,
+		DeviceId:   deviceId,
+		LaunchId:   launchId,
 		Os:   runtime.GOOS,
 		Arch: runtime.GOARCH,
 	}
@@ -35,7 +39,8 @@ func (s *Service) Start(ctx context.Context) {
 }
 
 type Info struct {
-	Id   string `json:"id"`
+	DeviceId   string `json:"device_id"`
+	LaunchId string `json:"launch_id"`
 	Os   string `json:"os"`
 	Arch string `json:"arch"`
 }

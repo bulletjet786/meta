@@ -18,6 +18,7 @@ type Service struct {
 
 type ServiceOptions struct {
 	DeviceId string
+	LaunchId string
 }
 
 func NewService(options ServiceOptions) (*Service, error) {
