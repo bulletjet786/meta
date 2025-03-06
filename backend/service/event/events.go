@@ -1,16 +1,16 @@
 package event
 
-import ()
+type EmptyPayload struct{}
 
 // app Events
 const (
-	EventTypeForApp = "app"
-	EventSubTypeForAppStart = "start"
-	EventSubTypeForAppStop = "stop"
-	EventSubTypeForAppUpdate = "update"
+	TypeForApp          = "app"
+	SubTypeForAppStart  = "start"
+	SubTypeForAppStop   = "stop"
+	SubTypeForAppUpdate = "update"
 )
 
 type AppStartTypeEventPayload struct {
-	Success bool `json:"success"`
-	Reason string `json:"reason"`
+	Success bool   `json:"success"`
+	Reason  string `json:"reason"`
 }

@@ -11,8 +11,8 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 
 	"meta/backend/constants"
-	"meta/backend/service/machine"
 	"meta/backend/service/event"
+	"meta/backend/service/machine"
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
@@ -63,15 +63,16 @@ func main() {
 			eventService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
-		},
-		OnDomReady: func(ctx context.Context) {
+
 			// Send app start Event: success
-			eventService.Send(event.EventTypeForApp, event.EventSubTypeForAppStart, event.AppStartTypeEventPayload{
+			eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 				Success: true,
 			})
 		},
+		OnDomReady: func(ctx context.Context) {},
 		OnBeforeClose: func(ctx context.Context) (prevent bool) {
-			
+			eventService.Send(event.TypeForApp, event.SubTypeForAppStop, event.EmptyPayload{})
+			return false
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId: constants.SingleInstanceLockUniqueId,
@@ -80,7 +81,7 @@ func main() {
 	if err != nil {
 		slog.Error("Wails run error", "err", err)
 		// Send app start event: failed
-		eventService.Send(event.EventTypeForApp, event.EventSubTypeForAppStart, event.AppStartTypeEventPayload{
+		eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 			Success: false,
 			Reason:  err.Error(),
 		})

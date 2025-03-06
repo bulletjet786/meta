@@ -18,7 +18,8 @@ export namespace common {
 export namespace machine {
 	
 	export class Info {
-	    id: string;
+	    device_id: string;
+	    launch_id: string;
 	    os: string;
 	    arch: string;
 	
@@ -28,7 +29,8 @@ export namespace machine {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
+	        this.device_id = source["device_id"];
+	        this.launch_id = source["launch_id"];
 	        this.os = source["os"];
 	        this.arch = source["arch"];
 	    }

@@ -5,9 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ffba837a-adc6-4057-8774-de94445aa93d" name="Changes" comment="add appicon">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crystal/src/components/GamePanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/crystal/src/components/GamePanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/think.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/think.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/service/event/events.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/event/events.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/service/event/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/backend/service/event/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/wailsjs/go/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
