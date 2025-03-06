@@ -29,14 +29,14 @@ export class ItadClient {
         return historyLogsData
     }
 
-    async storeLowestPrice(itadId: string): Promise<StoreLowestPrice | null> {
+    async storeLowestPrice(itadId: string, countryCode: string): Promise<StoreLowestPrice | null> {
         const requestOptions = {
             method: 'POST',
             body: JSON.stringify([
                 itadId
             ]),
         };
-        const storeLowResponse = await fetch(`${ItadClient.host}/games/storelow/v2?key=${ItadClient.apiKey}&country=CN&shops=61`,
+        const storeLowResponse = await fetch(`${ItadClient.host}/games/storelow/v2?key=${ItadClient.apiKey}&country=${countryCode}&shops=61`,
             requestOptions);
         const storeLowData: ItadStoreLowestPriceResponse = await storeLowResponse.json();
         console.info(`storeLowestPrice Response For itadId ${itadId}: ${JSON.stringify(storeLowData)}`);

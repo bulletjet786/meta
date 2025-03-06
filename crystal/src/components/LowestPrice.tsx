@@ -1,37 +1,25 @@
 import React from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { ItadClient } from '../client/itad';
+import { CountryInfo } from '../constants/country';
+import  { LowestGamePriceInfo } from '../client/price';
 
-
-const countryCodes = new Map(
-  [
-    ["CN", "中国"],
-    ["AR", "阿根廷"],
-    ["RU", "俄罗斯"],
-    ["TR", "土耳其"],
-    ["US", "美国"],
-  ]
-)
-
-export default LowestPriceTable;
-
+const countries = [CountryInfo.CN, CountryInfo.AR, CountryInfo.RU, CountryInfo.TR, CountryInfo.US]
 
 
 
 type LowestPriceTableProps = {
-
+  appId: string;
 }
-
 
 const LowestPriceTable: React.FC<LowestPriceTableProps> =
   (props) => {
 
     useEffect(() => {
-      ItadClient
+    
     }, [])
 
-    const data: LowestPriceDataType[] = [
+    const data: LowestGamePriceInfo[] = [
       {
         countryCode: 'John Brown',
         countryName: "32",
@@ -46,7 +34,7 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
       }
     ];
 
-    const columns: TableColumnsType<DataType> = [
+    const columns: TableColumnsType<LowestGamePriceInfo> = [
       { 
         title: '区域', 
         dataIndex: 'countryName',
@@ -94,3 +82,5 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
       </div>
     )
 };
+
+export default LowestPriceTable;
