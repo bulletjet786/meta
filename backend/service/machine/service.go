@@ -1,9 +1,7 @@
 package machine
 
 import (
-	"context"
 	"log/slog"
-	"os"
 	"runtime"
 
 	"github.com/denisbrodbeck/machineid"
@@ -11,38 +9,37 @@ import (
 )
 
 type Service struct {
-	ctx context.Context
-
 	machineInfo Info
 }
 
-func NewService() *Service {
-	return &Service{}
-}
-
-func (s *Service) Start(ctx context.Context) {
-	s.ctx = ctx
+func NewService() (*Service, error) {
+	service := &Service{}
 	deviceId, err := machineid.ID()
 	if err != nil {
 		slog.Error("Get machine id failed", "err", err.Error())
-		os.Exit(1)
+		return nil, err
 	}
 	launchId := uuid.NewString()
 
-	info := Info{
-		DeviceId:   deviceId,
-		LaunchId:   launchId,
-		Os:   runtime.GOOS,
-		Arch: runtime.GOARCH,
+	service.machineInfo = Info{
+		DeviceId: deviceId,
+		LaunchId: launchId,
+		Os:       runtime.GOOS,
+		Arch:     runtime.GOARCH,
 	}
-	slog.Info("New App with machine info", "machine", info)
+	slog.Info("New App with machine info", "machine", service.machineInfo)
+	return service, nil
+}
+
+func (s *Service) Start() {
+
 }
 
 type Info struct {
-	DeviceId   string `json:"device_id"`
+	DeviceId string `json:"device_id"`
 	LaunchId string `json:"launch_id"`
-	Os   string `json:"os"`
-	Arch string `json:"arch"`
+	Os       string `json:"os"`
+	Arch     string `json:"arch"`
 }
 
 func (s *Service) GetMachineInfo() Info {

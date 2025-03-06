@@ -26,7 +26,11 @@ const defaultRemoteDebuggingUrl = "http://localhost:8080"
 func main() {
 
 	// Create an instance of the app structure
-	machineService := machine.NewService()
+	machineService, err := machine.NewService()
+	if err != nil {
+		slog.Error("Machine service init error", "err", err)
+		os.Exit(1)
+	}
 	eventService, err := event.NewService(event.ServiceOptions{
 		DeviceId: machineService.GetMachineInfo().DeviceId,
 		LaunchId: machineService.GetMachineInfo().LaunchId,
@@ -59,7 +63,7 @@ func main() {
 			steamService,
 		},
 		OnStartup: func(ctx context.Context) {
-			machineService.Start(ctx)
+			machineService.Start()
 			eventService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
