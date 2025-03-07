@@ -1,4 +1,4 @@
-import {GameInfo, GamePriceOverview, HistoryLogs, ItadClient, StoreLowestPrice} from "./itad";
+import {GameInfo, GamePriceOverview, HistoryLogs, ItadClient} from "./itad";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -8,16 +8,12 @@ import { CountryInfo } from "../constants/country";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-async function fetchLowestGamePriceInfo(appId: string, country: CountryInfo): Promise<LowestGamePriceInfo | null> {
+async function fetchLowestGamePriceInfo(itadId: string, country: CountryInfo): Promise<LowestGamePriceInfo | null> {
   const itadClient = new ItadClient();
   const currencyClient = new CurrencyClient();
 
   try {
-    const gameInfo = await itadClient.lookup(appId);
-    if (!gameInfo) return null;
-    const itadId = gameInfo.id;
     const gameOverview = await itadClient.gamePriceOverview(itadId, country.code);
-
     const exchangeRate = await currencyClient.rate(country.currencyCode, CountryInfo.CN.currencyCode);
     if (!gameOverview || !exchangeRate) return null;
     return {
@@ -31,12 +27,12 @@ async function fetchLowestGamePriceInfo(appId: string, country: CountryInfo): Pr
       lowestPriceCut: gameOverview.lowest.price.amount,
     };
   } catch (e) {
-    console.error(`Error fetching LowestGamePriceInfo for appId ${appId}:`, e);
+    console.error(`Error fetching LowestGamePriceInfo for itadId ${itadId}:`, e);
     return null;
   }
 };
 
-interface LowestGamePriceInfo {
+export interface LowestGamePriceInfo {
   country: CountryInfo; // 国家
   exchangeRate: number; // 从区域兑换成人民币后的汇率
   currentPrice: number; // 当前价格
@@ -67,8 +63,7 @@ async function fetchAggGameInfo(appId: string): Promise<AggGameInfo | null> {
     console.error(`Error fetching AggGameInfo for appId ${appId}:`, e);
     return null;
   }
-};
-
+}
 
 class AggGameInfo {
   basic: GameInfo;

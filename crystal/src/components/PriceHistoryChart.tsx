@@ -2,7 +2,6 @@ import {Line} from '@ant-design/plots';
 import React from 'react';
 import {AggGameInfo} from "../client/price";
 import dayjs from "dayjs";
-import {Tag, Typography} from "antd";
 
 type PriceHistoryPanelProps = {
   gameInfo: AggGameInfo
@@ -47,12 +46,6 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
     };
     return (
       <>
-        <Typography.Text strong>
-          当前商品的史低价格为：
-          <Tag color="green">
-            { props.gameInfo?.storeLow.price ? `${props.gameInfo.storeLow.price}` : '暂无数据'}
-          </Tag>
-        </Typography.Text>
         <Line {...config} />
       </>
     );

@@ -46,8 +46,8 @@ type StudyResourceItemProps = {
 const StudyResourceItem: React.FC<StudyResourceItemProps> = 
   (props: StudyResourceItemProps) => {
     return (
-      <Card style={{ width: '100%', maxWidth: 500, margin: '0 auto' }}>
-      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+      <Card >
+      <Space direction="vertical" size="middle">
         <Typography.Link href={ props.url } target="_blank" style={{ fontSize: '18px', fontWeight: 'bold' }}>
           { props.name }
         </Typography.Link>

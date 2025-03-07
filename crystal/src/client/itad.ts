@@ -37,9 +37,9 @@ export class ItadClient {
           ])
         };
      
-        const gameOverviewResponse = await fetch(`https://${ItadClient.host}/games/overview/v2?key=${ItadClient.apiKey}&country=${countryCode}&shops=61&vouchers`, requestOptions)
+        const gameOverviewResponse = await fetch(`${ItadClient.host}/games/overview/v2?key=${ItadClient.apiKey}&country=${countryCode}&shops=61&vouchers`, requestOptions)
         const gameOverviewData: GamePriceOverviewResponse = await gameOverviewResponse.json();
-        console.info(`gamePriceOverview Response For itadId ${itadId}: ${JSON.stringify(gameOverviewData)}`);
+        console.info(`gamePriceOverview Response For itadId ${itadId} on ${countryCode}: ${JSON.stringify(gameOverviewData)}`);
         if (!gameOverviewData || gameOverviewData.prices.length === 0) {
           return null
         }
@@ -48,6 +48,7 @@ export class ItadClient {
     }
 }
 
+export const itadClient = new ItadClient();
 
 export type GameInfo = ItadGameLookupResponseGame
 
@@ -88,13 +89,13 @@ interface ItadHistoryLogDeal {
 // GameOverview API Model
 export interface GamePriceOverviewResponse {
   prices: GamePriceOverview[]
-  bundles: any[]
+  bundles: never[]
 }
 
 export interface GamePriceOverview {
   id: string
   current: Current
-  lowest: Lowest
+  lowest: ShopLowest
   bundled: number
 }
 
@@ -104,11 +105,11 @@ export interface Current {
   regular: Price
   cut: number
   timestamp: string
-  voucher: any
-  flag: any
-  drm: any[]
+  voucher: never
+  flag: never
+  drm: never[]
   platforms: Platform[]
-  expiry: any
+  expiry: never
   url: string
 }
 
@@ -117,21 +118,9 @@ export interface Platform {
   name: string
 }
 
-export interface Lowest {
-  shop: Shop
-  price: Price
-  regular: Price
-  cut: number
-  timestamp: string
-}
-
 
 // API Common Model
 
-interface GameLowest {
-  id: string
-  lows: ShopLowest[]
-}
 
 interface ShopLowest {
   shop: Shop

@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Segmented} from "antd";
-import {AggGameInfo, fetchAggGameInfo} from "../client/price";
-import PriceHistoryPanel from "./PriceHistoryChart";
 import StudyResourcePanel from "./StudyResource";
+import LowestPriceTable from "./LowestPrice.tsx";
+import {GameInfo, itadClient} from "../client/itad.ts";
 
 type GamePanelProps = {
   appId: string
@@ -10,19 +10,24 @@ type GamePanelProps = {
 
 const PriceHistoryTab = "PriceHistory"
 const StudyResourceTab = "StudyResource"
+const LowestPriceTab = "LowestPrice"
 
+// TODO：
+// 1. 修复每次加载切换Tab都会重新加载数据的问题
+// 2. 修复无法获取汇率：
+// 3. 修复区域货币转换问题：部分区域的货币总是USD
 const GamePanel: React.FC<GamePanelProps> = (props) => {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState(PriceHistoryTab)
-  const [gameInfo, setGameInfo] = useState<AggGameInfo | null>(null);
+  const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   useEffect(() => {
     console.log(`Start fetch aggGameInfo for ${props.appId}`);
-    fetchAggGameInfo(props.appId).then(data => {
+    itadClient.lookup(props.appId).then(data => {
       if (data) {
         setGameInfo(data);
         setLoading(false)
       }
-    });
+    })
   },[]);
 
   if (loading) {
@@ -31,10 +36,13 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
 
   const content = () => {
     switch (tab) {
-      case PriceHistoryTab:
-        return <PriceHistoryPanel gameInfo={gameInfo!}/>
+      case LowestPriceTab:
+        return <LowestPriceTable itadId={gameInfo!.id!}></LowestPriceTable>
+      // case PriceHistoryTab:
+      //   return <PriceHistoryPanel gameInfo={gameInfo!}/>
       case StudyResourceTab:
-        return <StudyResourcePanel gameName={gameInfo!.basic.slug!}/>
+        return <StudyResourcePanel gameName={gameInfo!.slug!}/>
+
     }
   }
 
@@ -48,7 +56,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
               {
                 label: (
                   <div style={{padding: 4}} onClick={() => {
-                    setTab(PriceHistoryTab)
+                    setTab(LowestPriceTab)
                   }}>
                     <div>史低价格</div>
                   </div>
@@ -63,7 +71,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
                     <div>学习研究</div>
                   </div>
                 ),
-                value: 'online',
+                value: 'study',
               },
             ]}
         />

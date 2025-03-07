@@ -1,0 +1,3 @@
+### 货币兑换汇率
+
+GET https://p.deckz.fun/currency/exchange_rate/convert?fromCode=CNY&toCode=CNY&money=1
