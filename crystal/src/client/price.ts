@@ -1,4 +1,4 @@
-import {GameInfo, HistoryLogs, ItadClient, StoreLowestPrice} from "./itad";
+import {GameInfo, GamePriceOverview, HistoryLogs, ItadClient, StoreLowestPrice} from "./itad";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -16,17 +16,19 @@ async function fetchLowestGamePriceInfo(appId: string, country: CountryInfo): Pr
     const gameInfo = await itadClient.lookup(appId);
     if (!gameInfo) return null;
     const itadId = gameInfo.id;
-    const storeLowData = await itadClient.storeLowestPrice(itadId, country.code);
+    const gameOverview = await itadClient.gamePriceOverview(itadId, country.code);
 
     const exchangeRate = await currencyClient.rate(country.currencyCode, CountryInfo.CN.currencyCode);
-    if (!storeLowData || !exchangeRate) return null;
+    if (!gameOverview || !exchangeRate) return null;
     return {
       country: country,
       exchangeRate: exchangeRate,
-      currentPriceOrigin: storeLowData.price,
-      currentPrice: storeLowData.price * exchangeRate,
-      currentPriceCut: storeLowData.cut,
-      // TODO:
+      currentPrice: gameOverview.current.price.amount * exchangeRate,
+      currentPriceOrigin: gameOverview.current.price.amount,
+      currentPriceCut: gameOverview.current.cut,
+      lowestPrice: gameOverview.lowest.price.amount * exchangeRate,
+      lowestPriceOrigin: gameOverview.lowest.price.amount,
+      lowestPriceCut: gameOverview.lowest.price.amount,
     };
   } catch (e) {
     console.error(`Error fetching LowestGamePriceInfo for appId ${appId}:`, e);
@@ -52,13 +54,13 @@ async function fetchAggGameInfo(appId: string): Promise<AggGameInfo | null> {
     const gameInfo = await itadClient.lookup(appId);
     if (!gameInfo) return null;
     const itadId = gameInfo.id;
-    const storeLowData = await itadClient.storeLowestPrice(itadId, "CN");
+    const gameOverviewData = await itadClient.gamePriceOverview(itadId, "CN");
     const start = dayjs().subtract(1, "year").tz("UTC").format();
     const historyLogsData = await itadClient.historyLogs(itadId, start);
-    if (!storeLowData || !historyLogsData) return null;
+    if (!gameOverviewData || !historyLogsData) return null;
     return {
       basic: gameInfo,
-      storeLow: storeLowData,
+      gamePriceOverview: gameOverviewData,
       historyLogs: historyLogsData
     };
   } catch (e) {
@@ -70,15 +72,15 @@ async function fetchAggGameInfo(appId: string): Promise<AggGameInfo | null> {
 
 class AggGameInfo {
   basic: GameInfo;
-  storeLow: StoreLowestPrice;
+  gamePriceOverview: GamePriceOverview;
   historyLogs: HistoryLogs;
 
-  constructor(basic: GameInfo, storeLow: StoreLowestPrice, historyLogs: HistoryLogs) {
+  constructor(basic: GameInfo, gamePriceOverview: GamePriceOverview, historyLogs: HistoryLogs) {
     this.basic = basic;
-    this.storeLow = storeLow;
+    this.gamePriceOverview = gamePriceOverview;
     this.historyLogs = historyLogs
   }
 }
 
 export {fetchAggGameInfo, AggGameInfo}
-export {fetchLowestGamePriceInfo, LowestGamePriceInfo}
+export {fetchLowestGamePriceInfo}

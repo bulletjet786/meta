@@ -2,21 +2,32 @@ import React from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { CountryInfo } from '../constants/country';
-import  { LowestGamePriceInfo } from '../client/price';
+import  { fetchLowestGamePriceInfo } from '../client/price';
+import { createStore } from 'zustand';
 
-const countries = [CountryInfo.CN, CountryInfo.AR, CountryInfo.RU, CountryInfo.TR, CountryInfo.US]
-
+const countries = [
+  CountryInfo.CN,
+  CountryInfo.AR,
+  CountryInfo.RU,
+  CountryInfo.TR,
+  CountryInfo.US
+]
 
 
 type LowestPriceTableProps = {
   appId: string;
 }
 
+ const lowestPirceTableStore = createStore()
 const LowestPriceTable: React.FC<LowestPriceTableProps> =
   (props) => {
-
+  
     useEffect(() => {
-    
+      const requests = [];
+      for (const country of countries) {
+        requests.push(fetchLowestGamePriceInfo(props.appId, country));
+      }
+      const results = await Promise.all(requests);
     }, [])
 
     const data: LowestGamePriceInfo[] = [

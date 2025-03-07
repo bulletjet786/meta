@@ -29,39 +29,32 @@ export class ItadClient {
         return historyLogsData
     }
 
-    async storeLowestPrice(itadId: string, countryCode: string): Promise<StoreLowestPrice | null> {
+    async gamePriceOverview(itadId: string, countryCode: string): Promise<GamePriceOverview | null> {
         const requestOptions = {
-            method: 'POST',
-            body: JSON.stringify([
-                itadId
-            ]),
+          method: 'POST',
+          body: JSON.stringify([
+            itadId
+          ])
         };
-        const storeLowResponse = await fetch(`${ItadClient.host}/games/storelow/v2?key=${ItadClient.apiKey}&country=${countryCode}&shops=61`,
-            requestOptions);
-        const storeLowData: ItadStoreLowestPriceResponse = await storeLowResponse.json();
-        console.info(`storeLowestPrice Response For itadId ${itadId}: ${JSON.stringify(storeLowData)}`);
+     
+        const gameOverviewResponse = await fetch(`https://${ItadClient.host}/games/overview/v2?key=${ItadClient.apiKey}&country=${countryCode}&shops=61&vouchers`, requestOptions)
+        const gameOverviewData: GamePriceOverviewResponse = await gameOverviewResponse.json();
+        console.info(`gamePriceOverview Response For itadId ${itadId}: ${JSON.stringify(gameOverviewData)}`);
+        if (!gameOverviewData || gameOverviewData.prices.length === 0) {
+          return null
+        }
 
-        if (!storeLowData || storeLowData.length === 0) {
-            return null
-        }
-        return {
-            price: storeLowData[0].lows[0].price.amount,
-            cut: storeLowData[0].lows[0].cut
-        }
+        return gameOverviewData.prices[0]
     }
 }
 
-export interface StoreLowestPrice {
-    price: number;
-    cut: number;
-}
 
 export type GameInfo = ItadGameLookupResponseGame
 
 export type HistoryLogs = ItadHistoryLogsResponse
 
 
-// Itad API Model
+// GameLookup API Model
 
 interface ItadGameLookupResponse {
     found: boolean
@@ -76,64 +69,84 @@ interface ItadGameLookupResponseGame {
     mature: boolean
 }
 
+// Game Price History Logs Api Model
+
 type ItadHistoryLogsResponse = ItadHistoryLog[]
 
 interface ItadHistoryLog {
   timestamp: string
-  shop: ItadHistoryLogShop
+  shop: Shop
   deal: ItadHistoryLogDeal
 }
 
-interface ItadHistoryLogShop {
+interface ItadHistoryLogDeal {
+  price: Price
+  regular: Price
+  cut: number
+}
+
+// GameOverview API Model
+export interface GamePriceOverviewResponse {
+  prices: GamePriceOverview[]
+  bundles: any[]
+}
+
+export interface GamePriceOverview {
+  id: string
+  current: Current
+  lowest: Lowest
+  bundled: number
+}
+
+export interface Current {
+  shop: Shop
+  price: Price
+  regular: Price
+  cut: number
+  timestamp: string
+  voucher: any
+  flag: any
+  drm: any[]
+  platforms: Platform[]
+  expiry: any
+  url: string
+}
+
+export interface Platform {
   id: number
   name: string
 }
 
-interface ItadHistoryLogDeal {
-  price: ItadHistoryLogPrice
-  regular: ItadHistoryLogRegular
-  cut: number
-}
-
-interface ItadHistoryLogPrice {
-  amount: number
-  amountInt: number
-  currency: string
-}
-
-interface ItadHistoryLogRegular {
-  amount: number
-  amountInt: number
-  currency: string
-}
-
-type ItadStoreLowestPriceResponse = ItadStoreLowestPrice[]
-
-interface ItadStoreLowestPrice {
-  id: string
-  lows: ItadStoreLowestPriceLow[]
-}
-
-interface ItadStoreLowestPriceLow {
-  shop: ItadStoreLowestPriceShop
-  price: ItadStoreLowestPricePrice
-  regular: ItadStoreLowestPriceRegular
+export interface Lowest {
+  shop: Shop
+  price: Price
+  regular: Price
   cut: number
   timestamp: string
 }
 
-interface ItadStoreLowestPriceShop {
+
+// API Common Model
+
+interface GameLowest {
+  id: string
+  lows: ShopLowest[]
+}
+
+interface ShopLowest {
+  shop: Shop
+  price: Price
+  regular: Price
+  cut: number
+  timestamp: string
+}
+
+interface Shop {
   id: number
   name: string
 }
 
-interface ItadStoreLowestPricePrice {
-  amount: number
-  amountInt: number
-  currency: string
-}
-
-interface ItadStoreLowestPriceRegular {
+interface Price {
   amount: number
   amountInt: number
   currency: string
