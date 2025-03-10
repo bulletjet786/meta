@@ -31,17 +31,17 @@ export class CurrencyClient {
 }
 
 export interface CurrencyResponse {
-    msg: string
-    success: boolean
-    code: number
-    data: CurrencyResponseData
-  }
-  
-  export interface CurrencyResponseData {
-    orderNo: string
-    ret_code: string
-    money: number
-  }
-  
+  msg: string
+  success: boolean
+  code: number
+  data: CurrencyResponseData
+}
 
+export interface CurrencyResponseData {
+  orderNo: string
+  ret_code: string
+  money: number
+}
+
+export const currencyClient = new CurrencyClient();
 

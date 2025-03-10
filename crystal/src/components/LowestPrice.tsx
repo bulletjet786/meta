@@ -57,6 +57,7 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
       <div>
         <Table<LowestGamePriceInfo>
           columns={columns}
+          pagination={ false }
           // expandable={{
           //   expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
           //   rowExpandable: (record) => record.name !== 'Not Expandable',

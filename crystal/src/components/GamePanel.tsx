@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Segmented} from "antd";
 import StudyResourcePanel from "./StudyResource";
 import LowestPriceTable from "./LowestPrice.tsx";
@@ -11,7 +11,6 @@ type GamePanelProps = {
   appId: string
 }
 
-const PriceHistoryTab = "PriceHistory"
 const StudyResourceTab = "StudyResource"
 const LowestPriceTab = "LowestPrice"
 
@@ -26,6 +25,8 @@ const countries = [
 interface GamePanelTableState {
   appId: string
   loading: boolean
+  tab: string
+  changeTab: (tab: string) => void
   gameInfo: GameInfo | null
   lowestGamePriceInfos: LowestGamePriceInfo[]
   load: (appId: string) => void
@@ -35,6 +36,12 @@ const useLowestPriceStore = create<GamePanelTableState>()(
   (set) => ({
     appId: "",
     loading: true,
+    tab: LowestPriceTab,
+    changeTab: (tab: string) => {
+      set({
+        tab: tab
+      })
+    },
     lowestGamePriceInfos: [],
     gameInfo: null,
     load: async (appId: string) => {
@@ -62,9 +69,10 @@ const useLowestPriceStore = create<GamePanelTableState>()(
 )
 
 // TODO：
-// 1. 修复每次加载切换Tab都会重新加载数据的问题：
+// 1. 修复每次只有切换Tab都会才会显示 LowestPriceTable 的问题：
 const GamePanel: React.FC<GamePanelProps> = (props) => {
-  const [tab, setTab] = useState(PriceHistoryTab)
+  const tab = useLowestPriceStore((state) => state.tab)
+  const changeTab = useLowestPriceStore((state) => state.changeTab)
   
   const loading = useLowestPriceStore((state) => state.loading)
   const gameInfo = useLowestPriceStore((state) => state.gameInfo)
@@ -72,20 +80,18 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
   const load = useLowestPriceStore((state) => state.load);
 
   useEffect(() => {
-    console.log(`Start fetch aggGameInfo for ${props.appId}`);
+    console.log(`Start fetch gameInfo and lowestGamePriceInfos for ${props.appId}`);
     load(props.appId)
   },[]);
 
   if (loading) {
-    return <div>loading...</div>
+    return <div></div>
   }
 
   const content = () => {
     switch (tab) {
       case LowestPriceTab:
         return <LowestPriceTable lowestGamePriceInfos={lowestGamePriceInfos}></LowestPriceTable>
-      // case PriceHistoryTab:
-      //   return <PriceHistoryPanel gameInfo={gameInfo!}/>
       case StudyResourceTab:
         return <StudyResourcePanel gameName={gameInfo!.slug!}/>
     }
@@ -101,7 +107,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
               {
                 label: (
                   <div style={{padding: 4}} onClick={() => {
-                    setTab(LowestPriceTab)
+                    changeTab(LowestPriceTab)
                   }}>
                     <div>史低价格</div>
                   </div>
@@ -111,7 +117,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
               {
                 label: (
                   <div style={{padding: 4}} onClick={() => {
-                    setTab(StudyResourceTab)
+                    changeTab(StudyResourceTab)
                   }}>
                     <div>学习研究</div>
                   </div>

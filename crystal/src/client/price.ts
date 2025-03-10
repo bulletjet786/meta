@@ -1,16 +1,14 @@
-import {GameInfo, GamePriceOverview, HistoryLogs, ItadClient} from "./itad";
+import {GameInfo, GamePriceOverview, HistoryLogs, itadClient} from "./itad";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { CurrencyClient } from "./currency";
+import {currencyClient} from "./currency";
 import { CountryInfo } from "../constants/country";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 async function fetchLowestGamePriceInfo(itadId: string, country: CountryInfo): Promise<LowestGamePriceInfo | null> {
-  const itadClient = new ItadClient();
-  const currencyClient = new CurrencyClient();
 
   try {
     const gameOverview = await itadClient.gamePriceOverview(itadId, country.code);
@@ -50,7 +48,6 @@ export interface LowestGamePriceInfo {
 }
 
 async function fetchAggGameInfo(appId: string): Promise<AggGameInfo | null> {
-  const itadClient = new ItadClient();
 
   try {
     const gameInfo = await itadClient.lookup(appId);
