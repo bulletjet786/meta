@@ -2,13 +2,16 @@ import React from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import {LowestGamePriceInfo} from '../client/price';
+import { Typography } from 'antd';
+
+const { Text } = Typography;
 
 type LowestPriceTableProps = {
   lowestGamePriceInfos: LowestGamePriceInfo[];
 }
 
 const LowestPriceTable: React.FC<LowestPriceTableProps> =
-  (_props) => {
+  (props) => {
 
     const columns: TableColumnsType<LowestGamePriceInfo> = [
       { 
@@ -27,9 +30,11 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
         dataIndex: 'currentPrice',
         render: (_it, record) => {
           return (
-            <div>
-              { `¥ ` + record.currentPrice + `( ` + record.country.currencyCode + ` ` + record.currentPriceOrigin + ` )` }
-            </div>
+            <PriceDisplay 
+              price={record.currentPrice}
+              originPrice={record.currentPriceOrigin}
+              OriginPriceCurrency={record.currentPriceOriginCurrency}
+            />
           )
         }
       },
@@ -38,9 +43,11 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
         dataIndex: 'lowestPrice',
         render: (_it, record) => {
           return (
-            <div>
-              { `¥ ` + record.lowestPrice + `( ` + record.country.currencyCode + ` ` + record.lowestPriceOrigin + ` )` }
-            </div>
+            <PriceDisplay 
+              price={record.lowestPrice}
+              originPrice={record.lowestPriceOrigin}
+              OriginPriceCurrency={record.lowestPriceOriginCurrency}
+            />
           )
         }
       }
@@ -54,10 +61,28 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
           //   expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
           //   rowExpandable: (record) => record.name !== 'Not Expandable',
           // }}
-          dataSource={_props.lowestGamePriceInfos}
+          dataSource={props.lowestGamePriceInfos}
         />
       </div>
     )
 };
+
+type PriceDisplayProps = {
+  price: number,
+  originPrice: number,
+  OriginPriceCurrency: string,
+}
+
+const PriceDisplay: React.FC<PriceDisplayProps> = 
+  (props) => {
+    return (
+      <div>
+        <span>
+          <Text> ¥ {props.price.toFixed(2)} </Text>
+          <Text type='secondary'> { `( ` + props.OriginPriceCurrency + ` ` +  props.originPrice.toFixed(2) + ` )` }</Text>
+        </span>
+      </div>
+    );
+  };
 
 export default LowestPriceTable;

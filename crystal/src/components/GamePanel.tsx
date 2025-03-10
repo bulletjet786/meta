@@ -63,8 +63,6 @@ const useLowestPriceStore = create<GamePanelTableState>()(
 
 // TODO：
 // 1. 修复每次加载切换Tab都会重新加载数据的问题：
-// 2. 修复无法获取汇率
-// 3. 修复区域货币转换问题：部分区域的货币总是USD： 完成
 const GamePanel: React.FC<GamePanelProps> = (props) => {
   const [tab, setTab] = useState(PriceHistoryTab)
   

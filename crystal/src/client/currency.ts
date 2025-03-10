@@ -16,7 +16,7 @@ export class CurrencyClient {
         }
         const response = await fetch(`${this.apiBase}/currency/exchange_rate/convert?fromCode=${fromCode}&toCode=${toCode}&money=1`)
         const rateData: CurrencyResponse = await response.json()
-        console.debug(`currency rate Response for ${fromCode} to ${toCode}: ${JSON.stringify(this.rate)}`)
+        console.info(`currency rate Response for ${fromCode} to ${toCode}: ${JSON.stringify(rateData)}`)
         
         if (!rateData.success) {
             return null;
