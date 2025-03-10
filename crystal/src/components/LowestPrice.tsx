@@ -1,66 +1,14 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { CountryInfo } from '../constants/country';
-import {fetchLowestGamePriceInfo, LowestGamePriceInfo} from '../client/price';
-import {create} from "zustand/react";
-
-const countries = [
-  CountryInfo.CN,
-  CountryInfo.AR,
-  CountryInfo.RU,
-  CountryInfo.TR,
-  CountryInfo.US
-]
-
-interface lowestPriceTableState {
-  data: LowestGamePriceInfo[]
-  load: (appId: string) => void
-}
-
-
-const useLowestPriceStore = create<lowestPriceTableState>()(
-    (set) => ({
-      data: [],
-      load: async (appId: string) => {
-          const requests = [];
-          for (const country of countries) {
-            requests.push(fetchLowestGamePriceInfo(appId, country));
-          }
-          const results = await Promise.all(requests);
-          set({
-            data: results.filter(it => it !== null) as LowestGamePriceInfo[]
-          });
-      },
-  })
-)
+import {LowestGamePriceInfo} from '../client/price';
 
 type LowestPriceTableProps = {
-  itadId: string;
+  lowestGamePriceInfos: LowestGamePriceInfo[];
 }
 
 const LowestPriceTable: React.FC<LowestPriceTableProps> =
   (_props) => {
-
-    const lowestPriceData = useLowestPriceStore((state) => state.data)
-    const load = useLowestPriceStore((state) => state.load);
-
-    useEffect(() => {
-      load(_props.itadId)
-    }, [])
-
-    // const data: LowestGamePriceInfo[] = [
-    //   {
-    //     country: CountryInfo.CN,
-    //     currentPrice: 100.0,
-    //     currentPriceOrigin: 200.0,
-    //     currentPriceCut: 0.5,
-    //     lowestPrice: 50.0,
-    //     lowestPriceOrigin: 100.0,
-    //     lowestPriceCut: 0.25,
-    //     exchangeRate: 0.5,
-    //   }
-    // ];
 
     const columns: TableColumnsType<LowestGamePriceInfo> = [
       { 
@@ -106,7 +54,7 @@ const LowestPriceTable: React.FC<LowestPriceTableProps> =
           //   expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
           //   rowExpandable: (record) => record.name !== 'Not Expandable',
           // }}
-          dataSource={lowestPriceData}
+          dataSource={_props.lowestGamePriceInfos}
         />
       </div>
     )

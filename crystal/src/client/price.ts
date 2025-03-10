@@ -14,16 +14,21 @@ async function fetchLowestGamePriceInfo(itadId: string, country: CountryInfo): P
 
   try {
     const gameOverview = await itadClient.gamePriceOverview(itadId, country.code);
-    const exchangeRate = await currencyClient.rate(country.currencyCode, CountryInfo.CN.currencyCode);
-    if (!gameOverview || !exchangeRate) return null;
+    if (!gameOverview) return null;
+    const currentPriceOriginCurrency = gameOverview.current.price.currency
+    const lowestPriceOriginCurrency = gameOverview.lowest.price.currency
+    const currentExchangeRate = await currencyClient.rate(currentPriceOriginCurrency, CountryInfo.CN.currencyCode);
+    const lowestExchangeRate = await currencyClient.rate(lowestPriceOriginCurrency, CountryInfo.CN.currencyCode);
+    if (!currentExchangeRate || !lowestExchangeRate) return null;
     return {
       country: country,
-      exchangeRate: exchangeRate,
-      currentPrice: gameOverview.current.price.amount * exchangeRate,
+      currentPrice: gameOverview.current.price.amount * currentExchangeRate,
       currentPriceOrigin: gameOverview.current.price.amount,
       currentPriceCut: gameOverview.current.cut,
-      lowestPrice: gameOverview.lowest.price.amount * exchangeRate,
+      currentPriceOriginCurrency: gameOverview.current.price.currency,
+      lowestPrice: gameOverview.lowest.price.amount * lowestExchangeRate,
       lowestPriceOrigin: gameOverview.lowest.price.amount,
+      lowestPriceOriginCurrency: gameOverview.lowest.price.currency,
       lowestPriceCut: gameOverview.lowest.price.amount,
     };
   } catch (e) {
@@ -34,12 +39,13 @@ async function fetchLowestGamePriceInfo(itadId: string, country: CountryInfo): P
 
 export interface LowestGamePriceInfo {
   country: CountryInfo; // 国家
-  exchangeRate: number; // 从区域兑换成人民币后的汇率
   currentPrice: number; // 当前价格
   currentPriceOrigin: number; // 当前区域价格
+  currentPriceOriginCurrency: string; // 当前区域的当前价格货币代码
   currentPriceCut: number; // 当前折扣
   lowestPrice: number;  // 最低价格
   lowestPriceOrigin: number; // 最低区域价格
+  lowestPriceOriginCurrency: string; // 当前区域的最低价格货币代码
   lowestPriceCut: number; // 最大折扣
 }
 

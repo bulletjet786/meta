@@ -12,7 +12,7 @@ export class CurrencyClient {
             return 1;
         }
         if (this.cache.has(this.cacheKey(fromCode, toCode))) {
-            return this.cache.get(this.cacheKey(fromCode, toCode));
+            return this.cache.get(this.cacheKey(fromCode, toCode)) as number;
         }
         const response = await fetch(`${this.apiBase}/currency/exchange_rate/convert?fromCode=${fromCode}&toCode=${toCode}&money=1`)
         const rateData: CurrencyResponse = await response.json()
