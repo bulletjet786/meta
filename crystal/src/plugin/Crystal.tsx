@@ -9,6 +9,7 @@ export function run(options: CrystalRunOptions) {
 export class CrystalRunOptions {
     constructor(
         public useDebugAppId: string | null = null,
+        public useDebugGameName: string | null = null,
         public enableHistoryPriceCharts: boolean = true, // 是否启用价格图表
         public deckSN: string = "deck:Unknown",
         public deviceId: string = "Unknown",
@@ -25,6 +26,7 @@ function injectCrystalGamePanelWc(options: CrystalRunOptions) {
         console.log("Crystal Extension has been injected")
         return;
     }
+    window.__crystal_injected = true
 
     // Define the web component
     defineWc(CrystalGamePanelWcName, CrystalGamePanelWc)
@@ -39,10 +41,18 @@ function injectCrystalGamePanelWc(options: CrystalRunOptions) {
         console.log(`Inject Crystal Game Panel Wc for appId=${appId} from url=${document.URL}`)
     }
 
+    let gameName = ""
+    if (options.useDebugGameName) {
+        gameName = options.useDebugGameName
+        console.log(`Inject Crystal Game Panel Wc for debug gameName=${gameName}`)
+    } else {
+        const gameNameNode = document.querySelector(`span[itemprop="name"]`)
+        gameName = `${(gameNameNode as HTMLSpanElement).innerText}`
+        console.log(`Inject Crystal Game Panel Wc for gameName=${gameName} from context`)
+    }
+
     const gamePanel = document.createElement('crystal-game-panel');
     gamePanel.setAttribute('app-id', appId)
-    const gameNameNode = document.querySelector(`span[itemprop="name"]`)
-    const gameName = `${(gameNameNode as HTMLSpanElement).innerText}`
     gamePanel.setAttribute('game-name', gameName)
     const injectPoint = document.getElementById("game_area_purchase")
     if (injectPoint == null) {

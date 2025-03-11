@@ -5,7 +5,8 @@ export const CrystalGamePanelWcName = "crystal-game-panel"
 
 export const CrystalGamePanelWc = r2wc(CrystalGamePanel, {
     props: {
-        appId: "string"
+        appId: "string",
+        gameName: "string"
     },
     // null: don't use shadow, ant design can inject styles to head.style 
     // open mode: we can inject styles

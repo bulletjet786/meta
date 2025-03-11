@@ -41,14 +41,14 @@ type SteamLowestPriceStorePlugin struct {
 
 const (
 	oldCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js"
-	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.0.alpha13/crystal.es.js"
+	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.0/crystal.es.js"
 )
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
 	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(lowestJsCodeTemplate)
 	var buf bytes.Buffer
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
-		CrystalUrl: oldCrystalUrl,
+		CrystalUrl: newCrystalUrl,
 	})
 	lowestJsCode := buf.String()
 

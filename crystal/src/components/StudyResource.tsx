@@ -32,7 +32,7 @@ function buildItemProps(gameName: string): StudyResourceItemProps[]{
     {
       name: "搜索: 小白游戏网",
       url: `https://www.xbgame.net?s=${encodeURIComponent(gameName)}`,
-      tags: ["2区免费", "2签1次", "月卡28", "季卡38", "年卡68", "永久98", "百度", "迅雷", "夸克", "天翼", "阿里", "123", "UC-不限速"],
+      tags: ["2区免费", "月卡28", "季卡38", "年卡68", "永久98", "百度", "迅雷", "夸克", "天翼-高速", "阿里", "UC-不限速"],
     },
   ]
 }

@@ -1,11 +1,12 @@
 import React, {useEffect} from 'react';
-import {Segmented} from "antd";
+import {Segmented, Tooltip} from "antd";
 import StudyResourcePanel from "./StudyResource";
 import LowestPriceTable from "./LowestPrice.tsx";
 import {GameInfo, itadClient} from "../client/itad.ts";
 import {fetchLowestGamePriceInfo, LowestGamePriceInfo} from '../client/price';
 import { CountryInfo } from '../constants/country';
 import {create} from "zustand/react";
+import {InfoCircleOutlined} from "@ant-design/icons";
 
 type GamePanelProps = {
   appId: string
@@ -74,7 +75,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
   const changeTab = useLowestPriceStore((state) => state.changeTab)
   
   const loading = useLowestPriceStore((state) => state.loading)
-  const gameInfo = useLowestPriceStore((state) => state.gameInfo)
+  // const gameInfo = useLowestPriceStore((state) => state.gameInfo)
   const lowestGamePriceInfos = useLowestPriceStore((state) => state.lowestGamePriceInfos)
   const load = useLowestPriceStore((state) => state.load);
 
@@ -110,7 +111,12 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
                   <div style={{padding: 4}} onClick={() => {
                     changeTab(LowestPriceTab)
                   }}>
-                    <div>史低价格</div>
+                    <div>
+                      <span>史低价格</span>
+                      <Tooltip title="数据来源于：IsThereAnyDeal，Steam伴侣不对数据准确性负责">
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    </div>
                   </div>
                 ),
                 value: 'price',

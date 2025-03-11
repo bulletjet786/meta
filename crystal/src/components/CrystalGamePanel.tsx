@@ -34,7 +34,8 @@ import {ConfigProvider, theme} from "antd";
 // 私服列表：维护者
 
 type CrystalGamePanelProps = {
-  appId: string
+  appId: string,
+  gameName: string
 }
 
 const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePanelProps) => {
@@ -42,7 +43,7 @@ const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePan
   return (
     <div>
       <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
-        <GamePanel appId={ props.appId }></GamePanel>
+        <GamePanel appId={ props.appId } gameName={ props.gameName }></GamePanel>
       </ConfigProvider>
     </div>
   )
