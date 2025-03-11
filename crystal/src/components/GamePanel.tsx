@@ -9,6 +9,7 @@ import {create} from "zustand/react";
 
 type GamePanelProps = {
   appId: string
+  gameName: string
 }
 
 const StudyResourceTab = "StudyResource"
@@ -91,7 +92,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
       case LowestPriceTab:
         return <LowestPriceTable lowestGamePriceInfos={lowestGamePriceInfos}></LowestPriceTable>
       case StudyResourceTab:
-        return <StudyResourcePanel gameName={gameInfo!.slug!}/>
+        return <StudyResourcePanel gameName={props.gameName}/>
     }
   }
 

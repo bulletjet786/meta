@@ -41,6 +41,9 @@ function injectCrystalGamePanelWc(options: CrystalRunOptions) {
 
     const gamePanel = document.createElement('crystal-game-panel');
     gamePanel.setAttribute('app-id', appId)
+    const gameNameNode = document.querySelector(`span[itemprop="name"]`)
+    const gameName = `${(gameNameNode as HTMLSpanElement).innerText}`
+    gamePanel.setAttribute('game-name', gameName)
     const injectPoint = document.getElementById("game_area_purchase")
     if (injectPoint == null) {
         return;
