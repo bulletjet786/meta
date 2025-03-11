@@ -9,9 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:wc": "vite build --mode development --config vite.wc.config.ts",
-    "build:wc:prod": "vite build --mode production --config vite.wc.config.ts"
+    "build:wc:prod": "vite build --mode production --config vite.wc.config.ts",
+    "build:crystal": "vite build --mode development --config vite.crystal.config.ts",
+    "build:crystal:prod": "vite build --mode production --config vite.crystal.config.ts"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.23.0",
+    "@ant-design/icons": "^5.6.1",
+    "@ant-design/plots": "^2.3.3",
+    "@coze/api": "^1.1.0",
     "@emotion/css": "^11.13.5",
     "@r2wc/react-to-web-component": "^2.0.3",
     "antd": "^5.23.2",
@@ -20,7 +26,8 @@
     "echarts-for-react": "^3.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "vite-plugin-css-injected-by-js": "^3.5.2"
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

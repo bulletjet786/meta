@@ -1,3 +1,5 @@
+VERSION=0.0.1
+
 .PHONY:
 gen_pb:
 	buf dep update
@@ -6,3 +8,9 @@ gen_pb:
 .PHONY:
 clean_pb:
 	rm -rf ./proto/gen/*
+
+.PHONY:
+dist:
+	
+
+.PHONY:

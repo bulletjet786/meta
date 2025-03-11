@@ -1,20 +1,15 @@
 package steam
 
 import (
-	"context"
 	"log/slog"
 	"os"
 
-	"meta/backend/constants"
+	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/discovery"
 	"meta/backend/service/steam/plugin"
-
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Service struct {
-	wailsCtx context.Context
-
 	options ServiceOptions
 	plugins []plugin.SteamPlugin
 
@@ -22,17 +17,18 @@ type Service struct {
 }
 
 type ServiceOptions struct {
-	RemoteUrl string
-	Os        string
+	RemoteUrl  string
+	Os         string
+	Subscriber []common.StatusSubscriber
 }
 
-func NewService() *Service {
-	return &Service{}
+func NewService(options ServiceOptions) *Service {
+	return &Service{
+		options: options,
+	}
 }
 
-func (s *Service) Start(ctx context.Context, options ServiceOptions) {
-	s.wailsCtx = ctx
-	s.options = options
+func (s *Service) Start() {
 
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
@@ -43,7 +39,7 @@ func (s *Service) Start(ctx context.Context, options ServiceOptions) {
 			os.Exit(1)
 		}
 	}
-	s.chromeHolder = NewChromeHolder(options.RemoteUrl)
+	s.chromeHolder = NewChromeHolder(s.options.RemoteUrl)
 	s.chromeHolder.Run()
 	s.startPlugins()
 }
@@ -54,7 +50,9 @@ func (s *Service) startPlugins() {
 		for status := range s.chromeHolder.statusChannel {
 			slog.Info("Receive status", "status", status)
 
-			runtime.EventsEmit(s.wailsCtx, constants.EventForStatusChange, status)
+			for _, sub := range s.options.Subscriber {
+				sub(status)
+			}
 
 			if lastState == StatusDisconnected && status.State == StatusConnected {
 				slog.Info("Found status change to connected", "status", status)
@@ -69,7 +67,7 @@ func (s *Service) startPlugins() {
 	}()
 }
 
-func (s *Service) Status() Status {
+func (s *Service) Status() common.Status {
 	return s.chromeHolder.Status()
 }
 

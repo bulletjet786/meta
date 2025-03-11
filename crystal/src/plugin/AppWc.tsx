@@ -1,3 +1,4 @@
+/*
 import {GameInfo, HistoryLogs, ItadClient, StoreLowestPrice} from "../client/itad"
 import * as echarts from "echarts"
 import dayjs from "dayjs"
@@ -283,3 +284,4 @@ interface AggGameInfo {
     storeLow: StoreLowestPrice,
     historyLogs: HistoryLogs
 }
+*/

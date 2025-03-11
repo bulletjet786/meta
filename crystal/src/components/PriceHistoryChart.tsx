@@ -1,14 +1,10 @@
 import {Line} from '@ant-design/plots';
 import React from 'react';
-import {AggGameInfo} from "@/services/itad/price";
+import {AggGameInfo} from "../client/price";
 import dayjs from "dayjs";
 
-class PriceHistoryPanelProps {
+type PriceHistoryPanelProps = {
   gameInfo: AggGameInfo
-
-  constructor(gameInfo: AggGameInfo) {
-    this.gameInfo = gameInfo
-  }
 }
 
 function priceChartsData(gameInfo: AggGameInfo) {
@@ -25,6 +21,10 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
   (props) => {
     const data = priceChartsData(props.gameInfo);
 
+    // 选择一个好看的背景图（P1）
+    // 正确处理主题色(P2)
+    // 如何处理时间：https://ant-design-charts.antgroup.com/zh/examples/statistics/line#connect-nulls(P2)
+    // 
     const config = {
       data: data,
       title: '价格趋势',
@@ -44,7 +44,11 @@ const PriceHistoryPanel: React.FC<PriceHistoryPanelProps> =
         },
       ],
     };
-    return <Line {...config} />;
+    return (
+      <>
+        <Line {...config} />
+      </>
+    );
   };
 
 export default PriceHistoryPanel;

@@ -1,5 +1,6 @@
 import React from 'react';
-import GamePanel from "@/pages/CrystalGamePanel/components/GamePanel";
+import GamePanel from "./GamePanel.tsx";
+import {ConfigProvider, theme} from "antd";
 
 // 模仿 小黑盒的布局
 
@@ -32,16 +33,18 @@ import GamePanel from "@/pages/CrystalGamePanel/components/GamePanel";
 
 // 私服列表：维护者
 
-const CrystalGamePanel: React.FC = () => {
+type CrystalGamePanelProps = {
+  appId: string,
+  gameName: string
+}
 
-  const containerCss = {
-    width: '800px',
-    height: '400px',
-  }
+const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePanelProps) => {
 
   return (
-    <div style={containerCss}>
-      <GamePanel appId="548430"></GamePanel>
+    <div>
+      <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
+        <GamePanel appId={ props.appId } gameName={ props.gameName }></GamePanel>
+      </ConfigProvider>
     </div>
   )
 };
