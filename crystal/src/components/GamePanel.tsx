@@ -68,8 +68,6 @@ const useLowestPriceStore = create<GamePanelTableState>()(
   })
 )
 
-// TODO：
-// 1. 修复每次只有切换Tab都会才会显示 LowestPriceTable 的问题：
 const GamePanel: React.FC<GamePanelProps> = (props) => {
   const tab = useLowestPriceStore((state) => state.tab)
   const changeTab = useLowestPriceStore((state) => state.changeTab)
@@ -96,6 +94,8 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
         return <StudyResourcePanel gameName={gameInfo!.slug!}/>
     }
   }
+
+  const contentHeight = 37 * (5 + 1)
 
   return (
     <div>
@@ -128,7 +128,10 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
         />
       </div>
 
-      {content()}
+      <div style={{ width: "100%", height: `${contentHeight}` + "px" }}>
+        {content()}
+      </div>
+
     </div>
   )
 }
