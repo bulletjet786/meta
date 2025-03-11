@@ -95,7 +95,7 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
     }
   }
 
-  const contentHeight = 37 * (5 + 1)
+  // const contentHeight = 37 * (5 + 1)
 
   return (
     <div>
@@ -128,7 +128,8 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
         />
       </div>
 
-      <div style={{ width: "100%", height: `${contentHeight}` + "px" }}>
+      {/*<div style={{ width: "100%", height: `${contentHeight}` + "px" }}>*/}
+      <div>
         {content()}
       </div>
 

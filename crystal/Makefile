@@ -9,6 +9,6 @@ upload_wc:
 build:
 	pnpm run build:crystal
 
-updata:
+update:
 	pnpm run build:crystal
 	qshell fput hulu-package crystal/$(CRYSTAL_VERSION)/crystal.es.js dist/crystal/crystal.es.js --overwrite
