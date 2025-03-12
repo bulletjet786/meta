@@ -1,4 +1,4 @@
-import { IPlugin } from "../plugin/plugin";
+import { IPlugin } from "./plugin.tsx";
 
 export class AssistantPlugin implements IPlugin {
 
