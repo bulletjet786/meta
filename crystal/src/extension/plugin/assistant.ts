@@ -1,14 +1,14 @@
-import { IPlugin } from "./plugin.tsx";
+import { IPlugin } from "./plugin.ts";
 
 export class AssistantPlugin implements IPlugin {
 
     client: any
 
-    Name(): string {
+    name(): string {
         return "assistant";
     }
 
-    Init() {
+    init() {
       const sdkImportScriptElement = document.createElement('script');
       sdkImportScriptElement.src = "https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.3/libs/cn/index.js";
       document.body.appendChild(sdkImportScriptElement);

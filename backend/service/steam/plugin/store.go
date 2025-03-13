@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"reflect"
 	"strings"
+	"net/url"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
@@ -15,9 +16,13 @@ import (
 )
 
 const (
-	storeUrlPrefix       = "https://store.steampowered.com/"
-	storeAppUrlPrefix    = "https://store.steampowered.com/app/"
-	lowestJsCodeTemplate = `
+	storeUrlHost = "store.steampowered.com"
+	XianYuDanJiHost = "www.xianyudanji.net"
+	KKYXHost = "www.kkyx.net"
+	XbGameHost = "www.xbgame.net"
+
+	storeAppUrlPrefix    = "/app/"
+	crystalStoreJsCodeTemplate = `
 	async function _crystalImport() {
 		try {
 			const crystal = await import("{{ .CrystalUrl }}");
@@ -28,6 +33,11 @@ const (
 	}
 	
 	_crystalImport();
+	`
+	allSelfTarget = `
+	document.querySelectorAll('a[target="_blank"]').forEach(link => {
+		link.setAttribute('target', '_self');
+	  });
 	`
 )
 
@@ -85,11 +95,17 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 	go func() {
 		err := func() error {
 			logger := slog.With(ctx, "plugin_name", p.Name())
-			url := targetInfo.URL
-			logger = logger.With("url", url)
+			rawurl := targetInfo.URL
+			logger = logger.With("url", rawurl)
+			url, err := p.ParseUrl(rawurl)
+			if err != nil {
+				return err
+			}
 
 			storeCtx, _ := chromedp.NewContext(ctx, chromedp.WithTargetID(targetInfo.TargetID))
-			if strings.HasPrefix(url, storeUrlPrefix) {
+			// 为指定的页面设置bypass csp
+			switch url.Host {
+			case storeUrlHost, XianYuDanJiHost, KKYXHost, XbGameHost:
 				if err := chromedp.Run(storeCtx,
 					page.SetBypassCSP(true),
 				); err != nil {
@@ -99,19 +115,37 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 				slog.Info("SetBypassCSP success", "id", targetInfo.TargetID, "url", targetInfo.URL)
 			}
 
-			if !strings.HasPrefix(url, storeAppUrlPrefix) {
+			if url.Host == storeUrlHost && strings.HasPrefix(url.Path, storeAppUrlPrefix) {
+				logger.Info("Found store page, try to inject ...")
+				// 注入 Crystal Store 相关的代码
+				if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
+					return err
+				}
 				return nil
 			}
 
-			logger.Info("Found store page, try to inject ...")
-			// Inject the JavaScript code
-			if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
-				return err
+			switch url.Host {
+			case XianYuDanJiHost, KKYXHost, XbGameHost:
+				logger.Info("Found store page, try to inject ...")
+				// 设置所有A标签的target属性为_self
+				if err := chromedp.Run(storeCtx, chromedp.Evaluate(allSelfTarget, nil)); err != nil {
+					return err
+				}
 			}
+
 			return nil
 		}()
 		if err != nil {
 			slog.Error("Failed to inject lowest price panel", "url", targetInfo.URL, "error", err)
 		}
 	}()
+}
+
+func (p *SteamLowestPriceStorePlugin) ParseUrl(rawurl string) (*url.URL, error) {
+	// 解析url为URL对象
+	url, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
 }

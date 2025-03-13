@@ -1,0 +1,49 @@
+
+import { StoreGamePanelPluginOptions, StoreGamePanelPlugin } from "./plugin/game-panel";
+
+export type StoreExtensionOptions = {
+    gamePanel: StoreGamePanelPluginOptions
+}
+
+export class StoreExtension {
+    constructor(
+        public options: StoreExtensionOptions
+    ) {}
+    
+    init(): void {
+        this.tryInjectCrystal()
+    }
+    
+    tryInjectCrystal() {
+        if (document.readyState === 'loading') {
+            // 如果文档还在加载中，等待 DOMContentLoaded 事件
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOMContentLoaded event fired');
+                this.initCrystal();
+            });
+        } else {
+            // 如果文档已经加载完成或处于 interactive 状态
+            console.log('Document is already loaded or interactive');
+            this.initCrystal();
+        }
+    }
+
+    initCrystal() {
+        if (window.__crystal_injected) {
+            console.log("Crystal Extension has been injected")
+            return;
+        }
+        window.__crystal_injected = true
+    
+        const storeGamePanel = new StoreGamePanelPlugin(this.options.gamePanel)
+        storeGamePanel.init()
+        
+        console.log("Inject Crystal Store Success")
+    }
+    
+}
+
+declare const window: {
+    __crystal_injected: boolean;
+} & Window;
+
