@@ -1,13 +1,10 @@
-import { defineCrystalGamePanleWc } from "../../ui/wc/StoreGamePanelWc";
+import { defineCrystalGamePanelWc } from "../../ui/wc/StoreGamePanelWc.ts";
 import { IPlugin } from "./plugin";
 
 export class StoreGamePanelPluginOptions {
     constructor(
-        public enable: boolean = true,
         public useDebugAppId: string | null = null,
         public useDebugGameName: string | null = null,
-        public enableHistoryPriceCharts: boolean = true,
-        public deckSN: string = "deck:Unknown",
         public deviceId: string = "Unknown",
     ) {
     }
@@ -24,8 +21,7 @@ export class StoreGamePanelPlugin implements IPlugin {
     }
     init(): void {
         // Define the web component
-        console.log("Injecting Crystal Extension ...")
-        defineCrystalGamePanleWc()
+        defineCrystalGamePanelWc()
         let appId = ""
         if (this.options.useDebugAppId) {
             appId = this.options.useDebugAppId

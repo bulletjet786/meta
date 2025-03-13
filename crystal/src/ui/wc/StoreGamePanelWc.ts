@@ -1,6 +1,6 @@
 import r2wc from '@r2wc/react-to-web-component'
 import CrystalGamePanel from '../../components/CrystalGamePanel.tsx'
-import { defineWc } from '../../ui/wc/utils'
+import { defineWc } from './utils.tsx'
 
 export const CrystalGamePanelWcName = "crystal-game-panel"
 
@@ -14,6 +14,6 @@ export const CrystalGamePanelWc = r2wc(CrystalGamePanel, {
     // shadow: "open", 
 })
 
-export function defineCrystalGamePanleWc() {
+export function defineCrystalGamePanelWc() {
     defineWc(CrystalGamePanelWcName, CrystalGamePanelWc)
 }

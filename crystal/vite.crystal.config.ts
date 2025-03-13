@@ -13,7 +13,7 @@ export default defineConfig({
     ],
     build: {
         lib: {
-            entry: 'src/plugin/Crystal.tsx', // 指定入口文件
+            entry: 'src/extension/Crystal.ts', // 指定入口文件
             name: 'crystal',
             fileName: (format) => `crystal.${format}.js`, // 输出文件名
             formats: ['es'],

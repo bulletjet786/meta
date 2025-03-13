@@ -1,5 +1,6 @@
 
 import { StoreGamePanelPluginOptions, StoreGamePanelPlugin } from "./plugin/game-panel";
+import {TranslatePlugin} from "./plugin/translate.ts";
 
 export type StoreExtensionOptions = {
     gamePanel: StoreGamePanelPluginOptions
@@ -11,6 +12,7 @@ export class StoreExtension {
     ) {}
     
     init(): void {
+        console.log("Injecting Crystal Extension ...")
         this.tryInjectCrystal()
     }
     
@@ -37,7 +39,10 @@ export class StoreExtension {
     
         const storeGamePanel = new StoreGamePanelPlugin(this.options.gamePanel)
         storeGamePanel.init()
-        
+
+        const translate = new TranslatePlugin()
+        translate.init()
+
         console.log("Inject Crystal Store Success")
     }
     
