@@ -4,6 +4,7 @@ import {TranslatePlugin} from "./plugin/translate.ts";
 
 export type StoreExtensionOptions = {
     gamePanel: StoreGamePanelPluginOptions
+    traslate:
 }
 
 export class StoreExtension {

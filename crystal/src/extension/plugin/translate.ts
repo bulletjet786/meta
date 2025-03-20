@@ -1,5 +1,12 @@
 import { IPlugin } from "./plugin";
 
+export class TranslatePluginOptions {
+	constructor(
+		public contentXPath: string,
+	) {
+	}
+}
+
 export class TranslatePlugin implements IPlugin {
 
 	name(): string {
@@ -15,8 +22,7 @@ export class TranslatePlugin implements IPlugin {
 			// @ts-ignore
 			console.log(`Translate translate: ${translate}`)
 
-			//清理缓存
-			localStorage.clear();
+			translate.setDocuments(document.querySelector("#game_area_description"))
 
 			// 翻译属性
 			translate.language.setLocal('chinese_simplified'); //设置本地语种（当前网页的语种）。如果不设置，默认就是 'chinese_simplified' 简体中文。 可填写如 'english'、'chinese_simplified' 等，具体参见文档下方关于此的说明
@@ -26,10 +32,10 @@ export class TranslatePlugin implements IPlugin {
 			translate.language.setUrlParamControl(); //url参数后可以加get方式传递 language 参数的方式控制当前网页以什么语种显示
 			translate.selectLanguageTag.show = false; // 不显示语言选择UI
 
-			translate.selectionTranslate.start() // 滑词翻译无法和全局翻译同时开启
+			// translate.selectionTranslate.start() // 滑词翻译无法和全局翻译同时开启
 			translate.execute();
 
-			translate.changeLanguage('chinese_simplified')
+			// translate.changeLanguage('chinese_simplified')
 		}
 		document.body.appendChild(script);
 	}
