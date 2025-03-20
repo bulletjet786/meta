@@ -1,4 +1,4 @@
-import { defineCrystalGamePanelWc } from "../../ui/wc/StoreGamePanelWc.ts";
+import { defineCrystalGamePanelWc } from "../../components/CrystalGamePanel.tsx";
 import { IPlugin } from "./plugin";
 
 export class StoreGamePanelPluginOptions {

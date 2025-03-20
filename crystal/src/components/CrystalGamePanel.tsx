@@ -1,6 +1,9 @@
 import React from 'react';
 import GamePanel from "./GamePanel.tsx";
 import {ConfigProvider, theme} from "antd";
+import r2wc from '@r2wc/react-to-web-component'
+import { defineWc } from './utils.ts'
+
 
 // 模仿 小黑盒的布局
 
@@ -50,3 +53,19 @@ const CrystalGamePanel: React.FC<CrystalGamePanelProps> = (props: CrystalGamePan
 };
 
 export default CrystalGamePanel;
+
+export const CrystalGamePanelWcName = "crystal-game-panel"
+
+export const CrystalGamePanelWc = r2wc(CrystalGamePanel, {
+    props: {
+        appId: "string",
+        gameName: "string"
+    },
+    // null: don't use shadow, ant design can inject styles to head.style 
+    // open mode: we can inject styles
+    // shadow: "open", 
+})
+
+export function defineCrystalGamePanelWc() {
+    defineWc(CrystalGamePanelWcName, CrystalGamePanelWc)
+}
