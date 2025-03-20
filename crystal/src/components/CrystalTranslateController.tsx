@@ -10,13 +10,14 @@ type CrystalTranslateControllerProps = {
 
 interface TranslateState {
   enabled: boolean,
-  translate: () => void
+  translate: (contentSelector: string) => void
 }
 
 const useTranslateStore = create<TranslateState>()(
   (set) => ({
     enabled: true,
-    translate: () => {
+    translate: (contentSelector: string) => {
+      window.translate.setDocuments(document.querySelector(contentSelector))
       window.translate.execute()
       set(() => ({
         enabled: false,
@@ -33,7 +34,7 @@ const CrystalTranslateController: React.FC<CrystalTranslateControllerProps> = (p
     return (
       <div>
         <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
-          <Button disabled= {!enabled} onClick={ translate }> 翻译 </Button>
+          <Button disabled= {!enabled} onClick={ () => { translate(props.contentSelector) } }> 翻译 </Button>
         </ConfigProvider>
       </div>
     )

@@ -26,7 +26,6 @@ export class TranslatePlugin implements IPlugin {
 		const options = this.options
 		script.onload = function () {
 			console.log("Translate Script On Load")
-			window.translate.setDocuments(document.querySelector(options.contentSelector))
 
 			// 翻译属性
 			window.translate.language.setLocal('chinese_simplified'); //设置本地语种（当前网页的语种）。如果不设置，默认就是 'chinese_simplified' 简体中文。 可填写如 'english'、'chinese_simplified' 等，具体参见文档下方关于此的说明
@@ -45,13 +44,13 @@ export class TranslatePlugin implements IPlugin {
 
 		// 加载翻译器控制组件
 		defineCrystalTranslateControllerWc()
-		const gamePanel = document.createElement('crystal-translate-controller');
-		gamePanel.setAttribute('content-selector', this.options.contentSelector)
-		const injectPoint = document.getElementById("game_area_purchase") // TODO: 注册的位置
+		const translateController = document.createElement('crystal-translate-controller');
+		translateController.setAttribute('content-selector', this.options.contentSelector)
+		const injectPoint = document.querySelector("#game_area_purchase > h2")
 		if (injectPoint == null) {
 			return;
 		}
-		injectPoint.appendChild(gamePanel);
+		injectPoint.appendChild(translateController);
 	}
 }
 

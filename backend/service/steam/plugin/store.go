@@ -6,9 +6,9 @@ import (
 	_ "embed"
 	"html/template"
 	"log/slog"
+	"net/url"
 	"reflect"
 	"strings"
-	"net/url"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
@@ -16,12 +16,12 @@ import (
 )
 
 const (
-	storeUrlHost = "store.steampowered.com"
+	storeUrlHost    = "store.steampowered.com"
 	XianYuDanJiHost = "www.xianyudanji.net"
-	KKYXHost = "www.kkyx.net"
-	XbGameHost = "www.xbgame.net"
+	KKYXHost        = "www.kkyx.net"
+	XbGameHost      = "www.xbgame.net"
 
-	storeAppUrlPrefix    = "/app/"
+	storeAppUrlPrefix          = "/app/"
 	crystalStoreJsCodeTemplate = `
 	async function _crystalImport() {
 		try {
@@ -50,12 +50,11 @@ type SteamLowestPriceStorePlugin struct {
 }
 
 const (
-	oldCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js"
-	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.0/crystal.es.js"
+	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.1.alpha1/crystal.es.js"
 )
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
-	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(lowestJsCodeTemplate)
+	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(crystalStoreJsCodeTemplate)
 	var buf bytes.Buffer
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
 		CrystalUrl: newCrystalUrl,
