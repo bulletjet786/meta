@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"html/template"
 	"log/slog"
+	"net/url"
 	"reflect"
 	"strings"
 
@@ -15,19 +16,28 @@ import (
 )
 
 const (
-	storeUrlPrefix       = "https://store.steampowered.com/"
-	storeAppUrlPrefix    = "https://store.steampowered.com/app/"
-	lowestJsCodeTemplate = `
+	storeUrlHost    = "store.steampowered.com"
+	XianYuDanJiHost = "www.xianyudanji.net"
+	KKYXHost        = "www.kkyx.net"
+	XbGameHost      = "www.xbgame.net"
+
+	storeAppUrlPrefix          = "/app/"
+	crystalStoreJsCodeTemplate = `
 	async function _crystalImport() {
 		try {
 			const crystal = await import("{{ .CrystalUrl }}");
-			crystal.run({"useDebugAppId": null, "enableHistoryPriceCharts": true});
+			crystal.run({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "translate": {"contentSelector": "#game_area_description"}});
 		} catch (error) {
 			console.error('Dynamic import is not supported:', error);
 		}
 	}
 	
 	_crystalImport();
+	`
+	allSelfTarget = `
+	document.querySelectorAll('a[target="_blank"]').forEach(link => {
+		link.setAttribute('target', '_self');
+	  });
 	`
 )
 
@@ -40,12 +50,11 @@ type SteamLowestPriceStorePlugin struct {
 }
 
 const (
-	oldCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.0.3.alpha2/crystal.es.js"
-	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.0/crystal.es.js"
+	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.1/crystal.es.js"
 )
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
-	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(lowestJsCodeTemplate)
+	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(crystalStoreJsCodeTemplate)
 	var buf bytes.Buffer
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
 		CrystalUrl: newCrystalUrl,
@@ -85,11 +94,17 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 	go func() {
 		err := func() error {
 			logger := slog.With(ctx, "plugin_name", p.Name())
-			url := targetInfo.URL
-			logger = logger.With("url", url)
+			rawurl := targetInfo.URL
+			logger = logger.With("url", rawurl)
+			url, err := p.ParseUrl(rawurl)
+			if err != nil {
+				return err
+			}
 
 			storeCtx, _ := chromedp.NewContext(ctx, chromedp.WithTargetID(targetInfo.TargetID))
-			if strings.HasPrefix(url, storeUrlPrefix) {
+			// 为指定的页面设置bypass csp
+			switch url.Host {
+			case storeUrlHost, XianYuDanJiHost, KKYXHost, XbGameHost:
 				if err := chromedp.Run(storeCtx,
 					page.SetBypassCSP(true),
 				); err != nil {
@@ -99,19 +114,37 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 				slog.Info("SetBypassCSP success", "id", targetInfo.TargetID, "url", targetInfo.URL)
 			}
 
-			if !strings.HasPrefix(url, storeAppUrlPrefix) {
+			if url.Host == storeUrlHost && strings.HasPrefix(url.Path, storeAppUrlPrefix) {
+				logger.Info("Found store page, try to inject ...")
+				// 注入 Crystal Store 相关的代码
+				if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
+					return err
+				}
 				return nil
 			}
 
-			logger.Info("Found store page, try to inject ...")
-			// Inject the JavaScript code
-			if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
-				return err
+			switch url.Host {
+			case XianYuDanJiHost, KKYXHost, XbGameHost:
+				logger.Info("Found store page, try to inject ...")
+				// 设置所有A标签的target属性为_self
+				if err := chromedp.Run(storeCtx, chromedp.Evaluate(allSelfTarget, nil)); err != nil {
+					return err
+				}
 			}
+
 			return nil
 		}()
 		if err != nil {
 			slog.Error("Failed to inject lowest price panel", "url", targetInfo.URL, "error", err)
 		}
 	}()
+}
+
+func (p *SteamLowestPriceStorePlugin) ParseUrl(rawurl string) (*url.URL, error) {
+	// 解析url为URL对象
+	url, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
 }
