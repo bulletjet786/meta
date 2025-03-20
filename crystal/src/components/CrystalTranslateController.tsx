@@ -34,7 +34,12 @@ const CrystalTranslateController: React.FC<CrystalTranslateControllerProps> = (p
     return (
       <div>
         <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
-          <Button disabled= {!enabled} onClick={ () => { translate(props.contentSelector) } }> 翻译 </Button>
+            <div style={{ width: "100%", display: "flex"}}>
+                <div style={{ flex: 3  }}></div>
+                <div style={{ flex: 1  }}>
+                    <Button disabled= {!enabled} onClick={ () => { translate(props.contentSelector) } }> 翻译 </Button>
+                </div>
+            </div>
         </ConfigProvider>
       </div>
     )

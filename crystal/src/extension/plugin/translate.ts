@@ -25,8 +25,7 @@ export class TranslatePlugin implements IPlugin {
 		script.src = 'https://res.zvo.cn/translate/translate.js'
 		const options = this.options
 		script.onload = function () {
-			console.log("Translate Script On Load")
-
+			console.log("Translate script start loading .. ")
 			// 翻译属性
 			window.translate.language.setLocal('chinese_simplified'); //设置本地语种（当前网页的语种）。如果不设置，默认就是 'chinese_simplified' 简体中文。 可填写如 'english'、'chinese_simplified' 等，具体参见文档下方关于此的说明
 			window.translate.language.setDefaultTo('chinese_simplified') // 设置要翻译成的语言
@@ -39,18 +38,21 @@ export class TranslatePlugin implements IPlugin {
 			// translate.execute();
 
 			// translate.changeLanguage('chinese_simplified')
+			console.log("Translate script load finished.")
+			// 加载翻译器控制组件
+			defineCrystalTranslateControllerWc()
+			const translateController = document.createElement('crystal-translate-controller');
+			translateController.setAttribute('content-selector', options.contentSelector)
+			const injectPoint = document.querySelector("#game_area_description > h2")
+			if (injectPoint == null) {
+				return;
+			}
+			injectPoint.appendChild(translateController);
+			console.log("Translate controller inject finished.")
 		}
 		document.body.appendChild(script);
 
-		// 加载翻译器控制组件
-		defineCrystalTranslateControllerWc()
-		const translateController = document.createElement('crystal-translate-controller');
-		translateController.setAttribute('content-selector', this.options.contentSelector)
-		const injectPoint = document.querySelector("#game_area_purchase > h2")
-		if (injectPoint == null) {
-			return;
-		}
-		injectPoint.appendChild(translateController);
+
 	}
 }
 
