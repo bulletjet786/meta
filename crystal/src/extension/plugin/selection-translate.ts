@@ -1,4 +1,5 @@
 import { IPlugin } from "./plugin";
+import {defineSelectionTranslatePanelWc} from "../../components/CrystalSelectionTranslatePanel.tsx";
 
 //该文件的代码是应用在网页页面上的，比如在页面上对文字的点击，选中网页上的文字等事件，如果这个文件里有写相应的事件，该文件里的代码则会被触发
 
@@ -137,34 +138,9 @@ Panel.prototype.pos = function (pos) {
 //实例化一个翻译面板
 let panel = new Panel()
 
-//划词翻译默认是关闭状态
-let selectState = 'off'
-
-//用chrome的storage接口，查看之前有没有存储 'switch' 这一项(查看用户之前是否已选择开启/关闭划词翻译功能,只要选择过,都会存储在switch里)
-chrome.storage.sync.get(['switch'], function (result) {
-    //如果有设置
-    if (result.switch) {
-        //把值(on / off)赋值给网页上翻译插件的状态变量
-        selectState = result.switch
-    }
-});
-
-//运行时，监听是否有数据传过来
-chrome.runtime.onMessage.addListener(
-    function (request) {
-        // 如果有传 'switch' (当选项[开启]/[关闭]发生改变时,popup.js都会给当前活动标签页传递switch数据,也就是用户选择的选项是什么)
-        console.log(request);
-        if (request.switch) {
-            //把用户修改的选项的值赋值给该变量
-
-            selectState = request.switch
-        }
-    });
 
 //监听鼠标的释放事件
 window.onmouseup = function (e) {
-    //如果用户选择的是关闭选项 就不显示翻译面板
-    if (selectState === 'off') return
 
     //获取到用户选中的内容
     let raw = window.getSelection().toString().trim()
@@ -215,14 +191,7 @@ class Panel {
         const container = document.createElement('div');
         const html = `
             <main>
-                <div class="source">
-                    <div class="title">英语</div>
-                    <div class="content"></div>
-                </div>
-                <div class="dest">
-                    <div class="title">简体中文</div>
-                    <div class="content">...</div>
-                </div>
+                <div class="content">...</div>
             </main>
         `;
         container.innerHTML = html;
@@ -261,30 +230,18 @@ class Panel {
         this.source.innerText = raw;
         this.dest.innerText = '...';
 
-        // 获取用户设置的语言
-        chrome.storage.sync.get(['sl', 'tl'], (result: { sl?: Language; tl?: Language }) => {
-            if (result.sl) {
-                slValue = result.sl.value;
-                this.container.querySelector('.source .title')!.innerText = result.sl.key;
-            }
-            if (result.tl) {
-                tlValue = result.tl.value;
-                this.container.querySelector('.dest .title')!.innerText = result.tl.key;
-            }
 
-            // 调用谷歌翻译接口
-            fetch(
-                `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${slValue}&tl=${tlValue}&dt=t&q=${encodeURIComponent(raw)}`
-            )
-                .then((res) => res.json())
-                .then((res: any[]) => {
-                    this.dest.innerText = res[0][0][0];
-                })
-                .catch((err) => {
-                    console.error('翻译失败:', err);
-                    this.dest.innerText = '翻译失败';
-                });
-        });
+        fetch(
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${slValue}&tl=${tlValue}&dt=t&q=${encodeURIComponent(raw)}`
+        )
+            .then((res) => res.json())
+            .then((res: any[]) => {
+                this.dest.innerText = res[0][0][0];
+            })
+            .catch((err) => {
+                console.error('翻译失败:', err);
+                this.dest.innerText = '翻译失败';
+            });
     }
 
     // 设置翻译面板的位置
@@ -295,33 +252,41 @@ class Panel {
 }
 
 // 实例化翻译面板
-const panel = new Panel();
 
-// 监听鼠标释放事件
-window.onmouseup = (e: MouseEvent): void => {
-    if (selectState === 'off') return;
 
-    // 获取选中的文本
-    const raw = window.getSelection()?.toString().trim();
-    if (!raw) return;
 
-    // 获取鼠标位置
-    const x = e.pageX;
-    const y = e.pageY;
-
-    // 设置翻译面板位置并显示
-    panel.pos({ x, y });
-    panel.translate(raw);
-    panel.show();
-};
-
-export class LineTranslatePluginOptions {
-	constructor(
-		public contentSelector: string = "#game_area_description",
-	) {
-	}
+export class SelectionTranslatePluginOptions {
 }
 
-export class LineTranslate implements IPlugin {
+export class SelectionTranslate implements IPlugin {
+
+    name(): string {
+        return "selection-translate"
+    }
+
+    init(): void {
+        // 创建翻译面板
+        defineSelectionTranslatePanelWc()
+
+        const panel = new Panel();
+
+
+        // 监听鼠标释放事件
+        window.onmouseup = (e: MouseEvent): void => {
+            // 获取选中的文本
+            const raw = window.getSelection()?.toString().trim();
+            if (!raw) return;
+
+            // 获取鼠标位置
+            const x = e.pageX;
+            const y = e.pageY;
+
+            // 设置翻译面板位置并显示
+            panel.pos({ x, y });
+            panel.translate(raw);
+            panel.show();
+        };
+
+    }
 
 }
