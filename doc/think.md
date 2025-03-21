@@ -257,8 +257,6 @@ https://www.cnblogs.com/stulzq/p/6121576.html
 
 3.21 - 3.30
 1. 增加促销节点(P1)：https://zhuanlan.zhihu.com/p/24066556600 3.23
-2. 增加游戏介绍翻译 3.23
-3. 修改target弹窗跳出的问题: 将该网站所有的a标签都调整成target="_self" 3.23
 制作视频、发布 3.30
 
 路由器 视频录制：
