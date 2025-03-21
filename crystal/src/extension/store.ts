@@ -1,9 +1,9 @@
 import { StoreGamePanelPluginOptions, StoreGamePanelPlugin } from "./plugin/game-panel";
-import { TranslatePluginOptions, TranslatePlugin } from "./plugin/translate.ts";
+import { BlockTranslatePluginOptions, BlockTranslatePlugin } from "./plugin/block-translate.ts";
 
 export type StoreExtensionOptions = {
     gamePanel: StoreGamePanelPluginOptions | null,
-    translate: TranslatePluginOptions  | null
+    blockTranslate: BlockTranslatePluginOptions  | null
 }
 
 export class StoreExtension {
@@ -41,8 +41,8 @@ export class StoreExtension {
             const storeGamePanel = new StoreGamePanelPlugin(this.options.gamePanel)
             storeGamePanel.init()
         }
-        if (this.options.translate) {
-            const translate = new TranslatePlugin(this.options.translate)
+        if (this.options.blockTranslate) {
+            const translate = new BlockTranslatePlugin(this.options.blockTranslate)
             translate.init()
         }
 

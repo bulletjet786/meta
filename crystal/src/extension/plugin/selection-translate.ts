@@ -1,5 +1,5 @@
 import { IPlugin } from "./plugin";
-import {defineSelectionTranslatePanelWc} from "../../components/CrystalSelectionTranslatePanel.tsx";
+import {CrystalSelectionTranslatePanelWcName, defineSelectionTranslatePanelWc} from "../../components/CrystalSelectionTranslatePanel.tsx";
 
 //该文件的代码是应用在网页页面上的，比如在页面上对文字的点击，选中网页上的文字等事件，如果这个文件里有写相应的事件，该文件里的代码则会被触发
 
@@ -163,96 +163,7 @@ window.onmouseup = function (e) {
     }
 }
 
-// 定义接口
-interface Language {
-    key: string; // 语言名称（如 "英语"）
-    value: string; // 语言代码（如 "en"）
-}
-
-interface Pos {
-    x: number; // 鼠标位置 X
-    y: number; // 鼠标位置 Y
-}
-
-// 翻译面板类
-class Panel {
-    private container: HTMLElement;
-    private close: HTMLElement;
-    private source: HTMLElement;
-    private dest: HTMLElement;
-
-    constructor() {
-        this.create();
-        this.bind();
-    }
-
-    // 创建翻译面板
-    private create(): void {
-        const container = document.createElement('div');
-        const html = `
-            <main>
-                <div class="content">...</div>
-            </main>
-        `;
-        container.innerHTML = html;
-        container.classList.add('translate-panel');
-        document.body.appendChild(container);
-
-        this.container = container;
-        this.close = container.querySelector('.close')!;
-        this.source = container.querySelector('.source .content')!;
-        this.dest = container.querySelector('.dest .content')!;
-    }
-
-    // 显示翻译面板
-    public show(): void {
-        this.container.classList.add('show');
-    }
-
-    // 隐藏翻译面板
-    public hide(): void {
-        this.container.classList.remove('show');
-    }
-
-    // 绑定事件
-    private bind(): void {
-        this.close.onclick = () => {
-            this.hide();
-        };
-    }
-
-    // 翻译功能
-    public translate(raw: string): void {
-        let slValue: string = 'en'; // 默认源语言
-        let tlValue: string = 'zh-Hans'; // 默认目标语言
-
-        // 设置翻译前的内容
-        this.source.innerText = raw;
-        this.dest.innerText = '...';
-
-
-        fetch(
-            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${slValue}&tl=${tlValue}&dt=t&q=${encodeURIComponent(raw)}`
-        )
-            .then((res) => res.json())
-            .then((res: any[]) => {
-                this.dest.innerText = res[0][0][0];
-            })
-            .catch((err) => {
-                console.error('翻译失败:', err);
-                this.dest.innerText = '翻译失败';
-            });
-    }
-
-    // 设置翻译面板的位置
-    public pos(pos: Pos): void {
-        this.container.style.top = `${pos.y}px`;
-        this.container.style.left = `${pos.x}px`;
-    }
-}
-
 // 实例化翻译面板
-
 
 
 export class SelectionTranslatePluginOptions {
@@ -265,28 +176,12 @@ export class SelectionTranslate implements IPlugin {
     }
 
     init(): void {
-        // 创建翻译面板
+        // 创建划词翻译面板
         defineSelectionTranslatePanelWc()
 
-        const panel = new Panel();
-
-
-        // 监听鼠标释放事件
-        window.onmouseup = (e: MouseEvent): void => {
-            // 获取选中的文本
-            const raw = window.getSelection()?.toString().trim();
-            if (!raw) return;
-
-            // 获取鼠标位置
-            const x = e.pageX;
-            const y = e.pageY;
-
-            // 设置翻译面板位置并显示
-            panel.pos({ x, y });
-            panel.translate(raw);
-            panel.show();
-        };
-
+        const selectionTranslatePanel = document.createElement(CrystalSelectionTranslatePanelWcName);
+        document.body.appendChild(selectionTranslatePanel);
+        console.log("Selection translate panel inject finished.")
     }
 
 }

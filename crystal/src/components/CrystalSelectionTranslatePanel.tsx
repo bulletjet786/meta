@@ -1,81 +1,107 @@
 // store.ts
-import create from 'zustand';
+import {create} from "zustand/react";
 import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
-import CrystalGamePanel from "./CrystalGamePanel.tsx";
+import { useEffect } from "react";
+import { Popover, Typography } from "antd";
+import { CloseSquareOutlined, TranslationOutlined } from '@ant-design/icons';
 
-interface TranslationState {
-    isVisible: boolean; // 翻译面板是否可见
-    setIsVisible: (visible: boolean) => void;
-
-    position: { x: number; y: number }; // 翻译面板位置
-    setPosition: (pos: { x: number; y: number }) => void;
-
-    sourceText: string; // 源文本
-    setSourceText: (text: string) => void;
-
-    translatedText: string; // 翻译后的文本
-    setTranslatedText: (text: string) => void;
-
-    languages: { sl: { key: string; value: string }; tl: { key: string; value: string } }; // 语言设置
-    setLanguages: (languages: { sl: { key: string; value: string }; tl: { key: string; value: string } }) => void;
+enum PanelState {
+    Hide,        // 隐藏状态
+    Selected,    // 选中文本
+    Translated,  // 翻译状态
 }
 
-export const useTranslationStore = create<TranslationState>((set) => ({
+interface Pos {
+    x: number; // 鼠标位置 X
+    y: number; // 鼠标位置 Y
+}
 
-    isVisible: false,
-    setIsVisible: (visible) => set({ isVisible: visible }),
+interface SelectionTranslationPanelState {
+    state: PanelState
+    fromText: string,
+    toText: string,
+    pos: Pos | null,
+    select: (pos: Pos, fromText: string) => void,
+    translate: () => void,
+    close: () => void,
+ }
 
-    position: { x: 0, y: 0 },
-    setPosition: (pos) => set({ position: pos }),
-
-    sourceText: '',
-    setSourceText: (text) => set({ sourceText: text }),
-
-    translatedText: '...',
-    setTranslatedText: (text) => set({ translatedText: text }),
-
-    languages: {
-        sl: { key: '英语', value: 'en' },
-        tl: { key: '简体中文', value: 'zh-Hans' },
-    },
-    setLanguages: (languages) => set({ languages }),
-}));
+export const useSelectionTranslationPanelStore = create<SelectionTranslationPanelState>(
+    (set) => ({
+        state: PanelState.Hide,
+        fromText: "",
+        toText: "...",
+        pos: null,
+        select: (pos: Pos, fromText: string) => {
+            set({ state: PanelState.Selected, pos: pos, fromText: fromText })
+        },
+        translate: async () => {
+            set({ state: PanelState.Translated })
+            // 获取翻译的结果
+            const result = "翻译结果"
+            set({
+                state: PanelState.Translated,
+                toText: result,
+            })
+        },
+        close: () => {
+            set({ state: PanelState.Hide, fromText: "", toText: "..." })
+        }
+    })
+);
 
 const SelectionTranslationPanel: React.FC = () => {
-    const { isVisible, position, sourceText, translatedText, setIsVisible, languages } = useTranslationStore();
+    const { state, pos, select, toText, translate, close } = useSelectionTranslationPanelStore();
 
-    // 隐藏翻译面板
-    const hidePanel = () => {
-        setIsVisible(false);
-    };
+    useEffect(() => {
+        // 监听鼠标释放事件
+        window.onmouseup = (e: MouseEvent): void => {
+            // 获取选中的文本
+            const raw = window.getSelection()?.toString().trim();
+            if (!raw) return;
 
-    return (
-        <div
-            className={`translate-panel ${isVisible ? 'show' : ''}`}
-            style={{
-                top: position.y,
-                left: position.x,
-            }}
-        >
-            <header>
-                翻译
-                <span className="close" onClick={hidePanel}>
-                    X
-                </span>
-            </header>
-            <main>
-                <div className="source">
-                    <div className="title">{languages.sl.key}</div>
-                    <div className="content">{sourceText}</div>
+            // 获取鼠标位置
+            const pos = {
+                x: e.pageX,
+                y: e.pageY,
+            }
+
+            // 设置翻译面板位置并显示
+            select(pos, raw);
+        };
+    }, [])
+
+
+    switch (state) {
+        case PanelState.Hide:
+            return <div></div>
+        case PanelState.Selected:
+            return (
+                <div style={{ position: 'fixed', top: pos!.y, left: pos!.x }}>
+                    <TranslationOutlined onClick={ () => translate() }/>
                 </div>
-                <div className="dest">
-                    <div className="title">{languages.tl.key}</div>
-                    <div className="content">{translatedText}</div>
+            )
+        case PanelState.Translated:
+            const content = (
+                <div>
+                    <CloseSquareOutlined onClick={ () => close() }/>
+                    <Typography.Text>${toText}</Typography.Text>
                 </div>
-            </main>
-        </div>
-    );
+            )
+
+            return (
+                <div style={{ position: 'fixed', top: pos!.y, left: pos!.x }}>
+                    <Popover
+                        content={ content }
+                        open={true}
+                    >
+                        {/* 占位元素 */}
+                        <div style={{ height: '100vh' }} />
+                    </Popover>
+                </div>
+            )
+    }
 };
 
 export default SelectionTranslationPanel;

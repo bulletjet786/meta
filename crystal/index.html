@@ -26,7 +26,7 @@
       async function _crystalImport() {
         try {
           const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha12/crystal.es.js");
-          crystal.run({"gamePanel": {"useDebugAppId": 292030, "enableHistoryPriceCharts": true}, "translate": {"content-selector": "#game_area_description"}});
+          crystal.run({"gamePanel": {"useDebugAppId": 292030}, "blockTranslate": {"contentSelector": "#game_area_description"}});
         } catch (error) {
           console.error('Dynamic import is not supported:', error);
         }
