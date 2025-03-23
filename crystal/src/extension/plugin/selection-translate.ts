@@ -15,6 +15,7 @@ import {CrystalSelectionTranslatePanelWcName, defineSelectionTranslatePanelWc} f
 */
 
 // 写一个翻译面板的构造函数，可以通过它new一个翻译面板实例出来
+/*
 function Panel() {
     //实例化panel时，调用create函数（作用：在页面上挂载翻译面板的div元素）
     this.create()
@@ -29,8 +30,8 @@ Panel.prototype.create = function () {
     //创建一个div元素,变量名叫container
     let container = document.createElement('div')
 
-    /*翻译面板的HTML内容 里面class为content的标签内的内容没有写,因为这里面的内容需要后面动态生成后插入,简体中文那里的content写了三个点是
-    是因为那里的翻译后的内容是异步获取的,在真正获取到内容前,把内容都显示成...做一个过渡*/
+    //翻译面板的HTML内容 里面class为content的标签内的内容没有写,因为这里面的内容需要后面动态生成后插入,简体中文那里的content写了三个点是
+    //是因为那里的翻译后的内容是异步获取的,在真正获取到内容前,把内容都显示成...做一个过渡
     let html = `
         <!--X是用来做关闭按钮-->
         <header>翻译<span class="close">X</span></header>
@@ -134,37 +135,7 @@ Panel.prototype.pos = function (pos) {
     //设置翻译面板的left属性
     this.container.style.left = pos.x + 'px'
 }
-
-//实例化一个翻译面板
-let panel = new Panel()
-
-
-//监听鼠标的释放事件
-window.onmouseup = function (e) {
-
-    //获取到用户选中的内容
-    let raw = window.getSelection().toString().trim()
-
-    //获取释放鼠标时，光标在页面上的位置
-    let x = e.pageX
-    let y = e.pageY
-
-    //如果什么内容都没有选择，就不执行下面的，直接返回
-    if (!raw) {
-        return
-    } else {
-        //否则执行下面的内容
-        //设置翻译面板的显示位置
-        panel.pos({x: x, y: y})
-        //翻译选中的内容
-        panel.translate(raw)
-        //把翻译面板在网页中显示出来
-        panel.show()
-    }
-}
-
-// 实例化翻译面板
-
+*/
 
 export class SelectionTranslatePluginOptions {
 }

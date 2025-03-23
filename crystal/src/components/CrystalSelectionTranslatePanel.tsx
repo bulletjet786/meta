@@ -83,17 +83,15 @@ const SelectionTranslationPanel: React.FC = () => {
                 </div>
             )
         case PanelState.Translated:
-            const content = (
-                <div>
-                    <CloseSquareOutlined onClick={ () => close() }/>
-                    <Typography.Text>${toText}</Typography.Text>
-                </div>
-            )
-
             return (
-                <div style={{ position: 'fixed', top: pos!.y, left: pos!.x }}>
+                <div style={{ position: 'fixed', top: pos!.y + 'px', left: pos!.x + 'px' }}>
                     <Popover
-                        content={ content }
+                        content={ (
+                            <div>
+                                <CloseSquareOutlined onClick={ () => close() }/>
+                                <Typography.Text>${toText}</Typography.Text>
+                            </div>
+                        ) }
                         open={true}
                     >
                         {/* 占位元素 */}
