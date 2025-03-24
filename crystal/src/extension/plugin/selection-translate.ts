@@ -141,6 +141,10 @@ export class SelectionTranslatePluginOptions {
 }
 
 export class SelectionTranslate implements IPlugin {
+    constructor(
+        public options: SelectionTranslatePluginOptions
+    ) {
+    }
 
     name(): string {
         return "selection-translate"

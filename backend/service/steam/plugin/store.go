@@ -26,7 +26,7 @@ const (
 	async function _crystalImport() {
 		try {
 			const crystal = await import("{{ .CrystalUrl }}");
-			crystal.run({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "translate": {"contentSelector": "#game_area_description"}});
+			crystal.runStore({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "translate": {"contentSelector": "#game_area_description"}});
 		} catch (error) {
 			console.error('Dynamic import is not supported:', error);
 		}
