@@ -1,4 +1,4 @@
-import { SelectionTranslatePluginOptions, SelectionTranslate } from "./plugin/selection-translate.ts";
+import { SelectionTranslatePluginOptions, SelectionTranslatePlugin } from "./plugin/selection-translate.ts";
 
 export type CommunityExtensionOptions = {
     selectionTranslate: SelectionTranslatePluginOptions  | null
@@ -36,7 +36,7 @@ export class CommunityExtension {
         window.__crystal_injected = true
     
         if (this.options.selectionTranslate) {
-            const translate = new SelectionTranslate(this.options.selectionTranslate)
+            const translate = new SelectionTranslatePlugin(this.options.selectionTranslate)
             translate.init()
         }
 

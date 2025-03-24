@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"log/slog"
+	"meta/backend/service/translate"
 	"os"
 
 	"github.com/wailsapp/wails/v2"
@@ -47,6 +48,11 @@ func main() {
 			wailsStatusSubscriber.RuntimePub,
 		},
 	})
+	translateService, err := translate.NewTranslateService()
+	if err != nil {
+		slog.Error("Translate service init error", "err", err)
+		os.Exit(1)
+	}
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -61,6 +67,7 @@ func main() {
 		Bind: []interface{}{
 			machineService,
 			steamService,
+			translateService,
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start()

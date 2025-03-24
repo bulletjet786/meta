@@ -140,7 +140,7 @@ Panel.prototype.pos = function (pos) {
 export class SelectionTranslatePluginOptions {
 }
 
-export class SelectionTranslate implements IPlugin {
+export class SelectionTranslatePlugin implements IPlugin {
     constructor(
         public options: SelectionTranslatePluginOptions
     ) {

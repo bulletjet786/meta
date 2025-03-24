@@ -1,9 +1,11 @@
 import { StoreGamePanelPluginOptions, StoreGamePanelPlugin } from "./plugin/game-panel";
 import { BlockTranslatePluginOptions, BlockTranslatePlugin } from "./plugin/block-translate.ts";
+import { SelectionTranslatePluginOptions, SelectionTranslatePlugin } from "./plugin/selection-translate.ts";
 
 export type StoreExtensionOptions = {
     gamePanel: StoreGamePanelPluginOptions | null,
-    blockTranslate: BlockTranslatePluginOptions  | null
+    blockTranslate: BlockTranslatePluginOptions  | null,
+    selectionTranslate: SelectionTranslatePluginOptions | null
 }
 
 export class StoreExtension {
@@ -42,8 +44,12 @@ export class StoreExtension {
             storeGamePanel.init()
         }
         if (this.options.blockTranslate) {
-            const translate = new BlockTranslatePlugin(this.options.blockTranslate)
-            translate.init()
+            const blockTranslate = new BlockTranslatePlugin(this.options.blockTranslate)
+            blockTranslate.init()
+        }
+        if (this.options.selectionTranslate) {
+            const selectionTranslate = new SelectionTranslatePlugin(this.options.selectionTranslate)
+            selectionTranslate.init()
         }
 
         console.log("Inject Crystal Store Success")
