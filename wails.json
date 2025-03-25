@@ -9,5 +9,12 @@
   "author": {
     "name": "bulletjet",
     "email": "851234786@qq.com"
+  },
+  "info": {
+    "companyName": "iHappy",
+    "productName": "SteamMeta",
+    "productVersion": "0.0.3",
+    "comments": "Steam伴侣可以增强Steam客户端的体验",
+    "copyright": "Copyright © 2025"
   }
 }

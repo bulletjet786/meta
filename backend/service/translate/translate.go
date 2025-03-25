@@ -9,8 +9,6 @@ import (
 	"resty.dev/v3"
 )
 
-const ()
-
 type TranslateService struct {
 	tencentCloudClient *tmt.Client
 	xiaoNiuClient *resty.Client

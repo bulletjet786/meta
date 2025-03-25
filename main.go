@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"flag"
 	"log/slog"
 	"meta/backend/service/translate"
 	"os"
@@ -24,7 +25,19 @@ var assets embed.FS
 
 const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
+const (
+	AutoStartMode = "autostart"
+	UserRunMode = "user-run"
+)
+
 func main() {
+
+	mode := flag.String("mode", UserRunMode, "启动方式")
+	flag.Parse()
+	windowStartState := options.Normal
+	if mode != nil && *mode == AutoStartMode {
+		windowStartState = options.Minimised
+	}
 
 	// Create an instance of the app structure
 	machineService, err := machine.NewService()
@@ -59,6 +72,7 @@ func main() {
 		Title:  "Steam伴侣",
 		Width:  1280,
 		Height: 800,
+		WindowStartState: windowStartState,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
