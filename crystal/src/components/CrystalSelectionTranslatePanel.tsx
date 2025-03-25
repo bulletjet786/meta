@@ -5,6 +5,7 @@ import {defineWc} from "./utils.ts";
 import { useEffect } from "react";
 import { Popover, Typography } from "antd";
 import { CloseSquareOutlined, TranslationOutlined } from '@ant-design/icons';
+import { translateClient } from "../client/translate.ts";
 
 enum PanelState {
     Hide,        // 隐藏状态
@@ -28,7 +29,7 @@ interface SelectionTranslationPanelState {
  }
 
 export const useSelectionTranslationPanelStore = create<SelectionTranslationPanelState>(
-    (set) => ({
+    (set, get) => ({
         state: PanelState.Hide,
         fromText: "",
         toText: "...",
@@ -39,7 +40,10 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
         translate: async () => {
             set({ state: PanelState.Translated })
             // 获取翻译的结果
-            const result = "翻译结果"
+            let result = await translateClient.translate(get().fromText)
+            if (result == null) {
+                result = "翻译出错啦..."
+            }
             set({
                 state: PanelState.Translated,
                 toText: result,
@@ -70,8 +74,12 @@ const SelectionTranslationPanel: React.FC = () => {
             // 设置翻译面板位置并显示
             select(pos, raw);
         };
+        window.onmousedown = (e: MouseEvent): void => {
+            if (state == PanelState.Selected) {
+                close();
+            }
+        }
     }, [])
-
 
     switch (state) {
         case PanelState.Hide:
