@@ -1,6 +1,7 @@
 export class TranslateClient {
 
-    apiBase: string = "https://api.niutrans.com";
+    // apiBase: string = "https://api.niutrans.com";
+    apiBase: string = "https://p.deckz.fun";
     apiKey: string = "c0e5379394438203aabc9bd8dea9212e";
 
     constructor() {}
@@ -10,29 +11,32 @@ export class TranslateClient {
             'from': "en",
             "to": "zh",
             "apikey": this.apiKey,
-            'srcText': fromText
+            'src_text': fromText
           }
         const requestOptions = {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify(
                 request
             )
           };
-        const response = await fetch(`${this.apiBase}/NiuTransServer/translation`, requestOptions)
+        const response = await fetch(`${this.apiBase}/translate/NiuTransServer/translation`, requestOptions)
         const translateData: TranslateResponse = await response.json()
-        console.info(`currency rate Response for ${request}: ${JSON.stringify(rateData)}`)
+        console.info(`currency rate Response for ${request}: ${JSON.stringify(translateData)}`)
         
-        if (translateData.errorCode != "") {
+        if (translateData.error_code != null) {
             return null;
         }
-        return translateData.tgtText;
+        return translateData.tgt_text;
     }
 }
 
 export interface TranslateResponse {
-  errorCode: string
-  errorMsg: string
-  tgtText: string
+  error_code: string
+  error_msg: string
+  tgt_text: string
   from: string
   to: string
 }

@@ -26,7 +26,7 @@ const (
 	async function _crystalImport() {
 		try {
 			const crystal = await import("{{ .CrystalUrl }}");
-			crystal.runStore({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "translate": {"contentSelector": "#game_area_description"}});
+			crystal.runStore({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "blockTranslate": {"contentSelector": "#game_area_description"}, "selectionTranslate": {}});
 		} catch (error) {
 			console.error('Dynamic import is not supported:', error);
 		}
@@ -50,7 +50,7 @@ type SteamLowestPriceStorePlugin struct {
 }
 
 const (
-	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.1/crystal.es.js"
+	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.2.alpha1/crystal.es.js"
 )
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {

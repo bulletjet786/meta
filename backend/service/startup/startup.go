@@ -1,7 +1,7 @@
 package startup
 
 import (
-	"flag"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,14 +14,11 @@ const (
 )
 
 type StartUpService struct {
-
 }
 
 func NewStartUpService() (*StartUpService, error) {
-	return &StartUpService{
-	}, nil
+	return &StartUpService{}, nil
 }
-
 
 func (s *StartUpService) Enable() error {
 	// 向注册表中写入启动项
@@ -69,11 +66,13 @@ func (s *StartUpService) Enabled() (bool, error) {
 
 	config := s.metaConfig()
 
-	err := key.QueryValue(config.Name)
+	_, _, err = key.GetStringValue(config.Name)
+	if errors.Is(err, registry.ErrNotExist) {
+		return false, nil
+	}
 	if err != nil {
 		return false, nil
 	}
-
 
 	return true, nil
 }
@@ -82,16 +81,16 @@ func (s *StartUpService) metaConfig() AutostartConfig {
 	exePath, _ := os.Executable()
 	appDir := filepath.Dir(exePath)
 
-	// TODO: exec -d 
+	// TODO: exec -d
 	return AutostartConfig{
 		Name: "meta",
 		Exec: exePath,
 	}
-	
+
 }
 
 type AutostartConfig struct {
-	Name string
-	Exec string
+	Name       string
+	Exec       string
 	WorkingDir string
 }

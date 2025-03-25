@@ -2,8 +2,8 @@
 import {create} from "zustand/react";
 import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
-import { useEffect } from "react";
-import { Popover, Typography } from "antd";
+import React, { useEffect } from "react";
+import {Button, Popover, Typography} from "antd";
 import { CloseSquareOutlined, TranslationOutlined } from '@ant-design/icons';
 import { translateClient } from "../client/translate.ts";
 
@@ -75,9 +75,7 @@ const SelectionTranslationPanel: React.FC = () => {
             select(pos, raw);
         };
         window.onmousedown = (e: MouseEvent): void => {
-            if (state == PanelState.Selected) {
-                close();
-            }
+            close();
         }
     }, [])
 
@@ -87,7 +85,8 @@ const SelectionTranslationPanel: React.FC = () => {
         case PanelState.Selected:
             return (
                 <div style={{ position: 'fixed', top: pos!.y, left: pos!.x }}>
-                    <TranslationOutlined onClick={ () => translate() }/>
+                    <Button color="purple" variant="filled" onClick={ () => translate() }>翻译</Button>
+                    {/*<TranslationOutlined onClick={ () => translate() }/>*/}
                 </div>
             )
         case PanelState.Translated:
@@ -96,8 +95,8 @@ const SelectionTranslationPanel: React.FC = () => {
                     <Popover
                         content={ (
                             <div>
-                                <CloseSquareOutlined onClick={ () => close() }/>
-                                <Typography.Text>${toText}</Typography.Text>
+                                <Typography.Text>{ toText }</Typography.Text>
+                                {/*<CloseSquareOutlined onClick={ () => close() }/>*/}
                             </div>
                         ) }
                         open={true}
