@@ -25,17 +25,12 @@ var assets embed.FS
 
 const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
-const (
-	AutoRunMode = "auto-run"
-	UserRunMode = "user-run"
-)
-
 func main() {
 
-	mode := flag.String("mode", UserRunMode, "启动方式")
+	mode := flag.String("mode", constants.UserRunMode, "启动方式")
 	flag.Parse()
 	windowStartState := options.Normal
-	if mode != nil && *mode == AutoRunMode {
+	if mode != nil && *mode == constants.AutoRunMode {
 		windowStartState = options.Minimised
 	}
 

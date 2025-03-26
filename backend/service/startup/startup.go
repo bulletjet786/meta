@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/sys/windows/registry"
+	"meta/backend/constants"
 	"os"
 )
 
@@ -80,7 +81,7 @@ func (s *Service) metaConfig() AutostartConfig {
 
 	return AutostartConfig{
 		Name: "SteamMeta",
-		Exec: exePath + " --mode autorun",
+		Exec: exePath + " --mode " + constants.AutoRunMode,
 	}
 }
 
