@@ -3,9 +3,11 @@ package startup
 import (
 	"errors"
 	"fmt"
-	"golang.org/x/sys/windows/registry"
-	"meta/backend/constants"
 	"os"
+
+	"meta/backend/constants"
+
+	"golang.org/x/sys/windows/registry"
 )
 
 const (

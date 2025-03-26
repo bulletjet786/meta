@@ -5,16 +5,18 @@ import (
 	"embed"
 	"flag"
 	"log/slog"
-	"meta/backend/service/startup"
 	"os"
 
+	"github.com/energye/systray"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"meta/backend/constants"
 	"meta/backend/service/event"
 	"meta/backend/service/machine"
+	"meta/backend/service/startup"
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
@@ -22,6 +24,9 @@ import (
 
 //go:embed all:frontend/dist
 var assets embed.FS
+
+//go:embed build/windows/icon.ico
+var trayIcon []byte
 
 const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
@@ -34,7 +39,7 @@ func main() {
 		windowStartState = options.Minimised
 	}
 
-	// Create an instance of the app structure
+	trayManager := NewTrayManager()
 	machineService, err := machine.NewService()
 	if err != nil {
 		slog.Error("Machine service init error", "err", err)
@@ -83,6 +88,7 @@ func main() {
 			eventService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
+			trayManager.Start(ctx)
 
 			// Send app start Event: success
 			eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
@@ -107,4 +113,24 @@ func main() {
 		})
 		os.Exit(1)
 	}
+}
+
+
+type TrayManager struct {
+	context context.Context
+}
+
+func NewTrayManager() *TrayManager {
+	return &TrayManager{}
+}
+
+func (t *TrayManager) Start(context context.Context) {
+	t.context = context
+
+	systray.SetIcon(trayIcon)
+	show := systray.AddMenuItem("打开", "")
+	show.Click(func() { wailsruntime.WindowShow(t.context) })
+	systray.AddSeparator()
+	exit := systray.AddMenuItem("退出", "")
+	exit.Click(func() { os.Exit(0) } )
 }
