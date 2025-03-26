@@ -3,26 +3,24 @@ package startup
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
-
 	"golang.org/x/sys/windows/registry"
+	"os"
 )
 
 const (
-	autostartKey = `Software\Microsoft\Windows\CurrentVersion\Run`
+	autorunKey = `Software\Microsoft\Windows\CurrentVersion\Run`
 )
 
-type StartUpService struct {
+type Service struct {
 }
 
-func NewStartUpService() (*StartUpService, error) {
-	return &StartUpService{}, nil
+func NewStartUpService() (*Service, error) {
+	return &Service{}, nil
 }
 
-func (s *StartUpService) Enable() error {
+func (s *Service) Enable() error {
 	// 向注册表中写入启动项
-	key, err := registry.OpenKey(registry.CURRENT_USER, autostartKey, registry.WRITE)
+	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
 		return err
 	}
@@ -39,9 +37,9 @@ func (s *StartUpService) Enable() error {
 	return nil
 }
 
-func (s *StartUpService) Disable() error {
+func (s *Service) Disable() error {
 	// 删除注册表中的启动项
-	key, err := registry.OpenKey(registry.CURRENT_USER, autostartKey, registry.WRITE)
+	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
 		return err
 	}
@@ -57,9 +55,9 @@ func (s *StartUpService) Disable() error {
 	return nil
 }
 
-func (s *StartUpService) Enabled() (bool, error) {
+func (s *Service) Enabled() (bool, error) {
 	// 检查注册表中是否有对应的启动项
-	key, err := registry.OpenKey(registry.CURRENT_USER, autostartKey, registry.WRITE)
+	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
 		return false, err
 	}
@@ -77,16 +75,13 @@ func (s *StartUpService) Enabled() (bool, error) {
 	return true, nil
 }
 
-func (s *StartUpService) metaConfig() AutostartConfig {
+func (s *Service) metaConfig() AutostartConfig {
 	exePath, _ := os.Executable()
-	appDir := filepath.Dir(exePath)
 
-	// TODO: exec -d
 	return AutostartConfig{
-		Name: "meta",
-		Exec: exePath,
+		Name: "SteamMeta",
+		Exec: exePath + " --mode autorun",
 	}
-
 }
 
 type AutostartConfig struct {

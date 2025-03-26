@@ -5,6 +5,7 @@ import (
 	"embed"
 	"flag"
 	"log/slog"
+	"meta/backend/service/startup"
 	"os"
 
 	"github.com/wailsapp/wails/v2"
@@ -25,8 +26,8 @@ var assets embed.FS
 const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 const (
-	AutoStartMode = "autostart"
-	UserRunMode   = "user-run"
+	AutoRunMode = "auto-run"
+	UserRunMode = "user-run"
 )
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	mode := flag.String("mode", UserRunMode, "启动方式")
 	flag.Parse()
 	windowStartState := options.Normal
-	if mode != nil && *mode == AutoStartMode {
+	if mode != nil && *mode == AutoRunMode {
 		windowStartState = options.Minimised
 	}
 
@@ -60,6 +61,11 @@ func main() {
 			wailsStatusSubscriber.RuntimePub,
 		},
 	})
+	startupService, err := startup.NewStartUpService()
+	if err != nil {
+		slog.Error("Startup service init error", "err", err)
+		os.Exit(1)
+	}
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -75,6 +81,7 @@ func main() {
 		Bind: []interface{}{
 			machineService,
 			steamService,
+			startupService,
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start()
