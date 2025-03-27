@@ -39,7 +39,6 @@ func main() {
 		windowStartState = options.Minimised
 	}
 
-	trayManager := NewTrayManager()
 	machineService, err := machine.NewService()
 	if err != nil {
 		slog.Error("Machine service init error", "err", err)
@@ -66,6 +65,7 @@ func main() {
 		slog.Error("Startup service init error", "err", err)
 		os.Exit(1)
 	}
+	trayManager := NewTrayManager(startupService, eventService)
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -93,6 +93,7 @@ func main() {
 			// Send app start Event: success
 			eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 				Success: true,
+				Mode: *mode,
 			})
 		},
 		OnDomReady: func(ctx context.Context) {},
@@ -115,13 +116,18 @@ func main() {
 	}
 }
 
-
 type TrayManager struct {
 	context context.Context
+
+	startupService *startup.Service
+	eventService *event.Service 
 }
 
-func NewTrayManager() *TrayManager {
-	return &TrayManager{}
+func NewTrayManager(startupService *startup.Service, eventService *event.Service) *TrayManager {
+	return &TrayManager{
+		startupService: startupService,
+		eventService: eventService,
+	}
 }
 
 func (t *TrayManager) Start(context context.Context) {
@@ -130,6 +136,38 @@ func (t *TrayManager) Start(context context.Context) {
 	systray.SetIcon(trayIcon)
 	show := systray.AddMenuItem("打开", "")
 	show.Click(func() { wailsruntime.WindowShow(t.context) })
+	autorun := systray.AddMenuItemCheckbox("开机自启", "", t.startupService.Enabled())
+	autorun.Click(func() {
+		if (autorun.Checked()) {
+			if err := t.startupService.Disable(); err != nil {
+				slog.Error("Disable autorun failed", "err", err)
+				t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+					Operate: event.AppAutoRunOperateDisable,
+					Success: false,
+					Reason: err.Error(),
+				})
+			}
+			autorun.Uncheck()
+			t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+				Operate: event.AppAutoRunOperateDisable,
+				Success: true,
+			})
+		} else {
+			if err := t.startupService.Enable(); err != nil {
+				slog.Error("Enable autorun failed", "err", err)
+				t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+					Operate: event.AppAutoRunOperateEnable,
+					Success: false,
+					Reason: err.Error(),
+				})
+			}
+			autorun.Check()
+			t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+				Operate: event.AppAutoRunOperateEnable,
+				Success: true,
+			})
+		}
+	})
 	systray.AddSeparator()
 	exit := systray.AddMenuItem("退出", "")
 	exit.Click(func() { os.Exit(0) } )

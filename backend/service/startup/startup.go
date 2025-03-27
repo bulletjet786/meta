@@ -58,24 +58,24 @@ func (s *Service) Disable() error {
 	return nil
 }
 
-func (s *Service) Enabled() (bool, error) {
+func (s *Service) Enabled() bool {
 	// 检查注册表中是否有对应的启动项
 	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
-		return false, err
+		return false
 	}
 
 	config := s.metaConfig()
 
 	_, _, err = key.GetStringValue(config.Name)
 	if errors.Is(err, registry.ErrNotExist) {
-		return false, nil
+		return false
 	}
 	if err != nil {
-		return false, nil
+		return false
 	}
 
-	return true, nil
+	return true
 }
 
 func (s *Service) metaConfig() AutostartConfig {

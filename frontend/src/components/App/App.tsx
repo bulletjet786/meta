@@ -1,6 +1,6 @@
 import './App.css';
 import SteamConnectionGuide from "../SteamConnectionGuide/SteamConnectionGuide";
-import {ConfigProvider, theme, Typography} from "antd";
+import {ConfigProvider, theme} from "antd";
 
 function App() {
 
@@ -8,9 +8,6 @@ function App() {
         <div id='app' style={{height: '100%', width: '100%'}}>
             <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
                 <SteamConnectionGuide />
-                <div>
-                    <Typography.Title>设置</Typography.Title>
-                </div>
             </ConfigProvider>
         </div>
     )
