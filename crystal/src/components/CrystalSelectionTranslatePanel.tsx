@@ -61,6 +61,7 @@ const SelectionTranslationPanel: React.FC = () => {
     useEffect(() => {
         // 监听鼠标释放事件
         window.onmouseup = (e: MouseEvent): void => {
+            console.debug(`receive mouseup event: ${e}`)
             // 获取选中的文本
             const raw = window.getSelection()?.toString().trim();
             if (!raw) return;
@@ -75,6 +76,7 @@ const SelectionTranslationPanel: React.FC = () => {
             select(pos, raw);
         };
         window.onmousedown = (e: MouseEvent): void => {
+            console.debug(`receive mousedown event: ${e}`)
             close();
         }
     }, [])
