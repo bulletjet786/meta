@@ -50,7 +50,8 @@ type SteamLowestPriceStorePlugin struct {
 }
 
 const (
-	newCrystalUrl = "https://package.hulu.deckz.fun/crystal/0.1.2.alpha1/crystal.es.js"
+	crystalVersion = "dev/0.1.2.alpha3"
+	newCrystalUrl  = "https://package.hulu.deckz.fun/crystal/" + crystalVersion + "/crystal.es.js"
 )
 
 func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {

@@ -4,7 +4,6 @@ import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
 import React, { useEffect } from "react";
 import {Button, Popover, Typography} from "antd";
-import { CloseSquareOutlined, TranslationOutlined } from '@ant-design/icons';
 import { translateClient } from "../client/translate.ts";
 
 enum PanelState {
@@ -61,9 +60,9 @@ const SelectionTranslationPanel: React.FC = () => {
     useEffect(() => {
         // 监听鼠标释放事件
         window.onmouseup = (e: MouseEvent): void => {
-            console.debug(`receive mouseup event: ${e}`)
             // 获取选中的文本
             const raw = window.getSelection()?.toString().trim();
+            console.debug(`receive mouseup event: ${e}, and selected text: ${raw}`)
             if (!raw) return;
 
             // 获取鼠标位置
