@@ -1,13 +1,13 @@
 VERSION=0.0.1
 
-CRYSTAL_VERSION = dev/0.1.2.alpha3
+CRYSTAL_VERSION = 0.1.3
 
-.PHONY:
-build:
-	cd crystall && pnpm run build:crystal
+.PHONY: build_crystal
+build_crystal:
+	cd crystal && pnpm run build:crystal
 
-.PHONY:
-update: build
+.PHONY: update_crystal
+update_crystal: build_crystal
 	qshell fput hulu-package crystal/$(CRYSTAL_VERSION)/crystal.es.js crystal/dist/crystal/crystal.es.js --overwrite
 
 .PHONY:

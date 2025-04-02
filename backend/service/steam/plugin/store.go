@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"html/template"
 	"log/slog"
 	"net/url"
 	"reflect"
 	"strings"
+	"text/template"
+
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/json"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
@@ -16,18 +18,21 @@ import (
 )
 
 const (
-	storeUrlHost    = "store.steampowered.com"
-	CommunityHost  = "steamcommunity.com"
-	XianYuDanJiHost = "www.xianyudanji.net"
-	KKYXHost        = "www.kkyx.net"
-	XbGameHost      = "www.xbgame.net"
+	storeHost       = "store.steampowered.com"
+	communityHost   = "steamcommunity.com"
+	xianYuDanJiHost = "www.xianyudanji.net"
+	kkyxHost        = "www.kkyx.net"
+	xbGameHost      = "www.xbgame.net"
+
+	extensionCommunity = "community"
+	extensionStore     = "store"
 
 	storeAppUrlPrefix          = "/app/"
 	crystalStoreJsCodeTemplate = `
 	async function _crystalImport() {
 		try {
 			const crystal = await import("{{ .CrystalUrl }}");
-			crystal.runStore({"gamePanel": {"useDebugAppId": null, "enableHistoryPriceCharts": true}, "blockTranslate": {"contentSelector": "#game_area_description"}, "selectionTranslate": {}});
+			crystal.run("{{ .Extension }}", {{ .Options }});
 		} catch (error) {
 			console.error('Dynamic import is not supported:', error);
 		}
@@ -44,39 +49,31 @@ const (
 
 type lowestJsCodeTemplateValue struct {
 	CrystalUrl string
+	Extension  string
+	Options    string
 }
 
-type SteamLowestPriceStorePlugin struct {
-	lowestJsCode string
+type SteamExtensionInjector struct {
 }
 
 const (
-	crystalVersion = "dev/0.1.2.alpha3"
-	newCrystalUrl  = "https://package.hulu.deckz.fun/crystal/" + crystalVersion + "/crystal.es.js"
+	crystalVersion = "0.1.3"
+	crystalUrl     = "https://package.hulu.deckz.fun/crystal/" + crystalVersion + "/crystal.es.js"
 )
 
-func NewSteamLowestPriceStorePlugin() *SteamLowestPriceStorePlugin {
-	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(crystalStoreJsCodeTemplate)
-	var buf bytes.Buffer
-	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
-		CrystalUrl: newCrystalUrl,
-	})
-	lowestJsCode := buf.String()
-
-	return &SteamLowestPriceStorePlugin{
-		lowestJsCode: lowestJsCode,
-	}
+func NewSteamLowestPriceStorePlugin() *SteamExtensionInjector {
+	return &SteamExtensionInjector{}
 }
 
-func (p *SteamLowestPriceStorePlugin) Name() string {
+func (p *SteamExtensionInjector) Name() string {
 	return "LowestPriceStorePlugin"
 }
 
-func (p *SteamLowestPriceStorePlugin) Init() error {
+func (p *SteamExtensionInjector) Init() error {
 	return nil
 }
 
-func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
+func (p *SteamExtensionInjector) Run(chromeCtx context.Context) {
 	// just install listener to watch new target creation events
 	// when chromeCtx cancelled, listening will exit
 	chromedp.ListenTarget(chromeCtx, func(ev interface{}) {
@@ -92,22 +89,22 @@ func (p *SteamLowestPriceStorePlugin) Run(chromeCtx context.Context) {
 	})
 }
 
-func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context, targetInfo *target.Info) {
+func (p *SteamExtensionInjector) injectLowestPricePanel(ctx context.Context, targetInfo *target.Info) {
 	go func() {
 		err := func() error {
 			logger := slog.With(ctx, "plugin_name", p.Name())
 			rawurl := targetInfo.URL
 			logger = logger.With("url", rawurl)
-			url, err := p.ParseUrl(rawurl)
+			url, err := p.parseUrl(rawurl)
 			if err != nil {
 				return err
 			}
 
-			storeCtx, _ := chromedp.NewContext(ctx, chromedp.WithTargetID(targetInfo.TargetID))
+			chromeCtx, _ := chromedp.NewContext(ctx, chromedp.WithTargetID(targetInfo.TargetID))
 			// 为指定的页面设置bypass csp
 			switch url.Host {
-			case storeUrlHost, XianYuDanJiHost, KKYXHost, XbGameHost:
-				if err := chromedp.Run(storeCtx,
+			case storeHost, xianYuDanJiHost, kkyxHost, xbGameHost, communityHost:
+				if err := chromedp.Run(chromeCtx,
 					page.SetBypassCSP(true),
 				); err != nil {
 					logger.Error("SetBypassCSP failed", "err", err)
@@ -116,33 +113,85 @@ func (p *SteamLowestPriceStorePlugin) injectLowestPricePanel(ctx context.Context
 				slog.Info("SetBypassCSP success", "id", targetInfo.TargetID, "url", targetInfo.URL)
 			}
 
-			if url.Host == storeUrlHost && strings.HasPrefix(url.Path, storeAppUrlPrefix) {
-				logger.Info("Found store page, try to inject ...")
-				// 注入 Crystal Store 相关的代码
-				if err := chromedp.Run(storeCtx, chromedp.Evaluate(p.lowestJsCode, nil)); err != nil {
-					return err
-				}
-				return nil
-			}
-
 			switch url.Host {
-			case XianYuDanJiHost, KKYXHost, XbGameHost:
-				logger.Info("Found store page, try to inject ...")
+			case storeHost:
+				if err := p.runStoreExtension(chromeCtx, url, logger); err != nil {
+					return err
+				}
+			case communityHost:
+				if err := p.runCommunityExtension(chromeCtx, url, logger); err != nil {
+					return err
+				}
+			case xianYuDanJiHost, kkyxHost, xbGameHost:
 				// 设置所有A标签的target属性为_self
-				if err := chromedp.Run(storeCtx, chromedp.Evaluate(allSelfTarget, nil)); err != nil {
+				if err := chromedp.Run(chromeCtx, chromedp.Evaluate(allSelfTarget, nil)); err != nil {
 					return err
 				}
 			}
-
 			return nil
 		}()
 		if err != nil {
-			slog.Error("Failed to inject lowest price panel", "url", targetInfo.URL, "error", err)
+			slog.Error("Failed to inject", "url", targetInfo.URL, "error", err)
 		}
 	}()
 }
 
-func (p *SteamLowestPriceStorePlugin) ParseUrl(rawurl string) (*url.URL, error) {
+func (p *SteamExtensionInjector) runStoreExtension(chromeCtx context.Context, url *url.URL, logger *slog.Logger) error {
+	if strings.HasPrefix(url.Path, storeAppUrlPrefix) {
+		logger.Info("Found store page, try to inject ...")
+		// 注入 Crystal Store 相关的代码
+		options := StoreExtensionOptions{
+			GamePanel: &StoreGamePanelPluginOptions{
+				UseDebugAppId: nil,
+			},
+			BlockTranslate: &BlockTranslatePluginOptions{
+				ContentSelector: "#game_area_description",
+			},
+			SelectionTranslate: &SelectionTranslatePluginOptions{},
+		}
+		optionsStr, err := json.Marshal(&options)
+		if err != nil {
+			return err
+		}
+		slog.Info("Injected Crystal Store Extension", "options", optionsStr)
+		if err := chromedp.Run(chromeCtx, chromedp.Evaluate(p.injectJsCode(extensionStore, string(optionsStr)), nil)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p *SteamExtensionInjector) runCommunityExtension(chromeCtx context.Context, url *url.URL, logger *slog.Logger) error {
+	// 注入 Crystal Community 相关的代码
+	logger.Info("Found community page, try to inject ...")
+	options := CommunityExtensionOptions{
+		SelectionTranslate: &SelectionTranslatePluginOptions{},
+	}
+	optionsStr, err := json.Marshal(&options)
+	if err != nil {
+		return err
+	}
+	slog.Info("Injected Crystal Store Extension", "options", optionsStr)
+	if err := chromedp.Run(chromeCtx, chromedp.Evaluate(p.injectJsCode(extensionCommunity, string(optionsStr)), nil)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *SteamExtensionInjector) injectJsCode(extension string, options string) string {
+	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(crystalStoreJsCodeTemplate)
+	var buf bytes.Buffer
+	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
+		CrystalUrl: crystalUrl,
+		Extension:  extension,
+		Options:    options,
+	})
+	injectJsCode := buf.String()
+	slog.Info("Inject js code", "code", injectJsCode)
+	return injectJsCode
+}
+
+func (p *SteamExtensionInjector) parseUrl(rawurl string) (*url.URL, error) {
 	// 解析url为URL对象
 	url, err := url.Parse(rawurl)
 	if err != nil {
@@ -150,3 +199,25 @@ func (p *SteamLowestPriceStorePlugin) ParseUrl(rawurl string) (*url.URL, error) 
 	}
 	return url, nil
 }
+
+type CommunityExtensionOptions struct {
+	SelectionTranslate *SelectionTranslatePluginOptions `json:"selectionTranslate"`
+}
+
+type StoreExtensionOptions struct {
+	GamePanel          *StoreGamePanelPluginOptions     `json:"gamePanel"`
+	BlockTranslate     *BlockTranslatePluginOptions     `json:"blockTranslate"`
+	SelectionTranslate *SelectionTranslatePluginOptions `json:"selectionTranslate"`
+}
+
+type StoreGamePanelPluginOptions struct {
+	UseDebugAppId    *string `json:"useDebugAppId"`
+	UseDebugGameName *string `json:"useDebugGameName"`
+	DeviceId         *string `json:"deviceId"`
+}
+
+type BlockTranslatePluginOptions struct {
+	ContentSelector string `json:"contentSelector"`
+}
+
+type SelectionTranslatePluginOptions struct{}

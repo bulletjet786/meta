@@ -2,7 +2,7 @@
 import {create} from "zustand/react";
 import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef} from "react";
 import {Button, Popover, Typography} from "antd";
 import { translateClient } from "../client/translate.ts";
 
@@ -56,7 +56,7 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
 
 const SelectionTranslationPanel: React.FC = () => {
     const { state, pos, select, toText, translate, close } = useSelectionTranslationPanelStore();
-    const panelRef = useRef(null);
+    const panelRef = useRef<HTMLDivElement>(null);
 
     function handleMouseUp(e: MouseEvent) {
         // 获取选中的文本
@@ -78,7 +78,7 @@ const SelectionTranslationPanel: React.FC = () => {
         console.debug(`receive mousedown event: ${e}`)
         if (
             panelRef.current && // 确保 ref 已正确绑定
-            !panelRef.current.contains(e.target)
+            !panelRef.current.contains(e.target as HTMLDivElement)
         ) {
             console.debug("receive mousedown event: ${e} and click outside of panel");
             close();
@@ -107,7 +107,7 @@ const SelectionTranslationPanel: React.FC = () => {
             )
         case PanelState.Translated:
             return (
-                <div ref={panelRef} style={{ position: 'fixed', top: pos!.y + 'px', left: pos!.x + 'px' }}>
+                <div ref={panelRef} style={{ position: 'absolute', top: pos!.y, left: pos!.x, zIndex: 9999 }}>
                     <Popover
                         content={ (
                             <div>
