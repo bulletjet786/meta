@@ -32,6 +32,10 @@ const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 func main() {
 
+	var updater = &selfupdater.Updater{
+		CurrentVersion: version,
+	}
+
 	mode := flag.String("mode", constants.UserRunMode, "启动方式")
 	flag.Parse()
 	windowStartState := options.Normal

@@ -2,7 +2,7 @@
 import {create} from "zustand/react";
 import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {Button, Popover, Typography} from "antd";
 import { translateClient } from "../client/translate.ts";
 
@@ -56,27 +56,42 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
 
 const SelectionTranslationPanel: React.FC = () => {
     const { state, pos, select, toText, translate, close } = useSelectionTranslationPanelStore();
+    const panelRef = useRef(null);
+
+    function handleMouseUp(e: MouseEvent) {
+        // 获取选中的文本
+        const raw = window.getSelection()?.toString().trim();
+        console.debug(`receive mouseup event: ${e}, and selected text: ${raw}`)
+        if (!raw) return;
+
+        // 获取鼠标位置
+        const pos = {
+            x: e.pageX,
+            y: e.pageY,
+        }
+
+        // 设置翻译面板位置并显示
+        select(pos, raw);
+    }
+
+    function handleMouseDown(e: MouseEvent) {
+        console.debug(`receive mousedown event: ${e}`)
+        if (
+            panelRef.current && // 确保 ref 已正确绑定
+            !panelRef.current.contains(e.target)
+        ) {
+            console.debug("receive mousedown event: ${e} and click outside of panel");
+            close();
+        }
+    }
 
     useEffect(() => {
         // 监听鼠标释放事件
-        window.onmouseup = (e: MouseEvent): void => {
-            // 获取选中的文本
-            const raw = window.getSelection()?.toString().trim();
-            console.debug(`receive mouseup event: ${e}, and selected text: ${raw}`)
-            if (!raw) return;
-
-            // 获取鼠标位置
-            const pos = {
-                x: e.pageX,
-                y: e.pageY,
-            }
-
-            // 设置翻译面板位置并显示
-            select(pos, raw);
-        };
-        window.onmousedown = (e: MouseEvent): void => {
-            console.debug(`receive mousedown event: ${e}`)
-            close();
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousedown', handleMouseDown);
+        return () => {
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mousedown', handleMouseDown);
         }
     }, [])
 
@@ -85,14 +100,14 @@ const SelectionTranslationPanel: React.FC = () => {
             return <div></div>
         case PanelState.Selected:
             return (
-                <div style={{ position: 'fixed', top: pos!.y, left: pos!.x }}>
+                <div ref={panelRef} style={{ position: 'absolute', top: pos!.y, left: pos!.x, zIndex: 9999 }}>
                     <Button color="purple" variant="filled" onClick={ () => translate() }>翻译</Button>
                     {/*<TranslationOutlined onClick={ () => translate() }/>*/}
                 </div>
             )
         case PanelState.Translated:
             return (
-                <div style={{ position: 'fixed', top: pos!.y + 'px', left: pos!.x + 'px' }}>
+                <div ref={panelRef} style={{ position: 'fixed', top: pos!.y + 'px', left: pos!.x + 'px' }}>
                     <Popover
                         content={ (
                             <div>

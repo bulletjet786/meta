@@ -17,6 +17,7 @@ import (
 
 const (
 	storeUrlHost    = "store.steampowered.com"
+	CommunityHost  = "steamcommunity.com"
 	XianYuDanJiHost = "www.xianyudanji.net"
 	KKYXHost        = "www.kkyx.net"
 	XbGameHost      = "www.xbgame.net"

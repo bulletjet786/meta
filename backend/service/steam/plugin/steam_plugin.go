@@ -12,4 +12,5 @@ type SteamPlugin interface {
 
 const (
 	SubTypeForStore = "Store"
+	SubTypeForCommunity = "Community"
 )

@@ -1,6 +1,7 @@
 build/bin
 frontend/dist
 frontend/node_modules
+vendor
 
 node_modules
 
