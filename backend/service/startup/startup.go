@@ -32,7 +32,7 @@ func (s *Service) Enable() error {
 	config := s.metaConfig()
 
 	// 为路径添加引号（防止空格路径问题）
-	value := fmt.Sprintf(`"%s"`, config.Exec)
+	value := fmt.Sprintf(`%s`, config.Exec)
 	err = key.SetStringValue(config.Name, value)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (s *Service) Disable() error {
 
 func (s *Service) Enabled() bool {
 	// 检查注册表中是否有对应的启动项
-	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
+	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.READ)
 	if err != nil {
 		return false
 	}
@@ -83,7 +83,7 @@ func (s *Service) metaConfig() AutostartConfig {
 
 	return AutostartConfig{
 		Name: "SteamMeta",
-		Exec: exePath + " --mode " + constants.AutoRunMode,
+		Exec: "\"" + exePath + "\"" + " --mode " + constants.AutoRunMode,
 	}
 }
 
