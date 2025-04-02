@@ -28,8 +28,6 @@ func (s *TranslateService) Translate(text string) (string, error) {
 }
 
 func (s *TranslateService) translateForTencentCloud(text string) (string, error) {
-
-    // 实例化一个请求对象,每个接口都会对应一个request对象
     request := tmt.NewTextTranslateRequest()
 	request.ProjectId = &integration.ProjectId
 
@@ -38,7 +36,6 @@ func (s *TranslateService) translateForTencentCloud(text string) (string, error)
 	request.Source = &source
 	target := "zh"
 	request.Target = &target
-    // 返回的resp是一个TextTranslateResponse的实例，与请求对象对应
     response, err := s.tencentCloudClient.TextTranslate(request)
     if err != nil {
 		slog.Error("translate failed", "request", request, "err", err)
@@ -48,7 +45,6 @@ func (s *TranslateService) translateForTencentCloud(text string) (string, error)
 }
 
 func (s *TranslateService) translateForXiaoNiu(text string) (string, error) {
-
 	request := XiaoNiuTranslateRequest{
 		From: "en",
 		To: "zh",
