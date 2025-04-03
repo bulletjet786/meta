@@ -253,7 +253,6 @@ https://www.cnblogs.com/stulzq/p/6121576.html
 
 先发布看看。
 
-
 1. 划词翻译 4.10
 
 制作视频、发布 4.15
@@ -274,6 +273,7 @@ https://www.cnblogs.com/stulzq/p/6121576.html
 5. 录制视频、发布 3.30
 6. 自定义配置区域（所有账号关联区域）
 7. 微信Pusher + IsThereAnyDeal 价格推送
+增加跳转到 SteamDBInfo 的按钮，BrowserOpenURL(url string)。
 
 0. 增加天翼网盘的唤起链接
 1. 小红书发布
