@@ -39,8 +39,10 @@ func main() {
 	mode := flag.String("mode", constants.UserRunMode, "启动方式")
 	flag.Parse()
 	windowStartState := options.Normal
+	startHidden := false
 	if mode != nil && *mode == constants.AutoRunMode {
 		windowStartState = options.Minimised
+		startHidden = true
 	}
 
 	machineService, err := machine.NewService()
@@ -77,11 +79,12 @@ func main() {
 		Width:             1280,
 		Height:            800,
 		WindowStartState:  windowStartState,
+		StartHidden:       startHidden,
 		HideWindowOnClose: true,
+		DisableResize:     true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		DisableResize:    true,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		Bind: []interface{}{
 			machineService,
