@@ -75,7 +75,7 @@ const SteamConnectionGuide = () => {
                 <div>
                     <p>2. 重新Steam客户端，耐心等待大约30秒，连接成功后，您将看到上方状态变为 运行中。</p>
                 </div>
-                <Paragraph strong>加入QQ群：993904755</Paragraph>
+                <Paragraph strong>加入QQ群：1044717281</Paragraph>
             </Card>
             <></>
         </>

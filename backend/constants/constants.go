@@ -11,3 +11,8 @@ const (
 const (
 	EventForStatusChange = "steam.connection.status"
 )
+
+const (
+	AutoRunMode = "auto-run"
+	UserRunMode = "user-run"
+)

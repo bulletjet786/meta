@@ -8,12 +8,12 @@ type CrystalTranslateControllerProps = {
     contentSelector: string,
 }
 
-interface TranslateState {
+interface BlockTranslateState {
   enabled: boolean,
   translate: (contentSelector: string) => void
 }
 
-const useTranslateStore = create<TranslateState>()(
+const useTranslateStore = create<BlockTranslateState>()(
   (set) => ({
     enabled: true,
     translate: (contentSelector: string) => {
@@ -26,7 +26,7 @@ const useTranslateStore = create<TranslateState>()(
   })
 )
   
-const CrystalTranslateController: React.FC<CrystalTranslateControllerProps> = (props: CrystalTranslateControllerProps) => {
+const CrystalBlockTranslateController: React.FC<CrystalTranslateControllerProps> = (props: CrystalTranslateControllerProps) => {
   
   const enabled = useTranslateStore(state => state.enabled)
   const translate = useTranslateStore(state => state.translate)
@@ -45,11 +45,11 @@ const CrystalTranslateController: React.FC<CrystalTranslateControllerProps> = (p
     )
 };
   
-export default CrystalTranslateController;
+export default CrystalBlockTranslateController;
 
-export const CrystalTranslateControllerName = "crystal-translate-controller"
+export const CrystalBlockTranslateControllerWcName = "crystal-block-translate-controller"
 
-export const CrystalTranslateControllerWc = r2wc(CrystalTranslateController, {
+export const CrystalTranslateControllerWc = r2wc(CrystalBlockTranslateController, {
     props: {
         contentSelector: "string"
     },
@@ -59,7 +59,7 @@ export const CrystalTranslateControllerWc = r2wc(CrystalTranslateController, {
 })
 
 export function defineCrystalTranslateControllerWc() {
-    defineWc(CrystalTranslateControllerName, CrystalTranslateControllerWc)
+    defineWc(CrystalBlockTranslateControllerWcName, CrystalTranslateControllerWc)
 }
 
 declare const window: {

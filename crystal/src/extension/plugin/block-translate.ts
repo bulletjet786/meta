@@ -1,21 +1,21 @@
-import { IPlugin } from "./plugin";
-import { defineCrystalTranslateControllerWc } from "../../components/CrystalTranslateController.tsx";
+import { IPlugin } from "./plugin.ts";
+import { CrystalBlockTranslateControllerWcName, defineCrystalTranslateControllerWc } from "../../components/CrystalBlockTranslateController.tsx";
 
-export class TranslatePluginOptions {
+export class BlockTranslatePluginOptions {
 	constructor(
 		public contentSelector: string = "#game_area_description",
 	) {
 	}
 }
 
-export class TranslatePlugin implements IPlugin {
+export class BlockTranslatePlugin implements IPlugin {
 
     constructor(
-        public options: TranslatePluginOptions
+        public options: BlockTranslatePluginOptions
     ) {}
 
 	name(): string {
-		return "translate";
+		return "block-translate";
 	}
 
 	init(): void {
@@ -41,7 +41,7 @@ export class TranslatePlugin implements IPlugin {
 			console.log("Translate script load finished.")
 			// 加载翻译器控制组件
 			defineCrystalTranslateControllerWc()
-			const translateController = document.createElement('crystal-translate-controller');
+			const translateController = document.createElement(CrystalBlockTranslateControllerWcName);
 			translateController.setAttribute('content-selector', options.contentSelector)
 			const injectPoint = document.querySelector("#game_area_description > h2")
 			if (injectPoint == null) {
