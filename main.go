@@ -139,7 +139,7 @@ func NewTrayManager(startupService *startup.Service, eventService *event.Service
 func (t *TrayManager) Start(context context.Context) {
 	t.context = context
 
-	systray.Run(t.configTray, func() {})
+	go systray.Run(t.configTray, func() {})
 }
 
 func (t *TrayManager) configTray() {
