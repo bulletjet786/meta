@@ -36,18 +36,20 @@ func NewService(options ServiceOptions) (*Service, error) {
 func (s *Service) Start() {}
 
 func (s *Service) Send(eType string, subType string, payload any) {
-	event := event{
-		DeviceId:  s.options.DeviceId,
-		LaunchId:  s.options.LaunchId,
-		Type:      eType,
-		SubType:   subType,
-		Payload:   payload,
-		CreatedAt: time.Now(),
-	}
-	_, _, err := s.client.From("event").Insert(event, false, "", "", "").Execute()
-	if err != nil {
-		slog.Warn("Send event failed", "err", err)
-	}
+	go func () {
+		event := event{
+			DeviceId:  s.options.DeviceId,
+			LaunchId:  s.options.LaunchId,
+			Type:      eType,
+			SubType:   subType,
+			Payload:   payload,
+			CreatedAt: time.Now(),
+		}
+		_, _, err := s.client.From("event").Insert(event, false, "", "", "").Execute()
+		if err != nil {
+			slog.Warn("Send event failed", "err", err)
+		}
+	}()
 }
 
 type event struct {
