@@ -1,4 +1,4 @@
-VERSION=0.0.1
+VERSION=0.0.3
 
 CRYSTAL_VERSION = 0.1.3
 
@@ -11,12 +11,8 @@ update_crystal: build_crystal
 	qshell fput hulu-package crystal/$(CRYSTAL_VERSION)/crystal.es.js crystal/dist/crystal/crystal.es.js --overwrite
 
 .PHONY:
-gen_pb:
+gen_pb: gen_pb
 	buf dep update
 	buf generate
-
-.PHONY:
-clean_pb:
-	rm -rf ./proto/gen/*
 
 .PHONY:
