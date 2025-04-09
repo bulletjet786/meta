@@ -24,7 +24,6 @@ func NewTranslateService() (*TranslateService, error) {
 
 func (s *TranslateService) Translate(text string) (string, error) {
 	return s.translateForXiaoNiu(text)
-	
 }
 
 func (s *TranslateService) translateForTencentCloud(text string) (string, error) {
@@ -46,7 +45,7 @@ func (s *TranslateService) translateForTencentCloud(text string) (string, error)
 
 func (s *TranslateService) translateForXiaoNiu(text string) (string, error) {
 	request := XiaoNiuTranslateRequest{
-		From: "en",
+		From: "auto",
 		To: "zh",
 		ApiKey: integration.XiaoNiuApiKey,
 		SrcText: text,
