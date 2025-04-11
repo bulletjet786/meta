@@ -50,6 +50,10 @@ func main() {
 		slog.Error("Machine service init error", "err", err)
 		os.Exit(1)
 	}
+
+	updaterService, err := updater.NewUpdaterService()
+	updaterService.Start()
+
 	eventService, err := event.NewService(event.ServiceOptions{
 		DeviceId: machineService.GetMachineInfo().DeviceId,
 		LaunchId: machineService.GetMachineInfo().LaunchId,
@@ -58,6 +62,7 @@ func main() {
 		slog.Error("Event service init error", "err", err)
 		os.Exit(1)
 	}
+
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 	steamService := steam.NewService(steam.ServiceOptions{
 		RemoteUrl: defaultRemoteDebuggingUrl,

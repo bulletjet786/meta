@@ -9,7 +9,17 @@
 
 ## L1: 支持自动更新
 
-使用域名：dl.meta.deckz.fun/
+使用 腾讯云+CDN 的存储
+使用域名：https://dl.deckz.fun/
+
+目录规划（bucket download）：
+存储二进制和安装包资源
+
+/crystal 存放crystal资源
+/public 存放公共资源
+
+Url规划：
+ApiUrl: https://joincyfzsuvolyklirho.supabase.co/functions/v1/version/latest
 
 ## L2: 迁移到自动更新的API
 
