@@ -2,6 +2,8 @@ VERSION=0.0.3
 
 CRYSTAL_VERSION = 0.1.3
 
+FC = version
+
 .PHONY: build_crystal
 build_crystal:
 	cd crystal && pnpm run build:crystal
@@ -16,3 +18,9 @@ gen_pb: gen_pb
 	buf generate
 
 .PHONY:
+sp_serve: sp_serve
+	pnpx supabase functions serve
+
+.PHONY:
+sp_deploy: sp_deploy
+	pnpx supabase functions deploy $(FC)

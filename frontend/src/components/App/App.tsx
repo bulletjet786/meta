@@ -1,6 +1,6 @@
 import './App.css';
 import SteamConnectionGuide from "../SteamConnectionGuide/SteamConnectionGuide";
-import {ConfigProvider, Layout, theme} from "antd";
+import {Button, ConfigProvider, Layout, Segmented, theme} from "antd";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -28,11 +28,17 @@ function App() {
     return (
         <div id='app' style={{height: '100%', width: '100%'}}>
             <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
-                <Layout style={layoutStyle}>
-                    <Sider style={siderStyle}>
-                        Sider
+                <Layout style={{height: '100%', width: '100%'}}>
+                    <Sider>
+                        <Segmented
+                            vertical
+                            options={[
+                                { value: 'List', label: <Button>引导</Button> },
+                                { value: 'Kanban',  label: <Button>设置</Button> },
+                            ]}
+                        />
                     </Sider>
-                    <Content style={contentStyle}>
+                    <Content>
                         <SteamConnectionGuide />
                     </Content>
                 </Layout>
