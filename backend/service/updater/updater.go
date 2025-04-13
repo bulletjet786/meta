@@ -1,16 +1,18 @@
 package updater
 
 import (
+	"io"
 	"log/slog"
 
-	"meta/backend/integration"
+	"meta/backend/constants"
 
-	tmt "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tmt/v20180321"
+	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"resty.dev/v3"
 )
 
 const (
-    versionUrl = "https://joincyfzsuvolyklirho.supabase.co/functions/v1/version/latest"
+	versionUrl     = "https://joincyfzsuvolyklirho.supabase.co/functions/v1/version/latest"
+	supabaseApiKey = ""
 
 	// 使用腾讯云存储
 	metaPublicUrl = "https://dl.deckz.fun/"
@@ -20,7 +22,7 @@ type UpdaterService struct {
 	updater *selfupdate.Updater
 }
 
-func NewUpdaterService(deviceId string) (*UpdaterService, error) {
+func NewUpdaterService(deviceId string) *UpdaterService {
 	updater := &selfupdate.Updater{
 		CurrentVersion: constants.Version,
 		ApiURL:         versionUrl,
@@ -29,38 +31,43 @@ func NewUpdaterService(deviceId string) (*UpdaterService, error) {
 		Dir:            "selfupdate/",
 		CmdName:        "meta",
 		ForceCheck:     true,
-		Requester:      NewMetaFetcher(deviceId, constants.VersionUrl),
+		Requester:      newMetaFetcher(deviceId, versionUrl),
 		OnSuccessfulUpdate: func() {
-			slog.Info("Update successful", "from", constants.Version, "to", u.Info.Version)
+			slog.Info("Update successful", "from", constants.Version)
 		},
 	}
 
 	return &UpdaterService{
 		updater: updater,
-	}, nil
+	}
 }
 
 func (s *UpdaterService) Start() {
-	go s.updater.BackgroundRun()
+	go func() {
+		err := s.updater.BackgroundRun()
+		if err != nil {
+			slog.Error("Start update background failed", "err", err)
+		}
+	}()
 }
 
 type metaFetcher struct {
-	deviceId string
+	deviceId   string
 	versionUrl string
 
-	client *resty.Client
+	client         *resty.Client
 	defaultFetcher *selfupdate.HTTPRequester
 }
 
-func NewMetaFetcher(deviceId string, versionUrl string) *metaFetcher {
+func newMetaFetcher(deviceId string, versionUrl string) *metaFetcher {
 	client := resty.New().
 		EnableGenerateCurlCmd().
 		EnableTrace().
 		SetDebugLogFormatter(resty.DebugLogJSONFormatter)
 	return &metaFetcher{
-		deviceId: deviceId,
-		client: client,
-		defaultFetcher: selfupdate.HTTPRequester{},
+		deviceId:       deviceId,
+		client:         client,
+		defaultFetcher: &selfupdate.HTTPRequester{},
 	}
 }
 
@@ -69,24 +76,23 @@ func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
 		return f.defaultFetcher.Fetch(url)
 	}
 
-	// 我们不使用默认的地址，我们使用 Supabase 中定义的地址
 	request := &LatestVersionRequest{
-		DeviceId: f.deviceId,
+		DeviceId:       f.deviceId,
 		CurrentVersion: constants.Version,
 	}
 
 	res, err := f.client.R().
 		SetBody(request).
-		SetResult(response).
 		SetHeader("X-Meta-Channel", constants.Channel).
-		SetDoNotParseResponse().
+		SetDoNotParseResponse(true).
 		Post(versionUrl)
-	
-	return res, err
+	if err != nil {
+		return nil, err
+	}
+	return res.Body, err
 }
 
 type LatestVersionRequest struct {
-	DeviceId string
+	DeviceId       string
 	CurrentVersion string
 }
-

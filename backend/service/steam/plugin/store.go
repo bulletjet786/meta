@@ -142,7 +142,7 @@ func (p *SteamExtensionInjector) runStoreExtension(chromeCtx context.Context, ur
 		// 注入 Crystal Store 相关的代码
 		options := StoreExtensionOptions{
 			GamePanel: &StoreGamePanelPluginOptions{
-				UseDebugAppId: nil,
+				Debug: false,
 			},
 			BlockTranslate: &BlockTranslatePluginOptions{
 				ContentSelector: "#game_area_description",
@@ -211,9 +211,8 @@ type StoreExtensionOptions struct {
 }
 
 type StoreGamePanelPluginOptions struct {
-	UseDebugAppId    *string `json:"useDebugAppId"`
-	UseDebugGameName *string `json:"useDebugGameName"`
-	DeviceId         *string `json:"deviceId"`
+	Debug    bool    `json:"debug"`
+	DeviceId *string `json:"deviceId"`
 }
 
 type BlockTranslatePluginOptions struct {

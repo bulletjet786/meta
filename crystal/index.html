@@ -19,6 +19,7 @@
       <div>A sword's poor company for a long road.</div>
       <div>No-one is promised tomorrow.</div>
       <div>Sleep is for the guiltless.</div>
+      <div>死は風のようにいつも私とともにある</div>
     </div>
     <div id="game_area_purchase" style="width: 616px">
       <h3>挂载点</h3>
@@ -27,7 +28,7 @@
       async function _crystalImport() {
         try {
           const crystal = await import("https://package.hulu.deckz.fun/crystal/0.1.0.alpha12/crystal.es.js");
-          crystal.runStore({"gamePanel": {"useDebugAppId": 292030}, "blockTranslate": {"contentSelector": "#game_area_description"}, "selectionTranslate": {}});
+          crystal.run("store", {"gamePanel": {"debug": true}, "blockTranslate": {"contentSelector": "#game_area_description"}, "selectionTranslate": {}});
         } catch (error) {
           console.error('Dynamic import is not supported:', error);
         }

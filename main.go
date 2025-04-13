@@ -20,6 +20,7 @@ import (
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
+	"meta/backend/service/updater"
 )
 
 //go:embed all:frontend/dist
@@ -46,7 +47,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	updaterService, err := updater.NewUpdaterService()
+	updaterService := updater.NewUpdaterService(machineService.GetMachineInfo().DeviceId)
 	updaterService.Start()
 
 	eventService, err := event.NewService(event.ServiceOptions{
