@@ -4,7 +4,7 @@ import express from 'express';
 
 const ChannelHeader = "x-meta-channel"
 
-interface LatestVersionRequest {
+interface     LatestVersionRequest {
   deviceId: string;
   currentVersion: string;
 }
@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 const port = 3000;
 
-app.post("/version/latest", (req: express.Request, res: express.Response) => {
+app.post("/version/latest/meta/windows-amd64.json", (req: express.Request, res: express.Response) => {
   console.log(`version latest request: ${JSON.stringify(req.body)}, channel: ${req.headers[ChannelHeader]}`);
   let latestVersion: any = null;
   switch (Channel[req.headers[ChannelHeader]]) {

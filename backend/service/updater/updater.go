@@ -3,6 +3,7 @@ package updater
 import (
 	"io"
 	"log/slog"
+	"meta/backend/integration"
 
 	"meta/backend/constants"
 
@@ -11,9 +12,8 @@ import (
 )
 
 const (
-	versionUrl     = "https://joincyfzsuvolyklirho.supabase.co/functions/v1/version/latest"
-	supabaseApiKey = ""
-
+	versionUrl = "/functions/v1/version/latest"
+	cmdName    = "meta"
 	// 使用腾讯云存储
 	metaPublicUrl = "https://dl.deckz.fun/"
 )
@@ -25,13 +25,13 @@ type UpdaterService struct {
 func NewUpdaterService(deviceId string) *UpdaterService {
 	updater := &selfupdate.Updater{
 		CurrentVersion: constants.Version,
-		ApiURL:         versionUrl,
+		ApiURL:         integration.SupabaseApiUrl + versionUrl + "/",
 		BinURL:         metaPublicUrl,
 		DiffURL:        metaPublicUrl,
 		Dir:            "selfupdate/",
-		CmdName:        "meta",
+		CmdName:        cmdName,
 		ForceCheck:     true,
-		Requester:      newMetaFetcher(deviceId, versionUrl),
+		Requester:      newMetaFetcher(deviceId),
 		OnSuccessfulUpdate: func() {
 			slog.Info("Update successful", "from", constants.Version)
 		},
@@ -59,20 +59,27 @@ type metaFetcher struct {
 	defaultFetcher *selfupdate.HTTPRequester
 }
 
-func newMetaFetcher(deviceId string, versionUrl string) *metaFetcher {
+func newMetaFetcher(deviceId string) *metaFetcher {
 	client := resty.New().
 		EnableGenerateCurlCmd().
 		EnableTrace().
-		SetDebugLogFormatter(resty.DebugLogJSONFormatter)
+		SetDebugLogFormatter(resty.DebugLogJSONFormatter).
+		SetDebugLogCurlCmd(true).
+		SetDebug(true)
 	return &metaFetcher{
 		deviceId:       deviceId,
 		client:         client,
 		defaultFetcher: &selfupdate.HTTPRequester{},
+		versionUrl:     versionUrl,
 	}
 }
 
+func (f *metaFetcher) windowsMetaVersionUrl() string {
+	return integration.SupabaseApiUrl + f.versionUrl + "/" + cmdName + "/windows-amd64.json"
+}
+
 func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
-	if f.versionUrl != url {
+	if f.windowsMetaVersionUrl() != url {
 		return f.defaultFetcher.Fetch(url)
 	}
 
@@ -84,15 +91,17 @@ func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
 	res, err := f.client.R().
 		SetBody(request).
 		SetHeader("X-Meta-Channel", constants.Channel).
+		SetAuthToken(integration.SupabaseServiceKey).
 		SetDoNotParseResponse(true).
-		Post(versionUrl)
+		Post(f.windowsMetaVersionUrl())
 	if err != nil {
+		slog.Error("fetch version failed", "curl", res.Request.CurlCmd(), "err", err)
 		return nil, err
 	}
 	return res.Body, err
 }
 
 type LatestVersionRequest struct {
-	DeviceId       string
-	CurrentVersion string
+	DeviceId       string `json:"deviceId"`
+	CurrentVersion string `json:"currentVersion"`
 }

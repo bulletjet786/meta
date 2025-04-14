@@ -45,11 +45,18 @@ sp_deploy:
 
 .PHONY: start
 start:
-	wails dev -s -ldflags "-X backend.Version=$(VERSION) -X backend.Channel=$(Channel)"
+	wails dev -s -ldflags "-X backend.constants.Version=$(VERSION) -X backend.constants.Channel=$(Channel)"
 
 .PHONY: build
 build:
-	wails build -nsis -ldflags "-X backend.Version=$(VERSION) -X backend.Channel=$(Channel)"
+	wails build -nsis -ldflags "-X backend.constants.Version=$(VERSION) -X backend.constants.Channel=$(Channel)"
+
+.PHONY: release
+release: build
+	go-selfupdate -o ./build/bin/selfupdate/ ./build/bin/SteamMeta.exe $(VERSION)
+	coscli.exe -c tool_configs/cos.yaml cp ./build/bin/meta-amd64-installer.exe cos://download-1252010398/meta/$(VERSION)/meta-amd64-installer.exe
+	coscli.exe -c tool_configs/cos.yaml cp ./build/bin/selfupdate/$(VERSION)/windows-amd64.gz cos://download-1252010398/meta/$(VERSION)/windows-amd64.gz
+	coscli.exe -c tool_configs/cos.yaml cp ./build/bin/selfupdate/windows-amd64.json cos://download-1252010398/meta/$(VERSION)/windows-amd64.json
 
 .PHONY: install_tool
 install_tool:
