@@ -1,4 +1,3 @@
-import './App.css';
 import SteamConnectionGuide from "../SteamConnectionGuide/SteamConnectionGuide";
 import {Button, ConfigProvider, Layout, Segmented, theme} from "antd";
 
@@ -28,7 +27,7 @@ function App() {
     return (
         <div id='app' style={{height: '100%', width: '100%'}}>
             <ConfigProvider theme={{algorithm: theme.darkAlgorithm}}>
-                <Layout style={{height: '100%', width: '100%'}}>
+                {/* <Layout style={{height: '100%', width: '100%'}}>
                     <Sider>
                         <Segmented
                             vertical
@@ -41,7 +40,8 @@ function App() {
                     <Content>
                         <SteamConnectionGuide />
                     </Content>
-                </Layout>
+                </Layout> */}
+                <SteamConnectionGuide />
             </ConfigProvider>
         </div>
     )

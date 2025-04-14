@@ -69,7 +69,7 @@ const SteamConnectionGuide = () => {
                 <Paragraph strong>状态：{model.stateDesc}</Paragraph>
                 <Title level={3}>如何连接上Steam</Title>
                 <div>
-                    <p>1. 启动CEF调试：</p>
+                    <p>1. 启动Steam的CEF调试：</p>
                     <Switch checked={cefState} onClick={switchCEFDebuggingButton}/>
                 </div>
                 <div>
