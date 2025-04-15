@@ -12,10 +12,9 @@ ifeq ($(GOHOSTOS), windows)
 	COS_BIN_URL=https://cosbrowser.cloud.tencent.com/software/coscli/coscli-windows-amd64.exe
 endif
 
-ifeq ($(Channel), "Develop")
-	VERSION = $(DEVELOP_VERSION)
-else
-	VERSION = $(RELEASE_VERSION)
+VERSION:=$(RELEASE_VERSION)
+ifeq ($(Channel), Develop)
+	VERSION=$(DEVELOP_VERSION)
 endif
 
 CRYSTAL_VERSION = 0.1.4.alpha1
