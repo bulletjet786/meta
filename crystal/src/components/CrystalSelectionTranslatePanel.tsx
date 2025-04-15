@@ -110,7 +110,7 @@ const SelectionTranslationPanel: React.FC = () => {
                 <div ref={panelRef} style={{ position: 'absolute', top: pos!.y, left: pos!.x, zIndex: 9999 }}>
                     <Popover
                         content={ (
-                            <div>
+                            <div style={{ maxWidth: '400px' }}>
                                 <Typography.Text>{ toText }</Typography.Text>
                                 {/*<CloseSquareOutlined onClick={ () => close() }/>*/}
                             </div>

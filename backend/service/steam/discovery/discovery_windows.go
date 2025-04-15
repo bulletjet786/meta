@@ -4,8 +4,9 @@ package discovery
 
 import (
 	"fmt"
-	registry "golang.org/x/sys/windows/registry"
 	"log/slog"
+
+	registry "golang.org/x/sys/windows/registry"
 )
 
 const (

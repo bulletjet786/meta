@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	apiUrl = "https://crh5nk8g91hjuhhg05pg.baseapi.memfiredb.com"
-	apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiZXhwIjozMzAyOTEwNjczLCJpYXQiOjE3MjYxMTA2NzMsImlzcyI6InN1cGFiYXNlIn0.tjKhMaUfAP6uKXlZFFtw8OKDSBAYkbpkwoKBcj-yaqg"
+	SupabaseApiUrl     = "https://joincyfzsuvolyklirho.supabase.co"
+	anonKey            = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaW5jeWZ6c3V2b2x5a2xpcmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5ODc2MjMsImV4cCI6MjA1NjU2MzYyM30.1MOumBy-Hatxd25iynOUJh2ggIWdZMEzQeUfzV1fsZE"
+	SupabaseServiceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaW5jeWZ6c3V2b2x5a2xpcmhvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDk4NzYyMywiZXhwIjoyMDU2NTYzNjIzfQ.W4WWp_aoFiFSs-7b5pl1Q6ClAHhKR7KYp3BRJyvn8No"
 )
 
 func NewSupabaseClient() (*supabase.Client, error) {
-	client, err := supabase.NewClient(apiUrl, apiKey, &supabase.ClientOptions{
+	client, err := supabase.NewClient(SupabaseApiUrl, SupabaseServiceKey, &supabase.ClientOptions{
 		Schema: "public",
 	})
 	if err != nil {

@@ -1,0 +1,10 @@
+# 获取最终版本
+POST https://joincyfzsuvolyklirho.supabase.co/functions/v1/version/latest/meta/windows-amd64.json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaW5jeWZ6c3V2b2x5a2xpcmhvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDk4NzYyMywiZXhwIjoyMDU2NTYzNjIzfQ.W4WWp_aoFiFSs-7b5pl1Q6ClAHhKR7KYp3BRJyvn8No
+Content-Type: application/json
+X-Meta-Channel: Develop
+
+{
+  "deviceId": "abc",
+  "currentVersion": "0.0.3"
+}

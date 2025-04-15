@@ -20,6 +20,7 @@ import (
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
+	"meta/backend/service/updater"
 )
 
 //go:embed all:frontend/dist
@@ -32,9 +33,7 @@ const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 func main() {
 
-	//var updater = &selfupdater.Updater{
-	//	CurrentVersion: version,
-	//}
+	slog.Info("Start meta", "version", constants.Version, "channel", constants.Channel)
 
 	mode := flag.String("mode", constants.UserRunMode, "启动方式")
 	flag.Parse()
@@ -50,6 +49,10 @@ func main() {
 		slog.Error("Machine service init error", "err", err)
 		os.Exit(1)
 	}
+
+	updaterService := updater.NewUpdaterService(machineService.GetMachineInfo().DeviceId)
+	updaterService.Start()
+
 	eventService, err := event.NewService(event.ServiceOptions{
 		DeviceId: machineService.GetMachineInfo().DeviceId,
 		LaunchId: machineService.GetMachineInfo().LaunchId,
@@ -58,6 +61,7 @@ func main() {
 		slog.Error("Event service init error", "err", err)
 		os.Exit(1)
 	}
+
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 	steamService := steam.NewService(steam.ServiceOptions{
 		RemoteUrl: defaultRemoteDebuggingUrl,
@@ -139,7 +143,7 @@ func NewTrayManager(startupService *startup.Service, eventService *event.Service
 func (t *TrayManager) Start(context context.Context) {
 	t.context = context
 
-	systray.Run(t.configTray, func() {})
+	go systray.Run(t.configTray, func() {})
 }
 
 func (t *TrayManager) configTray() {

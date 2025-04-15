@@ -34,9 +34,6 @@ export class BlockTranslatePlugin implements IPlugin {
 			window.translate.language.setUrlParamControl(); //url参数后可以加get方式传递 language 参数的方式控制当前网页以什么语种显示
 			window.translate.selectLanguageTag.show = false; // 不显示语言选择UI
 
-			// translate.selectionTranslate.start() // 滑词翻译无法和全局翻译同时开启
-			// translate.execute();
-
 			// translate.changeLanguage('chinese_simplified')
 			console.log("Translate script load finished.")
 			// 加载翻译器控制组件
@@ -51,8 +48,6 @@ export class BlockTranslatePlugin implements IPlugin {
 			console.log("Translate controller inject finished.")
 		}
 		document.body.appendChild(script);
-
-
 	}
 }
 

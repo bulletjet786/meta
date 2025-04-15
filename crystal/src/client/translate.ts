@@ -8,7 +8,7 @@ export class TranslateClient {
 
     async translate(fromText: string): Promise<string | null> {
         const request = {
-            'from': "en",
+            'from': "auto",
             "to": "zh",
             "apikey": this.apiKey,
             'src_text': fromText

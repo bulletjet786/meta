@@ -29,7 +29,6 @@ func NewService(options ServiceOptions) *Service {
 }
 
 func (s *Service) Start() {
-
 	s.plugins = []plugin.SteamPlugin{
 		plugin.NewSteamLowestPriceStorePlugin(),
 	}
