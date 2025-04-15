@@ -7,21 +7,17 @@ import {create} from "zustand/react";
 
 const useCEFDebuggingStore = create((set) => ({
     enabled: false,
+    changed: false,
     load: async () => {
         const result = await SteamCEFDebuggingEnabled()
+        if (!result) {
+            await EnableSteamCEFDebugging()
+            const enabledResult = await SteamCEFDebuggingEnabled()
+            const changed = result != enabledResult
+            console.log("load: changed result is ", changed)
+            set(() => ({enabled: result, changed: changed }))
+        }
         console.log("load: enabled result is ", result)
-        set(() => ({enabled: result}))
-    },
-    enableCEFDebugging: async () => {
-        await EnableSteamCEFDebugging()
-        const result = await SteamCEFDebuggingEnabled()
-        console.log("enableCEFDebugging: enabled result is ", result)
-        set(() => ({enabled: result}))
-    },
-    disableCEFDebugging: async () => {
-        await DisableSteamCEFDebugging()
-        const result = await SteamCEFDebuggingEnabled()
-        console.log("DisableSteamCEFDebugging: enabled result is ", result)
         set(() => ({enabled: result}))
     },
 }))

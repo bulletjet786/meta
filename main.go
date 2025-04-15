@@ -15,13 +15,17 @@ import (
 
 	"meta/backend/constants"
 	"meta/backend/service/event"
+	"meta/backend/service/http"
 	"meta/backend/service/machine"
-	"meta/backend/service/startup"
+	"meta/backend/service/setting"
 	"meta/backend/service/steam"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
 	"meta/backend/service/updater"
 )
+
+//go:embed crystal/dist/crystal
+var crystalFs embed.FS
 
 //go:embed all:frontend/dist
 var assets embed.FS
@@ -50,9 +54,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	updaterService := updater.NewUpdaterService(machineService.GetMachineInfo().DeviceId)
-	updaterService.Start()
-
 	eventService, err := event.NewService(event.ServiceOptions{
 		DeviceId: machineService.GetMachineInfo().DeviceId,
 		LaunchId: machineService.GetMachineInfo().LaunchId,
@@ -62,26 +63,40 @@ func main() {
 		os.Exit(1)
 	}
 
+	settingService, err := setting.NewSettingService(setting.ServiceOptions{
+		MachineLanguageTag: machineService.GetMachineInfo().LanguageTag,
+	}, eventService)
+	if err != nil {
+		slog.Error("Setting service init error", "err", err)
+		os.Exit(1)
+	}
+
+	embedHttpServer := http.NewEmbedServer(http.EmbedServerOptions{
+		CrystalFs: &crystalFs,
+	})
+	embedHttpServer.RunServer()
+
+	updaterService := updater.NewUpdaterService(machineService.GetMachineInfo().DeviceId)
+	updaterService.Start()
+
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
 	steamService := steam.NewService(steam.ServiceOptions{
-		RemoteUrl: defaultRemoteDebuggingUrl,
-		Os:        machineService.GetMachineInfo().Os,
+		RemoteUrl:   defaultRemoteDebuggingUrl,
+		MachineInfo: machineService.GetMachineInfo(),
+		GetSettingFunc: func() setting.Setting {
+			return settingService.GetSetting()
+		},
 		Subscriber: []common.StatusSubscriber{
 			wailsStatusSubscriber.RuntimePub,
 		},
 	})
-	startupService, err := startup.NewStartUpService()
-	if err != nil {
-		slog.Error("Startup service init error", "err", err)
-		os.Exit(1)
-	}
-	trayManager := NewTrayManager(startupService, eventService)
+	trayManager := NewTrayManager(eventService)
 
 	// Create application with options
 	err = wails.Run(&options.App{
-		Title:             "Steam伴侣",
-		Width:             1280,
-		Height:            800,
+		Title:             "Steam Meta",
+		Width:             800,
+		Height:            600,
 		WindowStartState:  windowStartState,
 		StartHidden:       startHidden,
 		HideWindowOnClose: true,
@@ -93,7 +108,7 @@ func main() {
 		Bind: []interface{}{
 			machineService,
 			steamService,
-			startupService,
+			settingService,
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start()
@@ -103,8 +118,10 @@ func main() {
 			trayManager.Start(ctx)
 
 			eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
-				Success: true,
-				Mode:    *mode,
+				Success:   true,
+				Version:   constants.Version,
+				MLanguage: machineService.GetMachineInfo().LanguageTag,
+				Mode:      *mode,
 			})
 		},
 		OnDomReady: func(ctx context.Context) {},
@@ -119,8 +136,10 @@ func main() {
 	if err != nil {
 		slog.Error("Wails run error", "err", err)
 		eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
-			Success: false,
-			Reason:  err.Error(),
+			Success:   false,
+			Version:   constants.Version,
+			MLanguage: machineService.GetMachineInfo().LanguageTag,
+			Reason:    err.Error(),
 		})
 		os.Exit(1)
 	}
@@ -129,14 +148,12 @@ func main() {
 type TrayManager struct {
 	context context.Context
 
-	startupService *startup.Service
-	eventService   *event.Service
+	eventService *event.Service
 }
 
-func NewTrayManager(startupService *startup.Service, eventService *event.Service) *TrayManager {
+func NewTrayManager(eventService *event.Service) *TrayManager {
 	return &TrayManager{
-		startupService: startupService,
-		eventService:   eventService,
+		eventService: eventService,
 	}
 }
 
@@ -154,39 +171,6 @@ func (t *TrayManager) configTray() {
 	systray.SetOnDClick(func(menu systray.IMenu) {
 		wailsruntime.WindowShow(t.context)
 	})
-	autorun := systray.AddMenuItemCheckbox("开机自启", "", t.startupService.Enabled())
-	autorun.Click(func() {
-		if autorun.Checked() {
-			if err := t.startupService.Disable(); err != nil {
-				slog.Error("Disable autorun failed", "err", err)
-				t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
-					Operate: event.AppAutoRunOperateDisable,
-					Success: false,
-					Reason:  err.Error(),
-				})
-			}
-			autorun.Uncheck()
-			t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
-				Operate: event.AppAutoRunOperateDisable,
-				Success: true,
-			})
-		} else {
-			if err := t.startupService.Enable(); err != nil {
-				slog.Error("Enable autorun failed", "err", err)
-				t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
-					Operate: event.AppAutoRunOperateEnable,
-					Success: false,
-					Reason:  err.Error(),
-				})
-			}
-			autorun.Check()
-			t.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
-				Operate: event.AppAutoRunOperateEnable,
-				Success: true,
-			})
-		}
-	})
-	systray.AddSeparator()
-	exit := systray.AddMenuItem("退出", "")
+	exit := systray.AddMenuItem("Exit", "")
 	exit.Click(func() { os.Exit(0) })
 }

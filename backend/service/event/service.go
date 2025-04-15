@@ -9,7 +9,9 @@ import (
 	"meta/backend/integration"
 )
 
-const ()
+var (
+	
+)
 
 type Service struct {
 	options ServiceOptions
@@ -59,4 +61,8 @@ type event struct {
 	SubType   string    `json:"sub_type"`
 	Payload   any       `json:"payload"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+func Push() {
+
 }

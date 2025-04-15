@@ -4,23 +4,28 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"encoding/json"
 	"log/slog"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
 	"text/template"
-
-	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/json"
+	"time"
 
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
+
+	"meta/backend/service/http"
+	"meta/backend/service/machine"
+	"meta/backend/service/setting"
 )
 
 const (
 	storeHost       = "store.steampowered.com"
 	communityHost   = "steamcommunity.com"
-	xianYuDanJiHost = "www.xianyudanji.net"
+	xianYuDanJiHost = "www.xianyudanji.ai"
 	kkyxHost        = "www.kkyx.net"
 	xbGameHost      = "www.xbgame.net"
 
@@ -45,6 +50,11 @@ const (
 		link.setAttribute('target', '_self');
 	  });
 	`
+	bypassAgeValidation = `
+	document.cookie = "wants_mature_content=1; domain=store.steampowered.com; path=/; expires=Fri, 01 Jan 9999 00:00:00 UTC; secure";
+	document.cookie = "lastagecheckage=1-January-1995; domain=store.steampowered.com; path=/; expires=Fri, 01 Jan 9999 00:00:00 UTC; secure";
+	document.cookie = "birthtime=788914801; domain=store.steampowered.com; path=/; expires=Fri, 01 Jan 9999 00:00:00 UTC; secure";
+	`
 )
 
 type lowestJsCodeTemplateValue struct {
@@ -54,15 +64,15 @@ type lowestJsCodeTemplateValue struct {
 }
 
 type SteamExtensionInjector struct {
+	machineInfo machine.Info
+	getSetting  func() setting.Setting
 }
 
-const (
-	crystalVersion = "0.1.3"
-	crystalUrl     = "https://package.hulu.deckz.fun/crystal/" + crystalVersion + "/crystal.es.js"
-)
-
-func NewSteamLowestPriceStorePlugin() *SteamExtensionInjector {
-	return &SteamExtensionInjector{}
+func NewSteamExtensionInjector(machineInfo machine.Info, getSettingFunc func() setting.Setting) *SteamExtensionInjector {
+	return &SteamExtensionInjector{
+		machineInfo: machineInfo,
+		getSetting:  getSettingFunc,
+	}
 }
 
 func (p *SteamExtensionInjector) Name() string {
@@ -137,17 +147,29 @@ func (p *SteamExtensionInjector) injectLowestPricePanel(ctx context.Context, tar
 }
 
 func (p *SteamExtensionInjector) runStoreExtension(chromeCtx context.Context, url *url.URL, logger *slog.Logger) error {
+	// 从商店页面进入时，如果是中国大陆地区，我们总是 跳过年龄验证
+	if p.machineInfo.LanguageTag.Language == "zh" && p.machineInfo.LanguageTag.Region == "CN" {
+		if err := chromedp.Run(chromeCtx, chromedp.Evaluate(bypassAgeValidation, nil)); err != nil {
+			logger.Error("BypassAgeValidation failed", "err", err)
+		}
+	}
+
+	// 商店游戏详情页
+	var gamePanel *StoreGamePanelPluginOptions = nil
+	if p.machineInfo.LanguageTag.Language == "zh" && p.machineInfo.LanguageTag.Region == "CN" {
+		gamePanel = &StoreGamePanelPluginOptions{}
+	}
 	if strings.HasPrefix(url.Path, storeAppUrlPrefix) {
 		logger.Info("Found store page, try to inject ...")
 		// 注入 Crystal Store 相关的代码
 		options := StoreExtensionOptions{
-			GamePanel: &StoreGamePanelPluginOptions{
-				Debug: false,
-			},
+			GamePanel: gamePanel,
 			BlockTranslate: &BlockTranslatePluginOptions{
-				ContentSelector: "#game_area_description",
+				TargetLanguage: p.getSetting().Translate.TargetLanguage,
 			},
-			SelectionTranslate: &SelectionTranslatePluginOptions{},
+			SelectionTranslate: &SelectionTranslatePluginOptions{
+				TargetLanguage: p.getSetting().Translate.TargetLanguage,
+			},
 		}
 		optionsStr, err := json.Marshal(&options)
 		if err != nil {
@@ -165,7 +187,9 @@ func (p *SteamExtensionInjector) runCommunityExtension(chromeCtx context.Context
 	// 注入 Crystal Community 相关的代码
 	logger.Info("Found community page, try to inject ...")
 	options := CommunityExtensionOptions{
-		SelectionTranslate: &SelectionTranslatePluginOptions{},
+		SelectionTranslate: &SelectionTranslatePluginOptions{
+			TargetLanguage: p.getSetting().Translate.TargetLanguage,
+		},
 	}
 	optionsStr, err := json.Marshal(&options)
 	if err != nil {
@@ -181,6 +205,8 @@ func (p *SteamExtensionInjector) runCommunityExtension(chromeCtx context.Context
 func (p *SteamExtensionInjector) injectJsCode(extension string, options string) string {
 	jsCodeTmpl, _ := template.New("lowestJsCode").Parse(crystalStoreJsCodeTemplate)
 	var buf bytes.Buffer
+	crystalUrl := "http://" + http.ListenOn + "/crystal/crystal.es.js?utc=" + strconv.FormatInt(time.Now().Unix(), 10)
+	slog.Info("Inject js code with crystal url", "url", crystalUrl)
 	_ = jsCodeTmpl.Execute(&buf, lowestJsCodeTemplateValue{
 		CrystalUrl: crystalUrl,
 		Extension:  extension,
@@ -216,7 +242,9 @@ type StoreGamePanelPluginOptions struct {
 }
 
 type BlockTranslatePluginOptions struct {
-	ContentSelector string `json:"contentSelector"`
+	TargetLanguage string `json:"targetLanguage"`
 }
 
-type SelectionTranslatePluginOptions struct{}
+type SelectionTranslatePluginOptions struct {
+	TargetLanguage string `json:"targetLanguage"`
+}

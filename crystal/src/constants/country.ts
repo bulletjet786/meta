@@ -16,7 +16,7 @@ export class CountryInfo {
     static AR = new CountryInfo("AR", "阿根廷", "ARS", "");
     static RU = new CountryInfo("RU", "俄罗斯", "RUB", "руб");
     static TR = new CountryInfo("TR", "土耳其", "TRY", "");
-
+    static UA = new CountryInfo("UA", "乌克兰", "UAH", "");
 }
   
 

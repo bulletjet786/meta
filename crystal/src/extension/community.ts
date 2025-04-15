@@ -36,8 +36,9 @@ export class CommunityExtension {
         window.__crystal_injected = true
     
         if (this.options.selectionTranslate) {
-            const translate = new SelectionTranslatePlugin(this.options.selectionTranslate)
-            translate.init()
+            console.log("Inject Comunity Selection Translate Plugin")
+            const selectionTranslate = new SelectionTranslatePlugin(this.options.selectionTranslate)
+            selectionTranslate.init()
         }
 
         console.log("Inject Crystal Community Extension Success")

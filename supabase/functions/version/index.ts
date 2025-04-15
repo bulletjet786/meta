@@ -1,13 +1,9 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 // import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import express from 'express';
+import releaseVersion from "./release_version.json" with { type: "json" };
 
 const ChannelHeader = "x-meta-channel"
-
-interface     LatestVersionRequest {
-  deviceId: string;
-  currentVersion: string;
-}
 
 enum Channel {
   Stable,
@@ -25,28 +21,16 @@ app.post("/version/latest/meta/windows-amd64.json", (req: express.Request, res: 
   let latestVersion: any = null;
   switch (Channel[req.headers[ChannelHeader]]) {
     case Channel.Stable:
-      latestVersion = {
-        Version: "0.0.3",
-        Sha256: "https://dl.meta.deckz.fun/releases/v0.0.4",
-      }
+      latestVersion = releaseVersion
       break;
     case Channel.Preview:
-      latestVersion = {
-        Version: "0.0.3",
-        Sha256: "https://dl.meta.deckz.fun/releases/v0.0.4",
-      }
+      latestVersion = releaseVersion
       break;
     case Channel.Testing:
-      latestVersion = {
-        Version: "0.0.3",
-        Sha256: "https://dl.meta.deckz.fun/releases/v0.0.4",
-      }
+      latestVersion = releaseVersion
       break;
     case Channel.Develop:
-      latestVersion = {
-        Version: "0.0.4",
-        Sha256: "wQIoy55uuB6W7A1e0RB3AC9kbHje96NGLZ5MTRFvW+A=",
-      }
+      latestVersion = releaseVersion
       break;
     default:
       res.status(400).end();

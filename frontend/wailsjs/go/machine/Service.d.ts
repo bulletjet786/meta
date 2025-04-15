@@ -4,4 +4,6 @@ import {machine} from '../models';
 
 export function GetMachineInfo():Promise<machine.Info>;
 
+export function OpenBrowser(arg1:string):Promise<void>;
+
 export function Start():Promise<void>;

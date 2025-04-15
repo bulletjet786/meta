@@ -14,3 +14,8 @@ cos:
     region: ""
     endpoint: cos.ap-shanghai.myqcloud.com
     ofs: false
+  - name: meta-public-1252010398
+    alias: meta-public-1252010398
+    region: ""
+    endpoint: cos.ap-shanghai.myqcloud.com
+    ofs: false

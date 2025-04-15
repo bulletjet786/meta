@@ -1,0 +1,33 @@
+{
+    "guide": {
+        "name": "Guide",
+        "state": {
+            "name": "Status:",
+            "connected": "Enhanced",
+            "disconnected": "Not Enabled"
+        },
+        "tooltip": {
+            "need_restart": "Steam is configured. Restart the Steam client to enable enhancement features.",
+            "connected": "Steam enhancement features are active. Enjoy your experience!",
+            "cef_failed": "Please ensure that your Steam client is installed."
+        }
+    },
+    "setting": {
+        "name": "Settings",
+        "regular": {
+            "title": "General",
+            "language": "UI Language",
+            "auto_run": "Launch on Startup"
+        },
+        "translation": {
+            "title": "Translation",
+            "target_language": "Target Language"
+        }
+    },
+    "about": {
+        "name": "About",
+        "software_name": "Software Name: Steam Meta",
+        "current_version": "Current Version",
+        "software_description": "Steam Meta enhances the functionality of the Steam client, offering a smoother user experience."
+    }
+}

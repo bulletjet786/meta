@@ -21,18 +21,18 @@ function buildItemProps(gameName: string): StudyResourceItemProps[]{
   return [
     {
       name: "搜索: 咸鱼单机网",
-      url: `https://www.xianyudanji.net?aff=270876&s=${encodeURIComponent(gameName)}`,
-      tags: ["部分免费", "月卡39", "永久49", "签到0.3", "百度", "夸克", "123", "UC-不限速"],
+      url: `https://www.xianyudanji.ai/?aff=270876&s=${encodeURIComponent(gameName)}`,
+      tags: ["部分免费", "月卡39", "永久49", "签到0.3", "百度", "夸克", "123", "UC"],
     },
     {
       name: "搜索: 游戏仓库网",
       url: `https://www.kkyx.net?aff=8119&s=${encodeURIComponent(gameName)}`,
-      tags: ["部分免费", "月卡28", "年卡48", "永久68", "签到+1", "百度", "天翼-高速", "迅雷"],
+      tags: ["部分免费", "月卡28", "年卡48", "永久68", "百度", "天翼", "迅雷"],
     },
     {
       name: "搜索: 小白游戏网",
       url: `https://www.xbgame.net?s=${encodeURIComponent(gameName)}`,
-      tags: ["2区免费", "月卡28", "季卡38", "年卡68", "永久98", "百度", "迅雷", "夸克", "天翼-高速", "阿里", "UC-不限速"],
+      tags: ["2区免费", "月卡28", "季卡38", "年卡68", "永久98", "百度", "迅雷", "夸克", "天翼", "阿里", "UC"],
     },
   ]
 }

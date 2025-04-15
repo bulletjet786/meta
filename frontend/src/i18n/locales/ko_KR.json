@@ -1,0 +1,33 @@
+{
+  "guide": {
+    "name": "가이드",
+    "state": {
+      "name": "상태：",
+      "connected": "강화됨",
+      "disconnected": "비활성화됨"
+    },
+    "tooltip": {
+      "need_restart": "Steam 설정이 완료되었습니다. 강화 기능을 시작하려면 Steam 클라이언트를 다시 시작하세요.",
+      "connected": "Steam 강화 기능이 활성화되었습니다. 즐겁게 사용해 주세요!",
+      "cef_failed": "Steam 클라이언트가 설치되어 있는지 확인해 주세요."
+    }
+  },
+  "setting": {
+    "name": "설정",
+    "regular": {
+      "title": "일반",
+      "language": "인터페이스 언어",
+      "auto_run": "시작 시 실행"
+    },
+    "translation": {
+      "title": "번역",
+      "target_language": "대상 언어"
+    }
+  },
+  "about": {
+    "name": "소개",
+    "software_name": "소프트웨어 이름: Steam 컴패니언",
+    "current_version": "현재 버전",
+    "software_description": "Steam 컴패니언은 Steam 클라이언트의 기능을 확장하여 보다 부드러운 사용자 경험을 제공합니다."
+  }
+}

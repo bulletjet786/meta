@@ -2,13 +2,14 @@ import { IPlugin } from "./plugin.ts";
 import { CrystalBlockTranslateControllerWcName, defineCrystalTranslateControllerWc } from "../../components/CrystalBlockTranslateController.tsx";
 
 export class BlockTranslatePluginOptions {
-	constructor(
-		public contentSelector: string = "#game_area_description",
-	) {
-	}
+	targetLanguage: string = "zh_CN"
 }
 
 export class BlockTranslatePlugin implements IPlugin {
+
+	private state: Map<string, boolean> = new Map();
+	private timeoutId: number | null = null;
+	private static gameAreaDescription = "#game_area_description"
 
     constructor(
         public options: BlockTranslatePluginOptions
@@ -19,38 +20,90 @@ export class BlockTranslatePlugin implements IPlugin {
 	}
 
 	init(): void {
-		// 加载Translate脚本
-		const script = document.createElement('script')
-		script.type = 'text/javascript'
-		script.src = 'https://res.zvo.cn/translate/translate.js'
-		const options = this.options
-		script.onload = function () {
-			console.log("Translate script start loading .. ")
-			// 翻译属性
-			window.translate.language.setLocal('chinese_simplified'); //设置本地语种（当前网页的语种）。如果不设置，默认就是 'chinese_simplified' 简体中文。 可填写如 'english'、'chinese_simplified' 等，具体参见文档下方关于此的说明
-			window.translate.language.setDefaultTo('chinese_simplified') // 设置要翻译成的语言
-			window.translate.language.translateLocal = true // 强制翻译
-			window.translate.service.use('client.edge') //指定翻译服务为使用 translate.service
-			window.translate.language.setUrlParamControl(); //url参数后可以加get方式传递 language 参数的方式控制当前网页以什么语种显示
-			window.translate.selectLanguageTag.show = false; // 不显示语言选择UI
+		defineCrystalTranslateControllerWc()
 
-			// translate.changeLanguage('chinese_simplified')
-			console.log("Translate script load finished.")
-			// 加载翻译器控制组件
-			defineCrystalTranslateControllerWc()
-			const translateController = document.createElement(CrystalBlockTranslateControllerWcName);
-			translateController.setAttribute('content-selector', options.contentSelector)
-			const injectPoint = document.querySelector("#game_area_description > h2")
-			if (injectPoint == null) {
-				return;
-			}
-			injectPoint.appendChild(translateController);
-			console.log("Translate controller inject finished.")
+		const translateController = document.createElement(CrystalBlockTranslateControllerWcName);
+		translateController.setAttribute('translate-node-selector', BlockTranslatePlugin.gameAreaDescription)
+		translateController.setAttribute('container-style', '{ "display": "inline-block", "margin-left": "30px" }')
+		translateController.setAttribute("target-language", this.options.targetLanguage)
+		const injectPoint = document.querySelector(BlockTranslatePlugin.gameAreaDescription + " > h2")
+		if (injectPoint == null) {
+			return;
 		}
-		document.body.appendChild(script);
+		injectPoint.appendChild(translateController);
+
+		// 发现评论区域
+		window.addEventListener('scroll', () => {
+			console.log('page scored! will inject translate controller');
+			this.willInjectTranslateController()
+		});
+
+		// 处理过滤器选项变动
+		const targetNode = document.getElementById('reviews_active_filters');
+		if (targetNode) {
+			const callback = () => {
+				console.log("review_active filters changed, will inject")
+				this.willInjectTranslateController()
+			};
+			const observer = new MutationObserver(callback);
+			const config = {
+				childList: true,      // 监听子节点变化
+				attributes: true,     // 监听属性变化
+				characterData: true,  // 监听文本内容变化
+				subtree: true         // 监听目标节点及其所有后代节点
+			};
+			observer.observe(targetNode, config);
+		}
+
+		console.log("Translate controller inject finished.")
+	}
+
+	willInjectTranslateController() {
+		// 清除之前的定时器
+		if (this.timeoutId) {
+			clearTimeout(this.timeoutId);
+		}
+
+		// 设置新的定时器
+		this.timeoutId = setTimeout(() => {
+			this.injectTranslateController();
+		}, 500); // 500ms 防抖时间
+	}
+
+	injectTranslateController() {
+		// 将所有的元素加入到
+		// div[data-panel].content
+		// div.postedDate
+		document.querySelectorAll("div[data-panel].content").forEach(
+			(node) => {
+				const reviewNode = node.parentNode
+				if (reviewNode == null) {
+					return;
+				}
+				const reviewEle = (reviewNode as HTMLDivElement)
+				const translateNodeSelector = "#" + reviewEle.id + " > div[data-panel].content"
+				const postedDate = reviewNode.querySelector(".postedDate")
+				if (postedDate == null) {
+					return;
+				}
+				// 检查是否已经注入过翻译按钮
+				const alreadyInjected = Array.from(postedDate.children).some(
+					(child) =>
+						child.tagName === CrystalBlockTranslateControllerWcName.toUpperCase() ||
+						(child as HTMLElement).classList.contains('crystal-translate-controller')
+				);
+
+				if (!alreadyInjected) {
+					const controller = document.createElement(CrystalBlockTranslateControllerWcName)
+					controller.setAttribute('translate-node-selector', translateNodeSelector)
+					controller.setAttribute('container-style', '{ "display": "inline-block", "margin-left": "30px" }')
+					controller.setAttribute("target-language", this.options.targetLanguage)
+					postedDate.appendChild(controller)
+					console.debug("add button finished")
+					this.state.set(translateNodeSelector, true)	// TODO: now state is not used
+				}
+			}
+		)
+		console.log("state size: ", this.state.size)
 	}
 }
-
-declare const window: {
-	translate: any;
-  } & Window;

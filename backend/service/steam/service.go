@@ -4,6 +4,8 @@ import (
 	"log/slog"
 	"os"
 
+	"meta/backend/service/machine"
+	"meta/backend/service/setting"
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/discovery"
 	"meta/backend/service/steam/plugin"
@@ -17,9 +19,10 @@ type Service struct {
 }
 
 type ServiceOptions struct {
-	RemoteUrl  string
-	Os         string
-	Subscriber []common.StatusSubscriber
+	RemoteUrl      string
+	Subscriber     []common.StatusSubscriber
+	MachineInfo    machine.Info
+	GetSettingFunc func() setting.Setting
 }
 
 func NewService(options ServiceOptions) *Service {
@@ -30,7 +33,7 @@ func NewService(options ServiceOptions) *Service {
 
 func (s *Service) Start() {
 	s.plugins = []plugin.SteamPlugin{
-		plugin.NewSteamLowestPriceStorePlugin(),
+		plugin.NewSteamExtensionInjector(s.options.MachineInfo, s.options.GetSettingFunc),
 	}
 	for _, p := range s.plugins {
 		if err := p.Init(); err != nil {

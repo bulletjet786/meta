@@ -2,6 +2,7 @@ import { IPlugin } from "./plugin";
 import {CrystalSelectionTranslatePanelWcName, defineSelectionTranslatePanelWc} from "../../components/CrystalSelectionTranslatePanel.tsx";
 
 export class SelectionTranslatePluginOptions {
+    targetLanguage: string = "zh_CN"
 }
 
 export class SelectionTranslatePlugin implements IPlugin {
@@ -19,6 +20,7 @@ export class SelectionTranslatePlugin implements IPlugin {
         defineSelectionTranslatePanelWc()
 
         const selectionTranslatePanel = document.createElement(CrystalSelectionTranslatePanelWcName);
+        selectionTranslatePanel.setAttribute("target-language", this.options.targetLanguage)
         document.body.appendChild(selectionTranslatePanel);
         console.log("Selection translate panel inject finished.")
     }
