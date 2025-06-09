@@ -21,7 +21,8 @@
         },
         "translation": {
             "title": "Translation",
-            "target_language": "Target Language"
+            "target_language": "Target Language",
+            "engine_provider": "Engine Provider"
         }
     },
     "about": {

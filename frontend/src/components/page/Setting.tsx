@@ -20,6 +20,7 @@ const Setting = () => {
     const [uiLanguageSelect, setUiLanguageSelect] = useState<string>("en_US")
     const [autoRunEnabled, setAutoRunEnabled] = useState<boolean>(false)
     const [targetLanguage, setTargetLanguage] = useState<string>("en_US")
+    const [engineProvider, setEngineProvider] = useState<string>("BingFree")
 
     useEffect(() => {
         SupportedLanguageLabels().then((languages) => {
@@ -33,6 +34,7 @@ const Setting = () => {
         GetSetting().then((setting) => {
             setTargetLanguage(setting.Translate.TargetLanguage)
             setUiLanguageSelect(setting.Regular.UI.Language)
+            setEngineProvider(setting.Translate.Provider)
         })
     }, []);
 
@@ -60,6 +62,16 @@ const Setting = () => {
             setting.Translate.TargetLanguage = select
             UpdateSetting(setting).then(() => {
                 setTargetLanguage(select)
+            })
+        })
+    }
+
+    function updateTranslateProvider(select: string) {
+        console.log(`update translate provider: ${select}`)
+        GetSetting().then((setting) => {
+            setting.Translate.Provider = select
+            UpdateSetting(setting).then(() => {
+                setEngineProvider(select)
             })
         })
     }
@@ -138,21 +150,6 @@ const Setting = () => {
             </div>
 
             <Space direction="vertical" size="large" style={{width: '100%'}}>
-                {/*<Row gutter={[16, 16]} align="middle">*/}
-                {/*    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>*/}
-                {/*        <span style={{ fontWeight: 500, minWidth: 80 }}>翻译引擎</span>*/}
-                {/*        <Select*/}
-                {/*            style={{ width: 200 }}*/}
-                {/*            defaultValue="google"*/}
-                {/*            uiLanguageOptions={[*/}
-                {/*                { value: 'google', label: 'Google' },*/}
-                {/*                { value: 'baidu', label: '百度翻译' },*/}
-                {/*                { value: 'tencent', label: '腾讯翻译君' },*/}
-                {/*            ]}*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*</Row>*/}
-
                 <Row gutter={32} align="middle">
                     <Col span={9}>
                         <div style={{fontWeight: 500, minWidth: 80}}>
@@ -172,6 +169,26 @@ const Setting = () => {
                                 {value: 'ko_KR', label: '한국어'},
                             ]}
                             onChange={(value) => updateTargetLanguage(value)}
+                        />
+                    </Col>
+                </Row>
+
+                <Row gutter={32} align="middle">
+                    <Col span={9}>
+                        <div style={{fontWeight: 500, minWidth: 80}}>
+                            {t('setting.translation.engine_provider')}
+                        </div>
+                    </Col>
+
+                    <Col span={9}>
+                        <Select
+                            style={{width: '100%'}}
+                            value={engineProvider}
+                            options={[
+                                {value: 'Bing', label: 'Bing'},
+                                {value: 'XiaoNiu', label: 'XiaoNiu'},
+                            ]}
+                            onChange={(value) => updateTranslateProvider(value)}
                         />
                     </Col>
                 </Row>

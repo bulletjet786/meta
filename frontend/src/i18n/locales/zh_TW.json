@@ -21,7 +21,8 @@
     },
     "translation": {
       "title": "翻譯",
-      "target_language": "目標語言"
+      "target_language": "目標語言",
+      "engine_provider": "翻譯引擎"
     }
   },
   "about": {

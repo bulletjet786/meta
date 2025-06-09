@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Button, ConfigProvider} from "antd";
 import r2wc from '@r2wc/react-to-web-component'
 import { defineWc } from './utils.ts'
-import {translateClient} from "../client/translate.ts";
+import {translateClient} from "../client/translate/translate.ts";
 import IconFont from "../icon/icon.ts";
 
 const pinkColorPrimary = "#722ed1"
@@ -11,11 +11,18 @@ type CrystalTranslateControllerProps = {
     translateNodeSelector: string,
     targetLanguage: string,
     containerStyle: Record<string, any>,
+    provider: string
+}
+
+enum TranslateProcessingState {
+    Untranslated,
+    Translating,
+    Translated,
 }
 
 class TranslateState {
     constructor(
-        public translated: boolean,
+        public translateProcessingState: TranslateProcessingState,
         public lastErr: boolean,
         public fromText: string,
         public toText: string,
@@ -26,7 +33,7 @@ class TranslateState {
   
 const CrystalBlockTranslateController: React.FC<CrystalTranslateControllerProps> = (props: CrystalTranslateControllerProps) => {
   
-  const [state, setState] = useState(new TranslateState(false, false, "", "", null));
+  const [state, setState] = useState(new TranslateState(TranslateProcessingState.Untranslated, false, "", "", null));
   useEffect(() => {
       init()
   }, []);
@@ -38,27 +45,28 @@ const CrystalBlockTranslateController: React.FC<CrystalTranslateControllerProps>
           console.log(`translateNode is null`)
           return
       }
-      setState(new TranslateState(false, false, translateNode.innerHTML, state.toText, translateNode));
+      setState(new TranslateState(TranslateProcessingState.Untranslated, false, translateNode.innerHTML, state.toText, translateNode));
   }
 
   function handleClick() {
-      if (state.translated) {
+      if (state.translateProcessingState == TranslateProcessingState.Translated) {
           // 将已经翻译的内容还原
-          setState(new TranslateState(false, false, state.fromText, state.toText, state.translateNode));
+          setState(new TranslateState(TranslateProcessingState.Untranslated, false, state.fromText, state.toText, state.translateNode));
           state.translateNode!.innerHTML = state.fromText;
           return;
       } else {
           console.log(`translate will begin ... state is ${JSON.stringify(state)}`)
           if (state.toText != "" && !state.lastErr) {
               // 如果之前翻译过，并且没有出错，直接设置DOM元素为已经翻译的结果
-              setState(new TranslateState(true, false, state.fromText, state.toText, state.translateNode))
+              setState(new TranslateState(TranslateProcessingState.Translated, false, state.fromText, state.toText, state.translateNode))
               state.translateNode!.innerHTML = state.toText;
               return;
           } else {
               // 如果之前没有翻译过或者上次翻译出错了，则调用翻译接口进行翻译
-              translateClient.translateXML(state.fromText, props.targetLanguage).then((toText: string | null) => {
+              setState(new TranslateState(TranslateProcessingState.Translating, false, state.fromText, "......", state.translateNode))
+              translateClient.translateXML(props.provider, state.fromText, props.targetLanguage).then((toText: string | null) => {
                   const result = toText == null ? "Translate Failed" : toText
-                  setState(new TranslateState(true, true, state.fromText, result, state.translateNode))
+                  setState(new TranslateState(TranslateProcessingState.Translated, true, state.fromText, result, state.translateNode))
                   state.translateNode!.innerHTML = result;
               });
           }
@@ -90,7 +98,8 @@ export const CrystalTranslateControllerWc = r2wc(CrystalBlockTranslateController
     props: {
         translateNodeSelector: "string",
         containerStyle: "json",
-        targetLanguage: "string"
+        targetLanguage: "string",
+        provider: "string"
     },
     // null: don't use shadow, ant design can inject styles to head.style 
     // open mode: we can inject styles

@@ -4,7 +4,7 @@ import r2wc from "@r2wc/react-to-web-component";
 import {defineWc} from "./utils.ts";
 import React, {useEffect, useRef} from "react";
 import {Button, Popover, Typography} from "antd";
-import {translateClient} from "../client/translate.ts";
+import {translateClient} from "../client/translate/translate.ts";
 import IconFont from "../icon/icon.ts";
 
 enum PanelState {
@@ -24,7 +24,8 @@ interface SelectionTranslationPanelState {
     toText: string,
     pos: Pos | null,
     targetLanguage: string,
-    load: (targetLanguage: string) => void,
+    provider: string,
+    load: (targetLanguage: string, provider: string) => void,
     select: (pos: Pos, fromText: string) => void,
     translate: () => void,
     close: () => void,
@@ -37,8 +38,9 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
         toText: "...",
         pos: null,
         targetLanguage: "en_US",
-        load: (targetLanguage: string) => {
-            set({state: PanelState.Hide, fromText: "", toText: "", targetLanguage: targetLanguage})
+        provider: "BingFree",
+        load: (targetLanguage: string, provider: string) => {
+            set({state: PanelState.Hide, fromText: "", toText: "", targetLanguage: targetLanguage, provider: provider})
         },
         select: (pos: Pos, fromText: string) => {
             set({state: PanelState.Selected, pos: pos, fromText: fromText})
@@ -46,7 +48,7 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
         translate: async () => {
             set({state: PanelState.Translated})
             // 获取翻译的结果
-            let result = await translateClient.translate(get().fromText, get().targetLanguage)
+            let result = await translateClient.translate(get().provider, get().fromText, get().targetLanguage)
             if (result == null) {
                 result = "翻译出错啦..."
             }
@@ -63,6 +65,7 @@ export const useSelectionTranslationPanelStore = create<SelectionTranslationPane
 
 type CrystalSelectionTranslationPanelProps = {
     targetLanguage: string,
+    provider: string,
 }
 
 const SelectionTranslationPanel: React.FC<CrystalSelectionTranslationPanelProps> = (props: CrystalSelectionTranslationPanelProps) => {
@@ -70,7 +73,7 @@ const SelectionTranslationPanel: React.FC<CrystalSelectionTranslationPanelProps>
     const panelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        load(props.targetLanguage)
+        load(props.targetLanguage, props.provider)
     }, []);
 
     function handleMouseUp(e: MouseEvent) {
@@ -146,7 +149,8 @@ export const CrystalSelectionTranslatePanelWcName = "crystal-selection-translate
 
 export const CrystalSelectionTranslatePanelWc = r2wc(SelectionTranslationPanel, {
     props: {
-        targetLanguage: "string"
+        targetLanguage: "string",
+        provider: "string",
     },
     // null: don't use shadow, ant design can inject styles to head.style
     // open mode: we can inject styles

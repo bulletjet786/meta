@@ -1,4 +1,6 @@
 build/bin
+build/darwin
+build/windows/installer/tmp
 frontend/dist
 frontend/node_modules
 vendor
@@ -31,3 +33,16 @@ crystal/build
 # Idea directories
 .idea
 .idea_modules
+
+# Browser Logs
+browser/oauth/logs
+browser/oauth/*.log
+browser/oauth/npm-debug.log*
+browser/oauth/yarn-debug.log*
+browser/oauth/yarn-error.log*
+browser/oauth/pnpm-debug.log*
+browser/oauth/lerna-debug.log*
+browser/oauth/node_modules
+browser/oauth/dist
+browser/oauth/dist-ssr
+browser/oauth/*.local

@@ -38,6 +38,7 @@ export namespace machine {
 	    launch_id: string;
 	    os: string;
 	    arch: string;
+	    work_dir: string;
 	    country: string;
 	    language_tag: IdentifyingLanguageTag;
 	    version: string;
@@ -52,6 +53,7 @@ export namespace machine {
 	        this.launch_id = source["launch_id"];
 	        this.os = source["os"];
 	        this.arch = source["arch"];
+	        this.work_dir = source["work_dir"];
 	        this.country = source["country"];
 	        this.language_tag = this.convertValues(source["language_tag"], IdentifyingLanguageTag);
 	        this.version = source["version"];

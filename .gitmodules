@@ -1,0 +1,3 @@
+[submodule "tame"]
+	path = tame
+	url = git@github.com:bulletjet786/tame.git

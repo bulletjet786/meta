@@ -5,6 +5,7 @@ import (
 	"embed"
 	"flag"
 	"log/slog"
+	"meta/backend/service/user"
 	"os"
 
 	"github.com/energye/systray"
@@ -63,16 +64,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	settingService, err := setting.NewSettingService(setting.ServiceOptions{
-		MachineLanguageTag: machineService.GetMachineInfo().LanguageTag,
-	}, eventService)
+	settingService, err := setting.NewSettingService(setting.ServiceOptions{}, eventService)
 	if err != nil {
 		slog.Error("Setting service init error", "err", err)
 		os.Exit(1)
 	}
 
+	userService, err := user.NewUserService(user.ServiceOptions{}, eventService)
+	if err != nil {
+		slog.Error("User service init error", "err", err)
+		os.Exit(1)
+	}
+
 	embedHttpServer := http.NewEmbedServer(http.EmbedServerOptions{
-		CrystalFs: &crystalFs,
+		CrystalFs:   &crystalFs,
+		AuthHandler: userService.AuthHandler(),
 	})
 	embedHttpServer.RunServer()
 
@@ -112,21 +118,21 @@ func main() {
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start()
-			eventService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
 			trayManager.Start(ctx)
 
-			eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
+			eventService.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 				Success:   true,
 				Version:   constants.Version,
 				MLanguage: machineService.GetMachineInfo().LanguageTag,
 				Mode:      *mode,
 			})
+			eventService.P(machineService.GetMachineInfo(), settingService.AutoRunEnabled())
 		},
 		OnDomReady: func(ctx context.Context) {},
 		OnBeforeClose: func(ctx context.Context) (prevent bool) {
-			eventService.Send(event.TypeForApp, event.SubTypeForAppStop, event.EmptyPayload{})
+			eventService.E(event.TypeForApp, event.SubTypeForAppStop, event.EmptyPayload{})
 			return false
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
@@ -135,7 +141,7 @@ func main() {
 	})
 	if err != nil {
 		slog.Error("Wails run error", "err", err)
-		eventService.Send(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
+		eventService.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 			Success:   false,
 			Version:   constants.Version,
 			MLanguage: machineService.GetMachineInfo().LanguageTag,

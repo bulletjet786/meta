@@ -13,9 +13,10 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
-	github.com/samber/lo v1.50.0
+	github.com/samber/lo v1.51.0
 	github.com/sanbornm/go-selfupdate v0.0.0-20230714125711-e1c03e3d6ac7
 	github.com/stretchr/testify v1.10.0
+	github.com/supabase-community/gotrue-go v1.2.0
 	github.com/supabase-community/supabase-go v0.0.4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1128
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tmt v1.0.1115
@@ -63,6 +64,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/kr/binarydist v0.1.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/labstack/echo/v4 v4.13.3 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/leaanthony/go-ansi-parser v1.6.1 // indirect
@@ -77,7 +79,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/supabase-community/functions-go v0.0.0-20220927045802-22373e6cb51d // indirect
-	github.com/supabase-community/gotrue-go v1.2.0 // indirect
 	github.com/supabase-community/postgrest-go v0.0.11 // indirect
 	github.com/supabase-community/storage-go v0.7.0 // indirect
 	github.com/tevino/abool v0.0.0-20220530134649-2bfc934cb23c // indirect

@@ -45,13 +45,10 @@ type Setting struct {
 type TranslateSetting struct {
 	// 区块翻译
 	Block BlockTranslateSetting `yaml:"block"`
-
 	// 划词翻译
 	Selection SelectionTranslateSetting `yaml:"selection"`
-
 	// 供应商
 	Provider string `yaml:"provider"`
-
 	// 母语
 	TargetLanguage string `yaml:"targetLanguage"`
 }
@@ -65,9 +62,21 @@ type BypassAgeValidation struct {
 }
 
 const (
+	// Deprecated: Will to change to TranslateProviderBingFree
 	TranslateProviderXiaoNiuFree = "XiaoNiuFree"
-	TranslateProviderDeepLFree   = "DeepLFree"
+
+	TranslateProviderXiaoNiu  = "XiaoNiu"
+	TranslateProviderDeepL    = "DeepL"
+	TranslateProviderBingFree = "BingFree"
+	TranslateProviderBing     = "Bing"
 )
+
+var supportTranslateEngines = []string{
+	TranslateProviderXiaoNiu,
+	TranslateProviderBing,
+	TranslateProviderDeepL,
+	// TranslateProviderBingFree,
+}
 
 type SelectionTranslateSetting struct {
 	Enabled bool `yaml:"enabled"`
@@ -87,11 +96,11 @@ type RegularUiSetting struct {
 	Language string `yaml:"language"`
 }
 
-func DefaultSetting(regularSetting string) *Setting {
+func DefaultSetting() *Setting {
 	return &Setting{
 		Translate: TranslateSetting{
-			Provider:       TranslateProviderXiaoNiuFree,
-			TargetLanguage: "en",
+			Provider:       TranslateProviderBing,
+			TargetLanguage: "en_US",
 			Selection: SelectionTranslateSetting{
 				Enabled: true,
 			},
@@ -103,7 +112,7 @@ func DefaultSetting(regularSetting string) *Setting {
 		},
 		Regular: RegularSetting{
 			UI: RegularUiSetting{
-				Language: regularSetting,
+				Language: defaultLanguage,
 			},
 		},
 	}
@@ -127,8 +136,6 @@ type Service struct {
 
 type ServiceOptions struct {
 	SettingPath string
-
-	MachineLanguageTag machine.IdentifyingLanguageTag
 }
 
 func NewSettingService(options ServiceOptions, eventService *event.Service) (*Service, error) {
@@ -137,9 +144,7 @@ func NewSettingService(options ServiceOptions, eventService *event.Service) (*Se
 	}
 	slog.Info("Setting path", "path", options.SettingPath)
 
-	regularLanguage := computerRegularLanguageFromLanguageTag(&options.MachineLanguageTag)
-
-	setting := DefaultSetting(regularLanguage)
+	setting := DefaultSetting()
 	// 如果设置文件不存在，则创建默认配置
 	if _, err := os.Stat(options.SettingPath); os.IsNotExist(err) {
 		// 创建默认配置
@@ -169,14 +174,22 @@ func NewSettingService(options ServiceOptions, eventService *event.Service) (*Se
 	if err := yaml.Unmarshal(data, setting); err != nil {
 		return nil, err
 	}
+	if !lo.Contains(supportTranslateEngines, setting.Translate.Provider) {
+		setting.Translate.Provider = TranslateProviderBing
+	}
+	if !lo.ContainsBy(supportedLanguageLabels, func(item LanguageLabel) bool {
+		return item.Language == setting.Regular.UI.Language
+	}) {
+		setting.Regular.UI.Language = defaultLanguage
+	}
 
 	return &Service{setting: setting, options: options, eventService: eventService}, nil
 }
 
 func computerRegularLanguageFromLanguageTag(languageTag *machine.IdentifyingLanguageTag) string {
 	regularLanguage := languageTag.Language + "_" + languageTag.Region
-	if !lo.ContainsBy(supportedLanguageLabels, func(label LanguageLabel) bool {
-		return languageTag.Language == label.Language
+	if !lo.ContainsBy(supportedLanguageLabels, func(item LanguageLabel) bool {
+		return item.Language == regularLanguage
 	}) {
 		return defaultLanguage
 	}
@@ -215,7 +228,7 @@ func (s *Service) AutoRunEnable() error {
 	// 向注册表中写入启动项
 	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
-		s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateEnable,
 			Success: false,
 			Reason:  err.Error(),
@@ -230,14 +243,14 @@ func (s *Service) AutoRunEnable() error {
 	value := fmt.Sprintf(`%s`, config.Exec)
 	err = key.SetStringValue(config.Name, value)
 	if err != nil {
-		s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateEnable,
 			Success: false,
 			Reason:  err.Error(),
 		})
 		return err
 	}
-	s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+	s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 		Operate: event.AppAutoRunOperateEnable,
 		Success: true,
 	})
@@ -249,7 +262,7 @@ func (s *Service) AutoRunDisable() error {
 	// 删除注册表中的启动项
 	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
-		s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateDisable,
 			Success: false,
 			Reason:  err.Error(),
@@ -262,14 +275,14 @@ func (s *Service) AutoRunDisable() error {
 
 	err = key.DeleteValue(config.Name)
 	if err != nil {
-		s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateDisable,
 			Success: false,
 			Reason:  err.Error(),
 		})
 		return err
 	}
-	s.eventService.Send(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+	s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 		Operate: event.AppAutoRunOperateDisable,
 		Success: true,
 	})
