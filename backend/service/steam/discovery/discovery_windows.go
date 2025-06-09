@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	registry "golang.org/x/sys/windows/registry"
+	"golang.org/x/sys/windows/registry"
 )
 
 const (

@@ -1,0 +1,33 @@
+{
+  "guide": {
+    "name": "引導",
+    "state": {
+      "name": "狀態：",
+      "connected": "增強中",
+      "disconnected": "未啟用"
+    },
+    "tooltip": {
+      "need_restart": "Steam 已配置，重新啟動 Steam 客戶端以啟動增強功能。",
+      "connected": "Steam 增強功能已生效，歡迎使用！",
+      "cef_failed": "請確保你的 Steam 客戶端已安裝。"
+    }
+  },
+  "setting": {
+    "name": "設定",
+    "regular": {
+      "title": "常規",
+      "language": "介面語言",
+      "auto_run": "開啟啟動"
+    },
+    "translation": {
+      "title": "翻譯",
+      "target_language": "目標語言"
+    }
+  },
+  "about": {
+    "name": "關於",
+    "software_name": "軟體名稱：Steam 伴侶",
+    "current_version": "目前版本",
+    "software_description": "Steam 伴侶可以增強 Steam 客戶端的功能，為使用者帶來更流暢的用戶體驗。"
+  }
+}

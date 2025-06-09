@@ -1,10 +1,12 @@
 package event
 
+import "meta/backend/service/machine"
+
 type EmptyPayload struct{}
 
 // app Events
 const (
-	TypeForApp          = "app"
+	TypeForApp = "app"
 
 	SubTypeForAppStart  = "start"
 	SubTypeForAppStop   = "stop"
@@ -13,20 +15,21 @@ const (
 )
 
 type AppStartTypeEventPayload struct {
-	Mode    string `json:"mode"`
-	Success bool   `json:"success"`
+	Mode      string                         `json:"mode"`
+	Version   string                         `json:"version"`
+	Success   bool                           `json:"success"`
+	MLanguage machine.IdentifyingLanguageTag `json:"mLanguage"`
 
-	Reason  string `json:"reason"` // 当失败时
+	Reason string `json:"reason"` // 当失败时
 }
 
 const (
-	AppAutoRunOperateEnable = "enable"
+	AppAutoRunOperateEnable  = "enable"
 	AppAutoRunOperateDisable = "disable"
 )
 
 type AppAutoRunTypeEventPayload struct {
-	Operate string   `json:"operate"`
-	Success bool     `json:"success"`
-	Reason  string   `json:"reason"`  // 当失败时
+	Operate string `json:"operate"`
+	Success bool   `json:"success"`
+	Reason  string `json:"reason"` // 当失败时
 }
-

@@ -1,0 +1,72 @@
+import Guide from "../page/Guide";
+import {ConfigProvider, Layout, Menu, MenuProps} from "antd";
+import React, {useState} from "react";
+import { useTranslation } from "react-i18next";
+import Setting from "../page/Setting";
+import About from "../page/About";
+
+const { Sider, Content } = Layout;
+type MenuItem = Required<MenuProps>['items'][number];
+
+const blueColorPrimary = "#1677ff"
+const pinkColorPrimary = "#722ed1"
+
+function App() {
+
+    const { t } = useTranslation();
+
+    const [menuSelect, setMenuSelect] = useState("guide")
+
+    const items: MenuItem[] = [
+        { key: 'guide', label: t('guide.name') },
+        { key: 'setting', label: t('setting.name')},
+        { key: 'about', label: t('about.name') },
+      ];
+
+    let content = (<div></div>)
+    switch (menuSelect) {
+        case "guide":
+            content = <Guide />
+            break;
+        case "setting":
+            content = <Setting />
+            break;
+        case "about":
+            content = <About />
+            break;
+    }
+
+    return (
+        <div id='app' style={{height: '100%', width: '100%', minHeight: '100%', minWidth: '100%'}}>
+            <ConfigProvider theme={
+                {
+                    token: {
+                        colorPrimary: pinkColorPrimary,
+                    },
+                }
+            }>
+                <Layout style={{height: '100%', width: '100%'}}>
+                    <Sider style={{height: '100%'}}>
+                        <Menu
+                            style={{height: '100%'}}
+                            defaultSelectedKeys={[menuSelect]}
+                            mode="inline"
+                            items={items}
+                            onClick={
+                                ({ key, keyPath, domEvent }) => {
+                                    setMenuSelect(key)
+                                }
+                            }
+                        />
+                    </Sider>
+                    <Content>
+                        {content}
+                    </Content>
+                </Layout>
+            </ConfigProvider>
+        </div>
+    )
+}
+
+export default App
+

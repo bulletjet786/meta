@@ -3,10 +3,11 @@ package translate
 import (
 	"log/slog"
 
+	"resty.dev/v3"
+	tmt "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tmt/v20180321"
+
 	"meta/backend/integration"
 
-	tmt "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tmt/v20180321"
-	"resty.dev/v3"
 )
 
 type TranslateService struct {

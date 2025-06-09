@@ -3,19 +3,20 @@ package updater
 import (
 	"io"
 	"log/slog"
-	"meta/backend/integration"
-
-	"meta/backend/constants"
+	"time"
 
 	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"resty.dev/v3"
+
+	"meta/backend/constants"
+	"meta/backend/integration"
 )
 
 const (
 	versionUrl = "/functions/v1/version/latest"
 	cmdName    = "meta"
 	// 使用腾讯云存储
-	metaPublicUrl = "https://dl.deckz.fun/"
+	metaPublicUrl = "https://dl.g.deckz.fun/"
 )
 
 type UpdaterService struct {
@@ -44,6 +45,9 @@ func NewUpdaterService(deviceId string) *UpdaterService {
 
 func (s *UpdaterService) Start() {
 	go func() {
+		t := time.NewTimer(10 * time.Minute)
+		<-t.C
+
 		err := s.updater.BackgroundRun()
 		if err != nil {
 			slog.Error("Start update background failed", "err", err)

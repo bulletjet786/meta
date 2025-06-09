@@ -1,57 +1,96 @@
-import React from 'react';
-import {Button, ConfigProvider, theme} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Button, ConfigProvider} from "antd";
 import r2wc from '@r2wc/react-to-web-component'
 import { defineWc } from './utils.ts'
-import {create} from "zustand/react";
+import {translateClient} from "../client/translate.ts";
+import IconFont from "../icon/icon.ts";
+
+const pinkColorPrimary = "#722ed1"
 
 type CrystalTranslateControllerProps = {
-    contentSelector: string,
+    translateNodeSelector: string,
+    targetLanguage: string,
+    containerStyle: Record<string, any>,
 }
 
-interface BlockTranslateState {
-  enabled: boolean,
-  translate: (contentSelector: string) => void
+class TranslateState {
+    constructor(
+        public translated: boolean,
+        public lastErr: boolean,
+        public fromText: string,
+        public toText: string,
+        public translateNode: HTMLElement | null,
+    ) {
+    }
 }
-
-const useTranslateStore = create<BlockTranslateState>()(
-  (set) => ({
-    enabled: true,
-    translate: (contentSelector: string) => {
-      window.translate.setDocuments(document.querySelector(contentSelector))
-      window.translate.execute()
-      set(() => ({
-        enabled: false,
-      }))
-    },
-  })
-)
   
 const CrystalBlockTranslateController: React.FC<CrystalTranslateControllerProps> = (props: CrystalTranslateControllerProps) => {
   
-  const enabled = useTranslateStore(state => state.enabled)
-  const translate = useTranslateStore(state => state.translate)
+  const [state, setState] = useState(new TranslateState(false, false, "", "", null));
+  useEffect(() => {
+      init()
+  }, []);
 
-    return (
-      <div>
-        <ConfigProvider theme={{algorithm: [theme.darkAlgorithm, theme.compactAlgorithm]}}>
-            <div style={{ width: "100%", display: "flex"}}>
-                <div style={{ flex: 3  }}></div>
-                <div style={{ flex: 1  }}>
-                    <Button disabled= {!enabled} onClick={ () => { translate(props.contentSelector) } }> 翻译 </Button>
-                </div>
-            </div>
-        </ConfigProvider>
-      </div>
-    )
-};
-  
-export default CrystalBlockTranslateController;
+  function init() {
+      console.log(`translateNodeSelector is ${props.translateNodeSelector}, targetLanguage is ${props.targetLanguage}`)
+      const translateNode = document.querySelector(props.translateNodeSelector) as HTMLElement
+      if (!translateNode) {
+          console.log(`translateNode is null`)
+          return
+      }
+      setState(new TranslateState(false, false, translateNode.innerHTML, state.toText, translateNode));
+  }
+
+  function handleClick() {
+      if (state.translated) {
+          // 将已经翻译的内容还原
+          setState(new TranslateState(false, false, state.fromText, state.toText, state.translateNode));
+          state.translateNode!.innerHTML = state.fromText;
+          return;
+      } else {
+          console.log(`translate will begin ... state is ${JSON.stringify(state)}`)
+          if (state.toText != "" && !state.lastErr) {
+              // 如果之前翻译过，并且没有出错，直接设置DOM元素为已经翻译的结果
+              setState(new TranslateState(true, false, state.fromText, state.toText, state.translateNode))
+              state.translateNode!.innerHTML = state.toText;
+              return;
+          } else {
+              // 如果之前没有翻译过或者上次翻译出错了，则调用翻译接口进行翻译
+              translateClient.translateXML(state.fromText, props.targetLanguage).then((toText: string | null) => {
+                  const result = toText == null ? "Translate Failed" : toText
+                  setState(new TranslateState(true, true, state.fromText, result, state.translateNode))
+                  state.translateNode!.innerHTML = result;
+              });
+          }
+      }
+  }
+
+  return (
+    <span>
+      <ConfigProvider theme={
+                {
+                    token: {
+                        colorPrimary: pinkColorPrimary,
+                    },
+                }
+            }>
+          <div style={ props.containerStyle }>
+            <Button size="small" onClick={ () => { handleClick() } }>
+                <IconFont type="icon-translate"></IconFont>
+            </Button>
+          </div>
+      </ConfigProvider>
+    </span>
+  )
+}
 
 export const CrystalBlockTranslateControllerWcName = "crystal-block-translate-controller"
 
 export const CrystalTranslateControllerWc = r2wc(CrystalBlockTranslateController, {
     props: {
-        contentSelector: "string"
+        translateNodeSelector: "string",
+        containerStyle: "json",
+        targetLanguage: "string"
     },
     // null: don't use shadow, ant design can inject styles to head.style 
     // open mode: we can inject styles
@@ -61,7 +100,3 @@ export const CrystalTranslateControllerWc = r2wc(CrystalBlockTranslateController
 export function defineCrystalTranslateControllerWc() {
     defineWc(CrystalBlockTranslateControllerWcName, CrystalTranslateControllerWc)
 }
-
-declare const window: {
-  translate: any;
-} & Window;

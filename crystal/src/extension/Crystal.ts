@@ -13,6 +13,8 @@ function runCommunity(options: CommunityExtensionOptions) {
 }
 
 export function run(extension: string, options: StoreExtensionOptions | CommunityExtensionOptions) {
+    console.log(`Start to Crystal Extension with options: ${JSON.stringify(options)}`)
+
     switch (extension) {
         case "store":
             runStore(options as StoreExtensionOptions)

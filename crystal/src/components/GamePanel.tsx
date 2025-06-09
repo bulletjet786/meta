@@ -21,7 +21,8 @@ const countries = [
   CountryInfo.AR,
   CountryInfo.RU,
   CountryInfo.TR,
-  CountryInfo.US
+  CountryInfo.US,
+  CountryInfo.UA,
 ]
 
 interface GamePanelTableState {
