@@ -5,8 +5,8 @@ Channel ?= Develop
 GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 DATETIME=$(shell echo %date:~0,4%%date:5,2%%date:8,2%%time:~3,2%%time:~6,2%)
-RELEASE_VERSION=0.0.5
-DEVELOP_VERSION=0.0.6
+RELEASE_VERSION=0.0.6
+DEVELOP_VERSION=0.0.7
 COS_BIN_URL=https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64
 ifeq ($(GOHOSTOS), windows)
 	COS_BIN_URL=https://cosbrowser.cloud.tencent.com/software/coscli/coscli-windows-amd64.exe

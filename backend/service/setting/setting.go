@@ -62,12 +62,8 @@ type BypassAgeValidation struct {
 }
 
 const (
-	// Deprecated: Will to change to TranslateProviderBingFree
-	TranslateProviderXiaoNiuFree = "XiaoNiuFree"
-
 	TranslateProviderXiaoNiu  = "XiaoNiu"
 	TranslateProviderDeepL    = "DeepL"
-	TranslateProviderBingFree = "BingFree"
 	TranslateProviderBing     = "Bing"
 )
 
