@@ -3,6 +3,7 @@ package machine
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"os/exec"
 	"runtime"
 
@@ -31,12 +32,19 @@ func NewService() (*Service, error) {
 		return nil, err
 	}
 
+	workDir, err := os.Executable()
+	if err != nil {
+		slog.Error("Get work dir failed", "err", err.Error())
+		return nil, err
+	}
+
 	service := &Service{
 		machineInfo: Info{
 			DeviceId: deviceId,
 			LaunchId: launchId,
 			Os:       runtime.GOOS,
 			Arch:     runtime.GOARCH,
+			WorkDir:  workDir,
 			LanguageTag: IdentifyingLanguageTag{
 				Language: (*languageTag).Language(),
 				Script:   (*languageTag).Script(),
@@ -54,6 +62,7 @@ type Info struct {
 	LaunchId    string                 `json:"launch_id"`
 	Os          string                 `json:"os"`
 	Arch        string                 `json:"arch"`
+	WorkDir     string                 `json:"work_dir"`
 	Country     string                 `json:"country"`
 	LanguageTag IdentifyingLanguageTag `json:"language_tag"`
 	Version     string                 `json:"version"`

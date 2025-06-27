@@ -21,7 +21,8 @@
     },
     "translation": {
       "title": "번역",
-      "target_language": "대상 언어"
+      "target_language": "대상 언어",
+      "engine_provider": "번역 엔진"
     }
   },
   "about": {

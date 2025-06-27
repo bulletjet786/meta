@@ -3,10 +3,10 @@ package updater
 import (
 	"io"
 	"log/slog"
+	"resty.dev/v3"
 	"time"
 
 	"github.com/sanbornm/go-selfupdate/selfupdate"
-	"resty.dev/v3"
 
 	"meta/backend/constants"
 	"meta/backend/integration"
@@ -95,7 +95,7 @@ func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
 	res, err := f.client.R().
 		SetBody(request).
 		SetHeader("X-Meta-Channel", constants.Channel).
-		SetAuthToken(integration.SupabaseServiceKey).
+		SetAuthToken(integration.SupabaseAnonKey).
 		SetDoNotParseResponse(true).
 		Post(f.windowsMetaVersionUrl())
 	if err != nil {

@@ -166,9 +166,11 @@ func (p *SteamExtensionInjector) runStoreExtension(chromeCtx context.Context, ur
 			GamePanel: gamePanel,
 			BlockTranslate: &BlockTranslatePluginOptions{
 				TargetLanguage: p.getSetting().Translate.TargetLanguage,
+				Provider:       p.getSetting().Translate.Provider,
 			},
 			SelectionTranslate: &SelectionTranslatePluginOptions{
 				TargetLanguage: p.getSetting().Translate.TargetLanguage,
+				Provider:       p.getSetting().Translate.Provider,
 			},
 		}
 		optionsStr, err := json.Marshal(&options)
@@ -243,8 +245,10 @@ type StoreGamePanelPluginOptions struct {
 
 type BlockTranslatePluginOptions struct {
 	TargetLanguage string `json:"targetLanguage"`
+	Provider       string `json:"provider"`
 }
 
 type SelectionTranslatePluginOptions struct {
 	TargetLanguage string `json:"targetLanguage"`
+	Provider       string `json:"provider"`
 }

@@ -1,4 +1,6 @@
 build/bin
+build/darwin
+build/windows/installer/tmp
 frontend/dist
 frontend/node_modules
 vendor
@@ -31,3 +33,4 @@ crystal/build
 # Idea directories
 .idea
 .idea_modules
+

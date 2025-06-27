@@ -3,6 +3,7 @@ import { CrystalBlockTranslateControllerWcName, defineCrystalTranslateController
 
 export class BlockTranslatePluginOptions {
 	targetLanguage: string = "zh_CN"
+	provider: string = "BingFree"
 }
 
 export class BlockTranslatePlugin implements IPlugin {
@@ -26,6 +27,7 @@ export class BlockTranslatePlugin implements IPlugin {
 		translateController.setAttribute('translate-node-selector', BlockTranslatePlugin.gameAreaDescription)
 		translateController.setAttribute('container-style', '{ "display": "inline-block", "margin-left": "30px" }')
 		translateController.setAttribute("target-language", this.options.targetLanguage)
+		translateController.setAttribute("provider", this.options.provider)
 		const injectPoint = document.querySelector(BlockTranslatePlugin.gameAreaDescription + " > h2")
 		if (injectPoint == null) {
 			return;

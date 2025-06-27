@@ -50,7 +50,7 @@ func TestService_Send(t *testing.T) {
 				options: tt.fields.options,
 				client:  tt.fields.client,
 			}
-			s.Send(tt.args.eType, tt.args.subType, tt.args.payload)
+			s.E(tt.args.eType, tt.args.subType, tt.args.payload)
 		})
 	}
 }

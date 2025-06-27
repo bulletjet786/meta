@@ -1,5 +1,0 @@
-{
-  "imports": {
-    "express": "npm:express@4.18.2"
-  }
-}
