@@ -1,5 +1,4 @@
 # Options
-Channel ?= Develop
 
 # Built-in
 GOHOSTOS:=$(shell go env GOHOSTOS)
@@ -21,19 +20,13 @@ endif
 build_crystal:
 	cd crystal && pnpm run build:crystal
 
-.PHONY: gen_pb
-gen_pb:
-	buf dep update
-	buf generate
-
 .PHONY: start
 start: build_crystal
-	wails dev -s -ldflags "-X meta/backend/constants.Version=$(VERSION) -X meta/backend/constants.Channel=$(Channel)"
+	wails dev -s -ldflags "-X meta/backend/constants.Version=$(VERSION)"
 
 .PHONY: build
 build: build_crystal
-	rmdir /s /q "build/bin"
-	wails build -nsis -ldflags "-X meta/backend/constants.Version=$(VERSION) -X meta/backend/constants.Channel=$(Channel)"
+	wails build -nsis -ldflags "-X meta/backend/constants.Version=$(VERSION)"
 
 .PHONY: push
 push: build

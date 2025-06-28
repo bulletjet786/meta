@@ -62,9 +62,9 @@ type BypassAgeValidation struct {
 }
 
 const (
-	TranslateProviderXiaoNiu  = "XiaoNiu"
-	TranslateProviderDeepL    = "DeepL"
-	TranslateProviderBing     = "Bing"
+	TranslateProviderXiaoNiu = "XiaoNiu"
+	TranslateProviderDeepL   = "DeepL"
+	TranslateProviderBing    = "Bing"
 )
 
 var supportTranslateEngines = []string{
@@ -85,7 +85,8 @@ type BlockTranslateSetting struct {
 }
 
 type RegularSetting struct {
-	UI RegularUiSetting `yaml:"ui"`
+	Channel string           `yaml:"channel"`
+	UI      RegularUiSetting `yaml:"ui"`
 }
 
 type RegularUiSetting struct {
@@ -107,6 +108,7 @@ func DefaultSetting() *Setting {
 			},
 		},
 		Regular: RegularSetting{
+			Channel: constants.ChannelRelease,
 			UI: RegularUiSetting{
 				Language: defaultLanguage,
 			},
@@ -170,16 +172,29 @@ func NewSettingService(options ServiceOptions, eventService *event.Service) (*Se
 	if err := yaml.Unmarshal(data, setting); err != nil {
 		return nil, err
 	}
+	fillDefault(setting)
+	slog.Info("Load setting", "setting", setting)
+	return &Service{setting: setting, options: options, eventService: eventService}, nil
+}
+
+// TODO: if need to updating, return true.Now the result is unused.
+func fillDefault(setting *Setting) bool {
+	update := false
 	if !lo.Contains(supportTranslateEngines, setting.Translate.Provider) {
 		setting.Translate.Provider = TranslateProviderBing
+		update = true
 	}
 	if !lo.ContainsBy(supportedLanguageLabels, func(item LanguageLabel) bool {
 		return item.Language == setting.Regular.UI.Language
 	}) {
 		setting.Regular.UI.Language = defaultLanguage
+		update = true
 	}
-
-	return &Service{setting: setting, options: options, eventService: eventService}, nil
+	if setting.Regular.Channel == "" {
+		setting.Regular.Channel = constants.ChannelRelease
+		update = true
+	}
+	return update
 }
 
 func computerRegularLanguageFromLanguageTag(languageTag *machine.IdentifyingLanguageTag) string {

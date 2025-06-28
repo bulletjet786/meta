@@ -5,7 +5,7 @@ import (
 	"embed"
 	"flag"
 	"log/slog"
-	"meta/backend/service/user"
+	"meta/backend/dependency"
 	"os"
 
 	"github.com/energye/systray"
@@ -23,6 +23,7 @@ import (
 	"meta/backend/service/steam/common"
 	"meta/backend/service/steam/subscriber"
 	"meta/backend/service/updater"
+	"meta/backend/service/user"
 )
 
 //go:embed crystal/dist/crystal
@@ -38,7 +39,8 @@ const defaultRemoteDebuggingUrl = "http://localhost:8080"
 
 func main() {
 
-	slog.Info("Start meta", "version", constants.Version, "channel", constants.Channel)
+	dependency.InitLogger()
+	slog.Info("Start meta", "version", constants.Version)
 
 	mode := flag.String("mode", constants.UserRunMode, "启动方式")
 	flag.Parse()
@@ -82,7 +84,9 @@ func main() {
 	})
 	embedHttpServer.RunServer()
 
-	updaterService := updater.NewUpdaterService(machineService.GetMachineInfo().DeviceId)
+	updaterService := updater.NewUpdaterService(
+		machineService.GetMachineInfo().DeviceId,
+		settingService.GetSetting().Regular.Channel)
 	updaterService.Start()
 
 	wailsStatusSubscriber := subscriber.NewWailsEventsStatusSubscriber()
@@ -128,7 +132,7 @@ func main() {
 				MLanguage: machineService.GetMachineInfo().LanguageTag,
 				Mode:      *mode,
 			})
-			eventService.P(machineService.GetMachineInfo(), settingService.AutoRunEnabled())
+			eventService.P(machineService.GetMachineInfo(), settingService.AutoRunEnabled(), settingService.GetSetting().Regular.Channel)
 		},
 		OnDomReady: func(ctx context.Context) {},
 		OnBeforeClose: func(ctx context.Context) (prevent bool) {

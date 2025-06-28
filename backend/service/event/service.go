@@ -52,7 +52,7 @@ func (s *Service) E(eType string, subType string, payload any) {
 	}()
 }
 
-func (s *Service) P(machineInfo machine.Info, autoRun bool) {
+func (s *Service) P(machineInfo machine.Info, autoRun bool, channel string) {
 	go func() {
 		info := DeviceInfoModel{
 			DeviceId: s.options.DeviceId,
@@ -60,7 +60,7 @@ func (s *Service) P(machineInfo machine.Info, autoRun bool) {
 				MachineInfo: MachineInfo{
 					Os:      machineInfo.Os,
 					Arch:    machineInfo.Arch,
-					Channel: constants.Channel,
+					Channel: channel,
 					Version: constants.Version,
 					AutoRun: autoRun,
 					Country: machineInfo.Country,

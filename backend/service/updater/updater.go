@@ -3,10 +3,10 @@ package updater
 import (
 	"io"
 	"log/slog"
-	"resty.dev/v3"
 	"time"
 
 	"github.com/sanbornm/go-selfupdate/selfupdate"
+	"resty.dev/v3"
 
 	"meta/backend/constants"
 	"meta/backend/integration"
@@ -23,7 +23,7 @@ type UpdaterService struct {
 	updater *selfupdate.Updater
 }
 
-func NewUpdaterService(deviceId string) *UpdaterService {
+func NewUpdaterService(deviceId string, channel string) *UpdaterService {
 	updater := &selfupdate.Updater{
 		CurrentVersion: constants.Version,
 		ApiURL:         integration.SupabaseApiUrl + versionUrl + "/",
@@ -32,7 +32,7 @@ func NewUpdaterService(deviceId string) *UpdaterService {
 		Dir:            "selfupdate/",
 		CmdName:        cmdName,
 		ForceCheck:     true,
-		Requester:      newMetaFetcher(deviceId),
+		Requester:      newMetaFetcher(deviceId, channel),
 		OnSuccessfulUpdate: func() {
 			slog.Info("Update successful", "from", constants.Version)
 		},
@@ -58,12 +58,13 @@ func (s *UpdaterService) Start() {
 type metaFetcher struct {
 	deviceId   string
 	versionUrl string
+	channel    string
 
 	client         *resty.Client
 	defaultFetcher *selfupdate.HTTPRequester
 }
 
-func newMetaFetcher(deviceId string) *metaFetcher {
+func newMetaFetcher(deviceId string, channel string) *metaFetcher {
 	client := resty.New().
 		EnableGenerateCurlCmd().
 		EnableTrace().
@@ -94,7 +95,7 @@ func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
 
 	res, err := f.client.R().
 		SetBody(request).
-		SetHeader("X-Meta-Channel", constants.Channel).
+		SetHeader("X-Meta-Channel", f.channel).
 		SetAuthToken(integration.SupabaseAnonKey).
 		SetDoNotParseResponse(true).
 		Post(f.windowsMetaVersionUrl())
