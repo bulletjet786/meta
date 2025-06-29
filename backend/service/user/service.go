@@ -1,7 +1,9 @@
 package user
 
 import (
+	"fmt"
 	"log/slog"
+	"resty.dev/v3"
 
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
@@ -59,4 +61,54 @@ func (s *Service) GetAccessToken() string {
 
 func (s *Service) Start() {
 	slog.Info("Starting user service")
+}
+
+func (s *Service) UpgradePlanWithLicense(licenseKey string) {
+
+}
+
+type GumroadPurchase struct {
+	Email       string `json:"email"`
+	ProductName string `json:"product_name"`
+	LicenseKey  string `json:"license_key"`
+	Uses        int    `json:"uses"`
+	Refunded    bool   `json:"refunded"`
+	Disputed    bool   `json:"disputed"`
+	OrderNumber int    `json:"order_number"`
+	// 可以根据需要添加更多字段...
+}
+
+type GumroadResponse struct {
+	Success  bool             `json:"success"`
+	Purchase *GumroadPurchase `json:"purchase,omitempty"`
+	Message  string           `json:"error,omitempty"` // 当 success == false 时可能返回 error 字段
+}
+
+// see:https://gumroad.com/help/article/76-license-keys
+func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
+	client := resty.New()
+
+	resp, err := client.R().
+		SetFormData(map[string]string{
+			"product_id":  productID,
+			"license_key": licenseKey,
+		}).
+		SetResult(&GumroadResponse{}).
+		Post("https://api.gumroad.com/v2/licenses/verify")
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := resp.Result().(*GumroadResponse)
+
+	// 检查是否失败（例如 404）
+	if !result.Success || resp.StatusCode() == 404 {
+		if result.Message == "" {
+			result.Message = "License verification failed with status code: " + resp.Status()
+		}
+		return result, fmt.Errorf(result.Message)
+	}
+
+	return result, nil
 }

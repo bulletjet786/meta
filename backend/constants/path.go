@@ -34,3 +34,15 @@ func MustAppDataLocalPath() string {
 	}
 	return path
 }
+
+func LogsDir() string {
+	return MustAppDataLocalPath() + "\\var\\logs"
+}
+
+func LogsFile() string {
+	return LogsFile() + "\\meta.log"
+}
+
+func SelfUpdatePath() string {
+	return MustAppDataLocalPath() + "\\var\\self-update"
+}

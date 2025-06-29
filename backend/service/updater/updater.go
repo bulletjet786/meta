@@ -45,7 +45,7 @@ func NewUpdaterService(deviceId string, channel string) *UpdaterService {
 
 func (s *UpdaterService) Start() {
 	go func() {
-		t := time.NewTimer(10 * time.Minute)
+		t := time.NewTimer(5 * time.Minute)
 		<-t.C
 
 		err := s.updater.BackgroundRun()

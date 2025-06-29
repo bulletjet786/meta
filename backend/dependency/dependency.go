@@ -1,13 +1,15 @@
 package dependency
 
 import (
-	"gopkg.in/natefinch/lumberjack.v2"
 	"log/slog"
+
+	"gopkg.in/natefinch/lumberjack.v2"
+
 	"meta/backend/constants"
 )
 
 func InitLogger() {
-	logPath := constants.MustAppDataLocalPath() + "\\var\\meta.log"
+	logPath := constants.MustAppDataLocalPath() + "\\var\\logs\\meta.log"
 	log := &lumberjack.Logger{
 		Filename:   logPath,
 		MaxSize:    5,
