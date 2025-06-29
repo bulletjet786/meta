@@ -43,6 +43,6 @@ func LogsFile() string {
 	return LogsFile() + "\\meta.log"
 }
 
-func SelfUpdatePath() string {
-	return MustAppDataLocalPath() + "\\var\\self-update"
+func VarDir() string {
+	return MustAppDataLocalPath() + "\\var"
 }
