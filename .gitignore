@@ -7,21 +7,6 @@ vendor
 
 node_modules
 
-# Logs
-crystal/logs
-crystal/*.log
-crystal/npm-debug.log*
-crystal/yarn-debug.log*
-crystal/yarn-error.log*
-crystal/pnpm-debug.log*
-crystal/lerna-debug.log*
-
-crystal/node_modules
-crystal/dist
-crystal/dist-ssr
-crystal/*.local
-crystal/build
-
 # Editor directories and files
 .DS_Store
 *.suo

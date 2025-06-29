@@ -68,7 +68,7 @@ export class TranslateClient {
       }
     }
     const { data, error } = await supabaseClient.functions.invoke('translation/translate', {
-      body: JSON.stringify(body)
+      body: body
     })
     if (error) {
       console.error(error)

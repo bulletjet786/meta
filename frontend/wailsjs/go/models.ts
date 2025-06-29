@@ -125,6 +125,7 @@ export namespace setting {
 	    }
 	}
 	export class RegularSetting {
+	    Channel: string;
 	    UI: RegularUiSetting;
 	
 	    static createFrom(source: any = {}) {
@@ -133,6 +134,7 @@ export namespace setting {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Channel = source["Channel"];
 	        this.UI = this.convertValues(source["UI"], RegularUiSetting);
 	    }
 	
