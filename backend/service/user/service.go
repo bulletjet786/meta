@@ -53,6 +53,36 @@ func (s *Service) GetAccessToken() string {
 	return s.Session.AccessToken
 }
 
+func (s *Service) UpdateSessionHandler() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		var session Session
+		if err := c.ShouldBindJSON(&session); err != nil {
+			// 重定向到授权失败的页面
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid JSON payload",
+			})
+			return
+		}
+
+		// 
+
+		
+
+		// 重定向到授权成功的页面
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Session updated successfully",
+			"token":   authResult.AccessToken,
+		})
+
+		return
+	}
+}
+
+
+func (s *Service) GetLoginInfo() {
+	return 
+}
+
 // 1. 使用 隐式流
 // 2. 在页面中发送 refresh_token 到wails中
 // 3. 在 wails 中启动 refresh_token 并保存每次的session到内存中
@@ -111,4 +141,19 @@ func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
 	}
 
 	return result, nil
+}
+
+
+type LoginInfo struct {
+	Logined bool `json:"logined"`
+	AccessToken string `json:"access_token"`
+}
+
+type Session struct {
+	AccessToken    string `json:"access_token" binding:"required"`
+	ExpiresIn      string `json:"expires_in" binding:"required"`
+	ExpiresAt      string `json:"expires_at" binding:"required"`
+	ProviderToken  string `json:"provider_token" binding:"required"`
+	RefreshToken   string `json:"refresh_token" binding:"required"`
+	TokenType      string `json:"token_type" binding:"required"`
 }
