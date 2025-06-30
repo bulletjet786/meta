@@ -29,7 +29,7 @@ import (
 //go:embed crystal/dist/crystal
 var crystalFs embed.FS
 
-//go:embed browser/out
+//go:embed all:browser/out
 var browserFs embed.FS
 
 //go:embed all:frontend/dist

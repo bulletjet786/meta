@@ -1,7 +1,7 @@
 
 import {createClient, type Provider} from '@supabase/supabase-js';
 
-interface AuthResult {
+interface Session {
     access_token: string;
     expires_in: string;
     expires_at: string;
@@ -22,9 +22,10 @@ export class UserService {
     })
 
     static metaHost = "http://localhost:15637"
-    static updateSessionUrl = "/user/auth/update_session"
+    static updateSessionUrl = "/api/user/auth/update_session"
+    static authCallbackUrl = "/browser/user/auth/callback.html"
     static getAccessTokenUrl = "/user/auth/get_access_token"
-    async updateSession(authResult: AuthResult) {
+    async updateSession(authResult: Session) {
         await fetch(UserService.metaHost + UserService.updateSessionUrl, {
             method: "POST",
             headers: {
@@ -34,7 +35,7 @@ export class UserService {
         });
     }
 
-    getAuthResult(): AuthResult | null {
+    getAuthResult(): Session | null {
         const hash = window.location.hash.substring(1);
 
         const params = new URLSearchParams(hash);
@@ -73,7 +74,7 @@ export class UserService {
         const { data, error } = await UserService.supabaseClient.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: "http://127.0.0.1:15637/browser/user/auth/callback",
+                redirectTo: UserService.metaHost + UserService.authCallbackUrl,
                 scopes: scope,
             },
         });

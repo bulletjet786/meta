@@ -40,6 +40,9 @@ func (s *EmbedServer) embedServer() error {
 		return err
 	}
 	browserSub, err := fs.Sub(s.options.BrowserFS, "browser/out")
+	if err != nil {
+		return err
+	}
 	engine.StaticFS("/crystal", http.FS(crystalSub))
 	engine.StaticFS("/browser", http.FS(browserSub))
 	engine.POST(s.options.UpdateSessionEndpoint, s.options.UpdateSessionHandler)
