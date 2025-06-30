@@ -5,7 +5,6 @@ import (
 	"embed"
 	"flag"
 	"log/slog"
-	"meta/backend/dependency"
 	"os"
 
 	"github.com/energye/systray"
@@ -15,6 +14,7 @@ import (
 	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"meta/backend/constants"
+	"meta/backend/dependency"
 	"meta/backend/service/event"
 	"meta/backend/service/http"
 	"meta/backend/service/machine"
@@ -28,6 +28,9 @@ import (
 
 //go:embed crystal/dist/crystal
 var crystalFs embed.FS
+
+//go:embed browser/out
+var browserFs embed.FS
 
 //go:embed all:frontend/dist
 var assets embed.FS
@@ -79,8 +82,10 @@ func main() {
 	}
 
 	embedHttpServer := http.NewEmbedServer(http.EmbedServerOptions{
-		CrystalFs:   &crystalFs,
-		AuthHandler: userService.AuthHandler(),
+		CrystalFs:             &crystalFs,
+		BrowserFS:             &browserFs,
+		UpdateSessionEndpoint: userService.UpdateSessionEndpoint(),
+		UpdateSessionHandler:  userService.UpdateSessionHandler(),
 	})
 	embedHttpServer.RunServer()
 
@@ -119,6 +124,7 @@ func main() {
 			machineService,
 			steamService,
 			settingService,
+			userService,
 		},
 		OnStartup: func(ctx context.Context) {
 			machineService.Start()

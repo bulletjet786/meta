@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import "@and-design/v5-patch-for-react-19"
+// import "@and-design/v5-patch-for-react-19";
 import { userService } from "@/app/service/user";
 import { Button } from "antd";
 

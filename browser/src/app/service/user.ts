@@ -68,12 +68,12 @@ export class UserService {
     }
 
     async signInWithOAuth(provider: Provider, scope: string) {
-        UserService.supabaseClient.auth.signOut()
+        await UserService.supabaseClient.auth.signOut();
 
         const { data, error } = await UserService.supabaseClient.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: "http://127.0.0.1:3000/user/auth/callback",
+                redirectTo: "http://127.0.0.1:15637/browser/user/auth/callback",
                 scopes: scope,
             },
         });

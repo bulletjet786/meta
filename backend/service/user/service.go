@@ -3,10 +3,13 @@ package user
 import (
 	"fmt"
 	"log/slog"
-	"resty.dev/v3"
+	"net/http"
+	"os/exec"
+	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
+	"resty.dev/v3"
 
 	"meta/backend/service/event"
 )
@@ -32,28 +35,26 @@ func NewUserService(options ServiceOptions, eventService *event.Service) (*Servi
 }
 
 func (s *Service) SignIn() {
-
+	err := s.OpenBrowser("http://localhost:15637/browser/user/auth/sign.html")
+	if err != nil {
+		slog.Error("OpenBrowser failed", "err", err)
+		return
+	}
 }
 
 func (s *Service) Auth() {
 
 }
 
-func (s *Service) AuthCallbackEndpoint() string {
-	return "/user/auth/callback"
-}
-
-func (s *Service) AuthHandler() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		return
-	}
+func (s *Service) UpdateSessionEndpoint() string {
+	return "/api/user/auth/update_session"
 }
 
 func (s *Service) GetAccessToken() string {
 	return s.Session.AccessToken
 }
 
-func (s *Service) UpdateSessionHandler() gin.HandlerFunc{
+func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var session Session
 		if err := c.ShouldBindJSON(&session); err != nil {
@@ -63,24 +64,20 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc{
 			})
 			return
 		}
-
-		// 
-
-		
+		slog.Info("update session with request", "session", session)
 
 		// 重定向到授权成功的页面
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Session updated successfully",
-			"token":   authResult.AccessToken,
-		})
+		//c.JSON(http.StatusOK, gin.H{
+		//	"message": "Session updated successfully",
+		//	"token":   authResult.AccessToken,
+		//})
 
 		return
 	}
 }
 
-
 func (s *Service) GetLoginInfo() {
-	return 
+	return
 }
 
 // 1. 使用 隐式流
@@ -94,11 +91,12 @@ func (s *Service) Start() {
 }
 
 func (s *Service) UpgradePlanWithLicense(licenseKey string) (err error) {
-	verified, err := verifyLicense("", licenseKey)
+	_, err = verifyLicense("", licenseKey)
 	if err != nil {
 		slog.Error("verifyLicense failed", "err", err)
 		return err
 	}
+	return nil
 }
 
 type GumroadPurchase struct {
@@ -147,18 +145,38 @@ func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
 	return result, nil
 }
 
-
 type LoginInfo struct {
-	Logined bool `json:"logined"`
-	Plan string `json:"plan"`
+	Logined     bool   `json:"logined"`
+	Plan        string `json:"plan"`
 	AccessToken string `json:"access_token"`
 }
 
 type Session struct {
-	AccessToken    string `json:"access_token" binding:"required"`
-	ExpiresIn      string `json:"expires_in" binding:"required"`
-	ExpiresAt      string `json:"expires_at" binding:"required"`
-	ProviderToken  string `json:"provider_token" binding:"required"`
-	RefreshToken   string `json:"refresh_token" binding:"required"`
-	TokenType      string `json:"token_type" binding:"required"`
+	AccessToken   string `json:"access_token" binding:"required"`
+	ExpiresIn     string `json:"expires_in" binding:"required"`
+	ExpiresAt     string `json:"expires_at" binding:"required"`
+	ProviderToken string `json:"provider_token" binding:"required"`
+	RefreshToken  string `json:"refresh_token" binding:"required"`
+	TokenType     string `json:"token_type" binding:"required"`
+}
+
+func (s *Service) OpenBrowser(url string) error {
+	var cmd string
+	var args []string
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start", "", url}
+	case "darwin":
+		cmd = "open"
+		args = []string{url}
+	case "linux":
+		cmd = "xdg-open"
+		args = []string{url}
+	default:
+		return fmt.Errorf("unsupported platform")
+	}
+
+	return exec.Command(cmd, args...).Start()
 }

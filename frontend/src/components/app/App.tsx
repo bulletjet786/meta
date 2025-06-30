@@ -5,6 +5,7 @@ import React, {useState} from "react";
 import { useTranslation } from "react-i18next";
 import Setting from "../page/Setting";
 import About from "../page/About";
+import {SignIn} from "../../../wailsjs/go/user/Service";
 
 const { Sider, Content } = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -71,7 +72,15 @@ function App() {
                                 backgroundColor: "#ffffff",
                             }}
                         >
-                            <Avatar size='large' icon={ <UserOutlined />} />
+                            <Avatar
+                                size='large'
+                                icon={ <UserOutlined /> }
+                                onClick={
+                                    () => {
+                                        SignIn()
+                                    }
+                                }
+                            />
                             {/*<Avatar style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />*/}
                         </div>
                     </Sider>

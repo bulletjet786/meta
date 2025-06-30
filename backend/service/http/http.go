@@ -26,8 +26,10 @@ func NewEmbedServer(options EmbedServerOptions) *EmbedServer {
 }
 
 type EmbedServerOptions struct {
-	CrystalFs   *embed.FS
-	AuthHandler gin.HandlerFunc
+	CrystalFs             *embed.FS
+	BrowserFS             *embed.FS
+	UpdateSessionHandler  gin.HandlerFunc
+	UpdateSessionEndpoint string
 }
 
 func (s *EmbedServer) embedServer() error {
@@ -37,8 +39,10 @@ func (s *EmbedServer) embedServer() error {
 	if err != nil {
 		return err
 	}
+	browserSub, err := fs.Sub(s.options.BrowserFS, "browser/out")
 	engine.StaticFS("/crystal", http.FS(crystalSub))
-	engine.GET("/user/auth/callback", s.options.AuthHandler)
+	engine.StaticFS("/browser", http.FS(browserSub))
+	engine.POST(s.options.UpdateSessionEndpoint, s.options.UpdateSessionHandler)
 
 	if engine.Run(ListenOn) != nil {
 		return err

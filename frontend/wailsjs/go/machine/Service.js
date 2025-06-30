@@ -6,10 +6,6 @@ export function GetMachineInfo() {
   return window['go']['machine']['Service']['GetMachineInfo']();
 }
 
-export function OpenBrowser(arg1) {
-  return window['go']['machine']['Service']['OpenBrowser'](arg1);
-}
-
 export function Start() {
   return window['go']['machine']['Service']['Start']();
 }
