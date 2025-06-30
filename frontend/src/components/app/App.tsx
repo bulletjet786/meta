@@ -1,5 +1,6 @@
 import Guide from "../page/Guide";
-import {ConfigProvider, Layout, Menu, MenuProps} from "antd";
+import {Avatar, ConfigProvider, Layout, Menu, MenuProps} from "antd";
+import { UserOutlined } from '@ant-design/icons';
 import React, {useState} from "react";
 import { useTranslation } from "react-i18next";
 import Setting from "../page/Setting";
@@ -46,9 +47,14 @@ function App() {
                 }
             }>
                 <Layout style={{height: '100%', width: '100%'}}>
-                    <Sider style={{height: '100%'}}>
+                    <Sider style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                    }}>
                         <Menu
-                            style={{height: '100%'}}
+                            style={{height: '90%'}}
                             defaultSelectedKeys={[menuSelect]}
                             mode="inline"
                             items={items}
@@ -58,6 +64,16 @@ function App() {
                                 }
                             }
                         />
+
+                        <div
+                            style={{
+                                height: '10%',
+                                backgroundColor: "#ffffff",
+                            }}
+                        >
+                            <Avatar size='large' icon={ <UserOutlined />} />
+                            {/*<Avatar style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />*/}
+                        </div>
                     </Sider>
                     <Content>
                         {content}
