@@ -93,8 +93,12 @@ func (s *Service) Start() {
 	slog.Info("Starting user service")
 }
 
-func (s *Service) UpgradePlanWithLicense(licenseKey string) {
-
+func (s *Service) UpgradePlanWithLicense(licenseKey string) (err error) {
+	verified, err := verifyLicense("", licenseKey)
+	if err != nil {
+		slog.Error("verifyLicense failed", "err", err)
+		return err
+	}
 }
 
 type GumroadPurchase struct {
@@ -146,6 +150,7 @@ func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
 
 type LoginInfo struct {
 	Logined bool `json:"logined"`
+	Plan string `json:"plan"`
 	AccessToken string `json:"access_token"`
 }
 
