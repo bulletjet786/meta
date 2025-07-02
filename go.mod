@@ -17,16 +17,15 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/supabase-community/gotrue-go v1.2.0
 	github.com/supabase-community/supabase-go v0.0.4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1128
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tmt v1.0.1115
 	github.com/wailsapp/wails/v2 v2.10.1
 	github.com/whosonfirst/go-rfc-5646 v0.1.0
+	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/sys v0.32.0
 	golang.org/x/text v0.23.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 	resty.dev/v3 v3.0.0-beta.2
-	github.com/zalando/go-keyring v0.2.6
 )
 
 require (
@@ -81,6 +80,7 @@ require (
 	github.com/supabase-community/functions-go v0.0.0-20220927045802-22373e6cb51d // indirect
 	github.com/supabase-community/postgrest-go v0.0.11 // indirect
 	github.com/supabase-community/storage-go v0.7.0 // indirect
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1128 // indirect
 	github.com/tevino/abool v0.0.0-20220530134649-2bfc934cb23c // indirect
 	github.com/tkrajina/go-reflector v0.5.8 // indirect
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect

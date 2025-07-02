@@ -15,7 +15,7 @@ import (
 
 	"meta/backend/constants"
 	"meta/backend/dependency"
-	"meta/backend/service/event"
+	"meta/backend/event"
 	"meta/backend/service/http"
 	"meta/backend/service/machine"
 	"meta/backend/service/setting"
@@ -54,19 +54,11 @@ func main() {
 		startHidden = true
 	}
 
-	machineService, err := machine.NewService()
-	if err != nil {
-		slog.Error("Machine service init error", "err", err)
-		os.Exit(1)
-	}
+	machineService := machine.NewService()
 
 	event.Init(machineService.GetMachineInfo().DeviceId, machineService.GetMachineInfo().LaunchId)
 
-	settingService, err := setting.NewSettingService(setting.ServiceOptions{})
-	if err != nil {
-		slog.Error("Setting service init error", "err", err)
-		os.Exit(1)
-	}
+	settingService := setting.NewSettingService(setting.ServiceOptions{})
 
 	userService, err := user.NewUserService(user.ServiceOptions{})
 	if err != nil {
@@ -98,7 +90,7 @@ func main() {
 			wailsStatusSubscriber.RuntimePub,
 		},
 	})
-	trayManager := NewTrayManager(eventService)
+	trayManager := NewTrayManager()
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -135,7 +127,7 @@ func main() {
 		},
 		OnDomReady: func(ctx context.Context) {},
 		OnBeforeClose: func(ctx context.Context) (prevent bool) {
-			eventService.E(event.TypeForApp, event.SubTypeForAppStop, event.EmptyPayload{})
+			event.E(event.TypeForApp, event.SubTypeForAppStop, event.EmptyPayload{})
 			return false
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
@@ -156,14 +148,10 @@ func main() {
 
 type TrayManager struct {
 	context context.Context
-
-	eventService *event.Service
 }
 
-func NewTrayManager(eventService *event.Service) *TrayManager {
-	return &TrayManager{
-		eventService: eventService,
-	}
+func NewTrayManager() *TrayManager {
+	return &TrayManager{}
 }
 
 func (t *TrayManager) Start(context context.Context) {
