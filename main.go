@@ -60,22 +60,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	eventService, err := event.NewService(event.ServiceOptions{
-		DeviceId: machineService.GetMachineInfo().DeviceId,
-		LaunchId: machineService.GetMachineInfo().LaunchId,
-	})
-	if err != nil {
-		slog.Error("Event service init error", "err", err)
-		os.Exit(1)
-	}
+	event.Init(machineService.GetMachineInfo().DeviceId, machineService.GetMachineInfo().LaunchId)
 
-	settingService, err := setting.NewSettingService(setting.ServiceOptions{}, eventService)
+	settingService, err := setting.NewSettingService(setting.ServiceOptions{})
 	if err != nil {
 		slog.Error("Setting service init error", "err", err)
 		os.Exit(1)
 	}
 
-	userService, err := user.NewUserService(user.ServiceOptions{}, eventService)
+	userService, err := user.NewUserService(user.ServiceOptions{})
 	if err != nil {
 		slog.Error("User service init error", "err", err)
 		os.Exit(1)
@@ -132,13 +125,13 @@ func main() {
 			steamService.Start()
 			trayManager.Start(ctx)
 
-			eventService.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
+			event.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 				Success:   true,
 				Version:   constants.Version,
 				MLanguage: machineService.GetMachineInfo().LanguageTag,
 				Mode:      *mode,
 			})
-			eventService.P(machineService.GetMachineInfo(), settingService.AutoRunEnabled(), settingService.GetSetting().Regular.Channel)
+			event.P(machineService.GetMachineInfo(), settingService.AutoRunEnabled(), settingService.GetSetting().Regular.Channel)
 		},
 		OnDomReady: func(ctx context.Context) {},
 		OnBeforeClose: func(ctx context.Context) (prevent bool) {
@@ -151,7 +144,7 @@ func main() {
 	})
 	if err != nil {
 		slog.Error("Wails run error", "err", err)
-		eventService.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
+		event.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{
 			Success:   false,
 			Version:   constants.Version,
 			MLanguage: machineService.GetMachineInfo().LanguageTag,

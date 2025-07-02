@@ -16,11 +16,16 @@ const (
 )
 
 type EmbedServer struct {
+	engine *gin.Engine
+
 	options EmbedServerOptions
 }
 
 func NewEmbedServer(options EmbedServerOptions) *EmbedServer {
+	engine := gin.Default()
+	engine.Use(cors.Default())
 	return &EmbedServer{
+		engine: engine,
 		options: options,
 	}
 }
@@ -33,8 +38,6 @@ type EmbedServerOptions struct {
 }
 
 func (s *EmbedServer) embedServer() error {
-	engine := gin.Default()
-	engine.Use(cors.Default())
 	crystalSub, err := fs.Sub(s.options.CrystalFs, "crystal/dist/crystal")
 	if err != nil {
 		return err
@@ -61,4 +64,8 @@ func (s *EmbedServer) RunServer() {
 			os.Exit(1)
 		}
 	}()
+}
+
+func (s *EmbedServer) AddRouter(path string, handler gin.HandlerFunc) {
+	engine.POST(path, handler)
 }

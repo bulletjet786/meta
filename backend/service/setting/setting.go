@@ -128,15 +128,13 @@ type Service struct {
 	setting *Setting
 
 	options ServiceOptions
-
-	eventService *event.Service
 }
 
 type ServiceOptions struct {
 	SettingPath string
 }
 
-func NewSettingService(options ServiceOptions, eventService *event.Service) (*Service, error) {
+func NewSettingService(options ServiceOptions) *Service {
 	if options.SettingPath == "" {
 		options.SettingPath = defaultSettingPath()
 	}
@@ -239,7 +237,7 @@ func (s *Service) AutoRunEnable() error {
 	// 向注册表中写入启动项
 	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
-		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateEnable,
 			Success: false,
 			Reason:  err.Error(),
@@ -254,14 +252,14 @@ func (s *Service) AutoRunEnable() error {
 	value := fmt.Sprintf(`%s`, config.Exec)
 	err = key.SetStringValue(config.Name, value)
 	if err != nil {
-		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateEnable,
 			Success: false,
 			Reason:  err.Error(),
 		})
 		return err
 	}
-	s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+	event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 		Operate: event.AppAutoRunOperateEnable,
 		Success: true,
 	})
@@ -286,14 +284,14 @@ func (s *Service) AutoRunDisable() error {
 
 	err = key.DeleteValue(config.Name)
 	if err != nil {
-		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateDisable,
 			Success: false,
 			Reason:  err.Error(),
 		})
 		return err
 	}
-	s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+	event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 		Operate: event.AppAutoRunOperateDisable,
 		Success: true,
 	})

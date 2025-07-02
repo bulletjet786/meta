@@ -20,8 +20,6 @@ import (
 type Service struct {
 	options ServiceOptions
 
-	eventService *event.Service
-
 	Session        *types.Session
 	supabaseClient *supabase.Client
 }
@@ -29,7 +27,7 @@ type Service struct {
 type ServiceOptions struct {
 }
 
-func NewUserService(options ServiceOptions, eventService *event.Service) (*Service, error) {
+func NewUserService(options ServiceOptions) (*Service, error) {
 	supabaseClient, err := integration.NewSupabaseClient()
 	if err != nil {
 		return nil, err

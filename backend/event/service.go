@@ -11,31 +11,26 @@ import (
 	"meta/backend/service/machine"
 )
 
-var ()
+var collector *collector = &collector{}
 
-type Service struct {
-	options ServiceOptions
+type collector struct {
+	DeviceId string
+	LaunchId string
 
 	client *supabase.Client
 }
 
-type ServiceOptions struct {
-	DeviceId string
-	LaunchId string
+func Init(deviceId string, launchId string) {
+	collector.DeviceId = deviceId
+	collector.LaunchId = launchId
+	collector.client = integration.MustSupabaseClient()
 }
 
-func NewService(options ServiceOptions) (*Service, error) {
-	client, err := integration.NewSupabaseClient()
-	if err != nil {
-		return nil, err
+func E(eType string, subType string, payload any) {
+	if (collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil) {
+		slog.Warn("collector not initialized")
+		return
 	}
-	return &Service{
-		options: options,
-		client:  client,
-	}, nil
-}
-
-func (s *Service) E(eType string, subType string, payload any) {
 	go func() {
 		event := event{
 			DeviceId:  s.options.DeviceId,
@@ -52,7 +47,11 @@ func (s *Service) E(eType string, subType string, payload any) {
 	}()
 }
 
-func (s *Service) P(machineInfo machine.Info, autoRun bool, channel string) {
+func P(machineInfo machine.Info, autoRun bool, channel string) {
+	if (collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil) {
+		slog.Warn("collector not initialized")
+		return
+	}
 	go func() {
 		info := DeviceInfoModel{
 			DeviceId: s.options.DeviceId,

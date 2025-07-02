@@ -15,25 +15,28 @@ type Service struct {
 	machineInfo Info
 }
 
-func NewService() (*Service, error) {
+func NewService() *Service {
 
 	deviceId, err := machineid.ID()
 	if err != nil {
 		slog.Error("Get machine id failed", "err", err.Error())
-		return nil, err
+		os.Exit(21)
+		return nil
 	}
 	launchId := uuid.NewString()
 
 	languageTag, err := FindLanguageTag()
 	if err != nil {
 		slog.Error("Find locale failed", "err", err.Error())
-		return nil, err
+		os.Exit(21)
+		return nil
 	}
 
 	workDir, err := os.Executable()
 	if err != nil {
 		slog.Error("Get work dir failed", "err", err.Error())
-		return nil, err
+		os.Exit(21)
+		return nil
 	}
 
 	service := &Service{
@@ -52,7 +55,7 @@ func NewService() (*Service, error) {
 		},
 	}
 	slog.Info("New App with machine info", "machine", service.machineInfo)
-	return service, nil
+	return service
 }
 
 type Info struct {
