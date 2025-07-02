@@ -12,9 +12,15 @@ import (
 	"github.com/supabase-community/gotrue-go/types"
 	"github.com/supabase-community/supabase-go"
 	"resty.dev/v3"
+	"github.com/zalando/go-keyring"
 
 	"meta/backend/integration"
 	"meta/backend/service/event"
+)
+
+const (
+	serviceKey = "fun.deckz.meta"
+	refreshTokenKey = "refresh_token"
 )
 
 type Service struct {
@@ -28,10 +34,19 @@ type ServiceOptions struct {
 }
 
 func NewUserService(options ServiceOptions) (*Service, error) {
-	supabaseClient, err := integration.NewSupabaseClient()
-	if err != nil {
-		return nil, err
+	supabaseClient := integration.MustSupabaseClient()
+	refreshToken := LoadRefreshToken()
+	if refreshToken != "" {
+		session, err := supabaseClient.Auth.RefreshToken(refreshToken)
+		if err != nil {
+			slog.Error("RefreshToken failed", "err", err)
+		} else {
+			slog.Info("RefreshToken success", "session", session)
+			s.Session = &session
+			SaveRefreshToken(session.RefreshToken)
+		}
 	}
+
 
 	return &Service{
 		options:        options,
@@ -215,8 +230,21 @@ func (s *Service) EnableTokenAutoRefresh(session types.Session) {
 			s.supabaseClient.UpdateAuthSession(newSession)
 			session = newSession
 			s.Session = &newSession
+			SaveRefreshToken(session.RefreshToken)
 			attempt = 0
 			expiresAt = time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
 		}
 	}()
+}
+
+func SaveRefreshToken(token string) error {
+	return := keyring.Set(serviceKey, refreshTokenKey)
+}
+
+func LoadRefreshToken() string {
+	secret, err := keyring.Get(serviceKey, refreshTokenKey)
+    if err != nil {
+        return ""
+    }
+	return string(secret)
 }
