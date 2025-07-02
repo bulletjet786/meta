@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os/exec"
 	"runtime"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
@@ -75,7 +76,7 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 		slog.Info("update session with request", "session", session)
 
 		s.supabaseClient.UpdateAuthSession(session)
-		s.supabaseClient.EnableTokenAutoRefresh(session)
+		s.EnableTokenAutoRefresh(session)
 		c.JSON(http.StatusOK, gin.H{
 			"code":    0,
 			"message": "Session updated successfully",
@@ -84,8 +85,12 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 	}
 }
 
-func (s *Service) GetLoginInfo() {
-	return
+func (s *Service) GetLoginInfo() LoginInfo {
+	return LoginInfo{
+		LoggedIn:    true,
+		Plan:        "free",
+		AccessToken: s.Session.AccessToken,
+	}
 }
 
 func (s *Service) Start() {
@@ -148,7 +153,7 @@ func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
 }
 
 type LoginInfo struct {
-	Logined     bool   `json:"logined"`
+	LoggedIn    bool   `json:"loggedIn"`
 	Plan        string `json:"plan"`
 	AccessToken string `json:"access_token"`
 }
@@ -181,4 +186,39 @@ func (s *Service) OpenBrowser(url string) error {
 	}
 
 	return exec.Command(cmd, args...).Start()
+}
+
+func (s *Service) EnableTokenAutoRefresh(session types.Session) {
+	go func() {
+		attempt := 0
+		expiresAt := time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
+
+		for {
+			sleepDuration := (time.Until(expiresAt) / 4) * 3
+			if sleepDuration > 0 {
+				time.Sleep(sleepDuration)
+			}
+
+			// Refresh the token
+			newSession, err := s.supabaseClient.RefreshToken(session.RefreshToken)
+			if err != nil {
+				attempt++
+				if attempt <= 3 {
+					slog.Info("Error refreshing token, retrying with exponential backoff: %v", err)
+					time.Sleep(time.Duration(1<<attempt) * time.Second)
+				} else {
+					slog.Info("Error refreshing token, retrying every 30 seconds: %v", err)
+					time.Sleep(30 * time.Second)
+				}
+				continue
+			}
+
+			// Update the session, reset the attempt counter, and update the expiresAt time
+			s.supabaseClient.UpdateAuthSession(newSession)
+			session = newSession
+			s.Session = &newSession
+			attempt = 0
+			expiresAt = time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
+		}
+	}()
 }
