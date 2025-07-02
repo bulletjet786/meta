@@ -3,8 +3,8 @@ import {createClient, type Provider} from '@supabase/supabase-js';
 
 interface Session {
     access_token: string;
-    expires_in: string;
-    expires_at: string;
+    expires_in: number;
+    expires_at: number;
     provider_token: string;
     refresh_token: string;
     token_type: string;
@@ -41,8 +41,16 @@ export class UserService {
         const params = new URLSearchParams(hash);
 
         const accessToken = params.get('access_token');
-        const expiresIn = params.get('expires_in');
-        const expiresAt = params.get('expires_at');
+        const expiresInStr = params.get('expires_in');
+        if (expiresInStr == null || expiresInStr == "") {
+            return null;
+        }
+        const expiresIn = parseInt(expiresInStr);
+        const expiresAtStr = params.get('expires_at');
+        if (expiresAtStr == null || expiresAtStr == "") {
+            return null;
+        }
+        const expiresAt = parseInt(expiresAtStr);
         const providerToken = params.get('provider_token');
         const refreshToken = params.get('refresh_token');
         const tokenType = params.get('token_type');

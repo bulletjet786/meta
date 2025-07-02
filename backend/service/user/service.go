@@ -9,8 +9,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
+	"github.com/supabase-community/supabase-go"
 	"resty.dev/v3"
 
+	"meta/backend/integration"
 	"meta/backend/service/event"
 )
 
@@ -19,17 +21,23 @@ type Service struct {
 
 	eventService *event.Service
 
-	Session *types.Session
+	Session        *types.Session
+	supabaseClient *supabase.Client
 }
 
 type ServiceOptions struct {
 }
 
 func NewUserService(options ServiceOptions, eventService *event.Service) (*Service, error) {
+	supabaseClient, err := integration.NewSupabaseClient()
+	if err != nil {
+		return nil, err
+	}
 
 	return &Service{
-		options:      options,
-		eventService: eventService,
+		options:        options,
+		eventService:   eventService,
+		supabaseClient: supabaseClient,
 	}, nil
 
 }
@@ -56,7 +64,7 @@ func (s *Service) GetAccessToken() string {
 
 func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var session Session
+		var session types.Session
 		if err := c.ShouldBindJSON(&session); err != nil {
 			// 重定向到授权失败的页面
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -66,12 +74,12 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 		}
 		slog.Info("update session with request", "session", session)
 
-		// 重定向到授权成功的页面
-		//c.JSON(http.StatusOK, gin.H{
-		//	"message": "Session updated successfully",
-		//	"token":   authResult.AccessToken,
-		//})
-
+		s.supabaseClient.UpdateAuthSession(session)
+		s.supabaseClient.EnableTokenAutoRefresh(session)
+		c.JSON(http.StatusOK, gin.H{
+			"code":    0,
+			"message": "Session updated successfully",
+		})
 		return
 	}
 }
@@ -79,12 +87,6 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 func (s *Service) GetLoginInfo() {
 	return
 }
-
-// 1. 使用 隐式流
-// 2. 在页面中发送 refresh_token 到wails中
-// 3. 在 wails 中启动 refresh_token 并保存每次的session到内存中
-// 4. 每次刷新时都保存到设置中
-// 5. 暴露 access_token 给 crystal（或者是否可以暴露refresh_token给crystal）
 
 func (s *Service) Start() {
 	slog.Info("Starting user service")
