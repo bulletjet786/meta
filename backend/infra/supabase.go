@@ -1,7 +1,8 @@
-package integration
+package infra
 
 import (
-	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/supabase-community/supabase-go"
 )

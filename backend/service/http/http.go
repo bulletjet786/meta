@@ -25,16 +25,14 @@ func NewEmbedServer(options EmbedServerOptions) *EmbedServer {
 	engine := gin.Default()
 	engine.Use(cors.Default())
 	return &EmbedServer{
-		engine: engine,
+		engine:  engine,
 		options: options,
 	}
 }
 
 type EmbedServerOptions struct {
-	CrystalFs             *embed.FS
-	BrowserFS             *embed.FS
-	UpdateSessionHandler  gin.HandlerFunc
-	UpdateSessionEndpoint string
+	CrystalFs *embed.FS
+	BrowserFS *embed.FS
 }
 
 func (s *EmbedServer) embedServer() error {
@@ -46,11 +44,10 @@ func (s *EmbedServer) embedServer() error {
 	if err != nil {
 		return err
 	}
-	engine.StaticFS("/crystal", http.FS(crystalSub))
-	engine.StaticFS("/browser", http.FS(browserSub))
-	engine.POST(s.options.UpdateSessionEndpoint, s.options.UpdateSessionHandler)
+	s.engine.StaticFS("/crystal", http.FS(crystalSub))
+	s.engine.StaticFS("/browser", http.FS(browserSub))
 
-	if engine.Run(ListenOn) != nil {
+	if s.engine.Run(ListenOn) != nil {
 		return err
 	}
 	return nil
@@ -67,5 +64,5 @@ func (s *EmbedServer) RunServer() {
 }
 
 func (s *EmbedServer) AddRouter(path string, handler gin.HandlerFunc) {
-	engine.POST(path, handler)
+	s.engine.POST(path, handler)
 }

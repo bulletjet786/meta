@@ -7,13 +7,13 @@ import (
 	"github.com/supabase-community/supabase-go"
 
 	"meta/backend/constants"
-	"meta/backend/integration"
+	"meta/backend/infra"
 	"meta/backend/service/machine"
 )
 
-var collector *collector = &collector{}
+var collector = &Collector{}
 
-type collector struct {
+type Collector struct {
 	DeviceId string
 	LaunchId string
 
@@ -23,24 +23,24 @@ type collector struct {
 func Init(deviceId string, launchId string) {
 	collector.DeviceId = deviceId
 	collector.LaunchId = launchId
-	collector.client = integration.MustSupabaseClient()
+	collector.client = infra.MustSupabaseClient()
 }
 
 func E(eType string, subType string, payload any) {
-	if (collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil) {
+	if collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil {
 		slog.Warn("collector not initialized")
 		return
 	}
 	go func() {
 		event := event{
-			DeviceId:  s.options.DeviceId,
-			LaunchId:  s.options.LaunchId,
+			DeviceId:  collector.DeviceId,
+			LaunchId:  collector.LaunchId,
 			Type:      eType,
 			SubType:   subType,
 			Payload:   payload,
 			CreatedAt: time.Now(),
 		}
-		_, _, err := s.client.From("event").Insert(event, false, "", "minimal", "").Execute()
+		_, _, err := collector.client.From("event").Insert(event, false, "", "minimal", "").Execute()
 		if err != nil {
 			slog.Warn("E event failed", "err", err)
 		}
@@ -48,13 +48,13 @@ func E(eType string, subType string, payload any) {
 }
 
 func P(machineInfo machine.Info, autoRun bool, channel string) {
-	if (collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil) {
+	if collector == nil || collector.DeviceId == "" || collector.LaunchId == "" || collector.client == nil {
 		slog.Warn("collector not initialized")
 		return
 	}
 	go func() {
 		info := DeviceInfoModel{
-			DeviceId: s.options.DeviceId,
+			DeviceId: collector.DeviceId,
 			Info: DeviceInfo{
 				MachineInfo: MachineInfo{
 					Os:      machineInfo.Os,
@@ -71,8 +71,8 @@ func P(machineInfo machine.Info, autoRun bool, channel string) {
 				},
 			},
 		}
-		result := s.client.Rpc("collect_device_info", "", map[string]any{
-			"p_device_id": s.options.DeviceId,
+		result := collector.client.Rpc("collect_device_info", "", map[string]any{
+			"p_device_id": collector.DeviceId,
 			"p_info":      info,
 		})
 		slog.Info("upsert device info", "info", info, "result", result)

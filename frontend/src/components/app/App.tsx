@@ -48,7 +48,7 @@ function App() {
                 }
             }>
                 <Layout style={{height: '100%', width: '100%'}}>
-                    <Sider style={{
+                    <Sider width='100px' style={{
                         height: '100%',
                         display: 'flex',
                         flexDirection: 'column',

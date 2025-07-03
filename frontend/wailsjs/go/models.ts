@@ -461,24 +461,3 @@ export namespace types {
 
 }
 
-export namespace user {
-	
-	export class LoginInfo {
-	    loggedIn: boolean;
-	    plan: string;
-	    access_token: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new LoginInfo(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.loggedIn = source["loggedIn"];
-	        this.plan = source["plan"];
-	        this.access_token = source["access_token"];
-	    }
-	}
-
-}
-

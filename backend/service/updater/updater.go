@@ -1,13 +1,14 @@
 package updater
 
 import (
-	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"io"
 	"log/slog"
+
+	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"resty.dev/v3"
 
 	"meta/backend/constants"
-	"meta/backend/integration"
+	"meta/backend/infra"
 )
 
 const (
@@ -25,7 +26,7 @@ type UpdaterService struct {
 func NewUpdaterService(deviceId string, channel string) *UpdaterService {
 	updater := &selfupdate.Updater{
 		CurrentVersion: constants.Version,
-		ApiURL:         integration.SupabaseApiUrl + versionUrl + "/",
+		ApiURL:         infra.SupabaseApiUrl + versionUrl + "/",
 		BinURL:         metaPublicUrl,
 		DiffURL:        metaPublicUrl,
 		Dir:            "selfupdate/",
@@ -81,7 +82,7 @@ func newMetaFetcher(deviceId string, channel string) *metaFetcher {
 }
 
 func (f *metaFetcher) windowsMetaVersionUrl() string {
-	return integration.SupabaseApiUrl + f.versionUrl + "/" + cmdName + "/windows-amd64.json"
+	return infra.SupabaseApiUrl + f.versionUrl + "/" + cmdName + "/windows-amd64.json"
 }
 
 func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
@@ -97,7 +98,7 @@ func (f *metaFetcher) Fetch(url string) (io.ReadCloser, error) {
 	res, err := f.client.R().
 		SetBody(request).
 		SetHeader("X-Meta-Channel", f.channel).
-		SetAuthToken(integration.SupabaseAnonKey).
+		SetAuthToken(infra.SupabaseAnonKey).
 		SetDoNotParseResponse(true).
 		Post(f.windowsMetaVersionUrl())
 	if err != nil {

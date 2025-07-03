@@ -60,18 +60,14 @@ func main() {
 
 	settingService := setting.NewSettingService(setting.ServiceOptions{})
 
-	userService, err := user.NewUserService(user.ServiceOptions{})
-	if err != nil {
-		slog.Error("User service init error", "err", err)
-		os.Exit(1)
-	}
+	userService := user.NewUserService(user.ServiceOptions{})
 
 	embedHttpServer := http.NewEmbedServer(http.EmbedServerOptions{
-		CrystalFs:             &crystalFs,
-		BrowserFS:             &browserFs,
-		UpdateSessionEndpoint: userService.UpdateSessionEndpoint(),
-		UpdateSessionHandler:  userService.UpdateSessionHandler(),
+		CrystalFs: &crystalFs,
+		BrowserFS: &browserFs,
 	})
+	embedHttpServer.AddRouter(userService.UpdateSessionEndpoint(), userService.UpdateSessionHandler())
+	embedHttpServer.AddRouter(userService.GetLoginInfoEndpoint(), userService.GetLoginInfoHandler())
 	embedHttpServer.RunServer()
 
 	updaterService := updater.NewUpdaterService(
@@ -93,7 +89,7 @@ func main() {
 	trayManager := NewTrayManager()
 
 	// Create application with options
-	err = wails.Run(&options.App{
+	err := wails.Run(&options.App{
 		Title:             "Steam Meta",
 		Width:             800,
 		Height:            600,

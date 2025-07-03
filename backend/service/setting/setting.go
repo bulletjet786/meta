@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"meta/backend/constants"
-	"meta/backend/service/event"
+	"meta/backend/event"
 	"meta/backend/service/machine"
 )
 
@@ -146,33 +146,38 @@ func NewSettingService(options ServiceOptions) *Service {
 		// 创建默认配置
 		data, err := yaml.Marshal(setting)
 		if err != nil {
-			return nil, err
+			slog.Error("Failed to marshal setting", "error", err)
+			os.Exit(21)
 		}
 		// 获取父目录
 		parentDir := filepath.Dir(options.SettingPath)
 
 		// 检查并创建父目录（如果它不存在）
 		if err := os.MkdirAll(parentDir, os.ModePerm); err != nil {
-			return nil, err
+			slog.Error("Failed to create parent directory", "error", err)
+			os.Exit(22)
 		}
 		if err := os.WriteFile(options.SettingPath, data, 0644); err != nil {
-			return nil, err
+			slog.Error("Failed to write setting", "error", err)
+			os.Exit(23)
 		}
 	} else if err != nil {
-		return nil, err
+		slog.Error("Failed to stat setting", "error", err)
+		os.Exit(24)
 	}
 
 	// 否则从设置文件中读取配置
 	data, err := os.ReadFile(options.SettingPath)
 	if err != nil {
-		return nil, err
+		slog.Error("Failed to read setting", "error", err)
+		os.Exit(25)
 	}
 	if err := yaml.Unmarshal(data, setting); err != nil {
-		return nil, err
+		slog.Error("Failed to unmarshal setting", "error", err)
 	}
 	fillDefault(setting)
 	slog.Info("Load setting", "setting", setting)
-	return &Service{setting: setting, options: options, eventService: eventService}, nil
+	return &Service{setting: setting, options: options}
 }
 
 // TODO: if need to updating, return true.Now the result is unused.
@@ -271,7 +276,7 @@ func (s *Service) AutoRunDisable() error {
 	// 删除注册表中的启动项
 	key, err := registry.OpenKey(registry.CURRENT_USER, autorunKey, registry.WRITE)
 	if err != nil {
-		s.eventService.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
+		event.E(event.TypeForApp, event.SubTypeForAutoRun, event.AppAutoRunTypeEventPayload{
 			Operate: event.AppAutoRunOperateDisable,
 			Success: false,
 			Reason:  err.Error(),

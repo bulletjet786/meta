@@ -11,15 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
 	"github.com/supabase-community/supabase-go"
-	"resty.dev/v3"
 	"github.com/zalando/go-keyring"
+	"resty.dev/v3"
 
-	"meta/backend/integration"
-	"meta/backend/service/event"
+	"meta/backend/infra"
 )
 
 const (
-	serviceKey = "fun.deckz.meta"
+	serviceKey      = "fun.deckz.meta"
 	refreshTokenKey = "refresh_token"
 )
 
@@ -33,26 +32,25 @@ type Service struct {
 type ServiceOptions struct {
 }
 
-func NewUserService(options ServiceOptions) (*Service, error) {
-	supabaseClient := integration.MustSupabaseClient()
+func NewUserService(options ServiceOptions) *Service {
+	supabaseClient := infra.MustSupabaseClient()
+	service := &Service{
+		options:        options,
+		supabaseClient: supabaseClient,
+	}
 	refreshToken := LoadRefreshToken()
 	if refreshToken != "" {
-		session, err := supabaseClient.Auth.RefreshToken(refreshToken)
+		session, err := supabaseClient.RefreshToken(refreshToken)
 		if err != nil {
 			slog.Error("RefreshToken failed", "err", err)
 		} else {
 			slog.Info("RefreshToken success", "session", session)
-			s.Session = &session
-			SaveRefreshToken(session.RefreshToken)
+			service.Session = &session
+			_ = SaveRefreshToken(session.RefreshToken)
 		}
 	}
 
-
-	return &Service{
-		options:        options,
-		eventService:   eventService,
-		supabaseClient: supabaseClient,
-	}, nil
+	return service
 
 }
 
@@ -70,10 +68,6 @@ func (s *Service) Auth() {
 
 func (s *Service) UpdateSessionEndpoint() string {
 	return "/api/user/auth/update_session"
-}
-
-func (s *Service) GetAccessToken() string {
-	return s.Session.AccessToken
 }
 
 func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
@@ -98,11 +92,23 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 	}
 }
 
-func (s *Service) GetLoginInfo() LoginInfo {
-	return LoginInfo{
-		LoggedIn:    true,
-		Plan:        "free",
-		AccessToken: s.Session.AccessToken,
+func (s *Service) GetLoginInfoEndpoint() string {
+	return "/api/user/auth/get_login_info"
+}
+
+func (s *Service) GetLoginInfoHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if s.Session == nil {
+			c.JSON(http.StatusOK, LoginInfo{
+				LoggedIn: false,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, LoginInfo{
+			LoggedIn:    true,
+			Plan:        "free",
+			AccessToken: s.Session.AccessToken,
+		})
 	}
 }
 
@@ -230,7 +236,7 @@ func (s *Service) EnableTokenAutoRefresh(session types.Session) {
 			s.supabaseClient.UpdateAuthSession(newSession)
 			session = newSession
 			s.Session = &newSession
-			SaveRefreshToken(session.RefreshToken)
+			_ = SaveRefreshToken(session.RefreshToken)
 			attempt = 0
 			expiresAt = time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
 		}
@@ -238,13 +244,17 @@ func (s *Service) EnableTokenAutoRefresh(session types.Session) {
 }
 
 func SaveRefreshToken(token string) error {
-	return := keyring.Set(serviceKey, refreshTokenKey)
+	if err := keyring.Set(serviceKey, refreshTokenKey, token); err != nil {
+		slog.Error("Error saving refresh token to keyring: %v", err)
+		return err
+	}
+	return nil
 }
 
 func LoadRefreshToken() string {
 	secret, err := keyring.Get(serviceKey, refreshTokenKey)
-    if err != nil {
-        return ""
-    }
-	return string(secret)
+	if err != nil {
+		return ""
+	}
+	return secret
 }
