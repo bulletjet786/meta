@@ -1,5 +1,4 @@
 import {
-    DisableSteamCEFDebugging,
     EnableSteamCEFDebugging,
     SteamCEFDebuggingEnabled
 } from "../../wailsjs/go/steam/Service";

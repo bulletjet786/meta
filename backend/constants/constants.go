@@ -5,7 +5,8 @@ const (
 )
 
 const (
-	EventForStatusChange = "steam.connection.status"
+	EventForStatusChange  = "steam.connection.status"
+	EventForUserLoginInfo = "user.login_info"
 )
 
 const (

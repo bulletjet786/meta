@@ -78,7 +78,3 @@ type IdentifyingLanguageTag struct {
 func (s *Service) GetMachineInfo() Info {
 	return s.machineInfo
 }
-
-func (s *Service) Start() {
-
-}

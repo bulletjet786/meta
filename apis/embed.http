@@ -1,0 +1,12 @@
+### 获取登录信息
+POST http://127.0.0.1:15637/api/user/auth/get_login_info
+Content-Type: application/json
+
+{}
+
+### 退出登录
+
+POST http://127.0.0.1:15637/api/user/auth/sign_out
+Content-Type: application/json
+
+{}

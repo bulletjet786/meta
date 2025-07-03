@@ -3,5 +3,3 @@
 import {machine} from '../models';
 
 export function GetMachineInfo():Promise<machine.Info>;
-
-export function Start():Promise<void>;

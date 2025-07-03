@@ -3,10 +3,9 @@ import {Card, Space, Switch, Typography} from 'antd';
 import {EventsOff, EventsOn} from "../../../wailsjs/runtime";
 import useCEFDebuggingStore from "../../context/cef_debugging";
 import { useTranslation } from "react-i18next";
+import { SteamConnectionStatusEventName } from "../../constants/constants";
 
 const {Title, Paragraph, Text} = Typography;
-
-const SteamConnectionStatusEventName = "steam.connection.status"
 
 function guideStateReducer(model: any, action: any): any {
     console.log("Do state reducer for model: %s, with: %s, ", JSON.stringify(model), JSON.stringify(action))

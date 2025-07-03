@@ -5,7 +5,3 @@
 export function GetMachineInfo() {
   return window['go']['machine']['Service']['GetMachineInfo']();
 }
-
-export function Start() {
-  return window['go']['machine']['Service']['Start']();
-}

@@ -66,6 +66,7 @@ func main() {
 		CrystalFs: &crystalFs,
 		BrowserFS: &browserFs,
 	})
+	embedHttpServer.AddRouter(userService.SignOutEndpoint(), userService.SignOutHandler())
 	embedHttpServer.AddRouter(userService.UpdateSessionEndpoint(), userService.UpdateSessionHandler())
 	embedHttpServer.AddRouter(userService.GetLoginInfoEndpoint(), userService.GetLoginInfoHandler())
 	embedHttpServer.RunServer()
@@ -108,9 +109,9 @@ func main() {
 			userService,
 		},
 		OnStartup: func(ctx context.Context) {
-			machineService.Start()
 			wailsStatusSubscriber.Start(ctx)
 			steamService.Start()
+			userService.Start(ctx)
 			trayManager.Start(ctx)
 
 			event.E(event.TypeForApp, event.SubTypeForAppStart, event.AppStartTypeEventPayload{

@@ -1,19 +1,20 @@
 package user
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os/exec"
-	"runtime"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/gotrue-go/types"
 	"github.com/supabase-community/supabase-go"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 	"github.com/zalando/go-keyring"
 	"resty.dev/v3"
 
+	"meta/backend/constants"
 	"meta/backend/infra"
 )
 
@@ -25,6 +26,7 @@ const (
 type Service struct {
 	options ServiceOptions
 
+	wailsCtx       context.Context
 	Session        *types.Session
 	supabaseClient *supabase.Client
 }
@@ -51,19 +53,30 @@ func NewUserService(options ServiceOptions) *Service {
 	}
 
 	return service
-
 }
 
 func (s *Service) SignIn() {
-	err := s.OpenBrowser("http://localhost:15637/browser/user/auth/sign.html")
-	if err != nil {
-		slog.Error("OpenBrowser failed", "err", err)
-		return
-	}
+	wailsruntime.BrowserOpenURL(s.wailsCtx, "http://localhost:15637/browser/user/auth/sign.html")
 }
 
-func (s *Service) Auth() {
+func (s *Service) SignOut() {
+	s.Session = nil
+	wailsruntime.EventsEmit(s.wailsCtx, constants.EventForUserLoginInfo, s.GetLoginInfo())
+	_ = keyring.Delete(serviceKey, refreshTokenKey)
+}
 
+func (s *Service) SignOutEndpoint() string {
+	return "/api/user/auth/sign_out"
+}
+
+func (s *Service) SignOutHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		s.SignOut()
+		c.JSON(http.StatusOK, gin.H{
+			"code":    0,
+			"message": "Sign out successfully",
+		})
+	}
 }
 
 func (s *Service) UpdateSessionEndpoint() string {
@@ -83,7 +96,10 @@ func (s *Service) UpdateSessionHandler() gin.HandlerFunc {
 		slog.Info("update session with request", "session", session)
 
 		s.supabaseClient.UpdateAuthSession(session)
-		s.EnableTokenAutoRefresh(session)
+		s.Session = &session
+		wailsruntime.EventsEmit(s.wailsCtx, constants.EventForUserLoginInfo, s.GetLoginInfo())
+		_ = SaveRefreshToken(session.RefreshToken)
+		s.enableTokenAutoRefresh()
 		c.JSON(http.StatusOK, gin.H{
 			"code":    0,
 			"message": "Session updated successfully",
@@ -112,8 +128,21 @@ func (s *Service) GetLoginInfoHandler() gin.HandlerFunc {
 	}
 }
 
-func (s *Service) Start() {
-	slog.Info("Starting user service")
+func (s *Service) GetLoginInfo() LoginInfo {
+	if s.Session == nil {
+		return LoginInfo{
+			LoggedIn: false,
+		}
+	}
+	return LoginInfo{
+		LoggedIn:    true,
+		Plan:        "free",
+		AccessToken: s.Session.AccessToken,
+	}
+}
+
+func (s *Service) Start(wailsContext context.Context) {
+	s.wailsCtx = wailsContext
 }
 
 func (s *Service) UpgradePlanWithLicense(licenseKey string) (err error) {
@@ -186,40 +215,23 @@ type Session struct {
 	TokenType     string `json:"token_type" binding:"required"`
 }
 
-func (s *Service) OpenBrowser(url string) error {
-	var cmd string
-	var args []string
-
-	switch runtime.GOOS {
-	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start", "", url}
-	case "darwin":
-		cmd = "open"
-		args = []string{url}
-	case "linux":
-		cmd = "xdg-open"
-		args = []string{url}
-	default:
-		return fmt.Errorf("unsupported platform")
-	}
-
-	return exec.Command(cmd, args...).Start()
-}
-
-func (s *Service) EnableTokenAutoRefresh(session types.Session) {
+func (s *Service) enableTokenAutoRefresh() {
 	go func() {
 		attempt := 0
-		expiresAt := time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
+		expiresAt := time.Now().Add(time.Duration(s.Session.ExpiresIn) * time.Second)
 
 		for {
 			sleepDuration := (time.Until(expiresAt) / 4) * 3
 			if sleepDuration > 0 {
 				time.Sleep(sleepDuration)
 			}
+			// NOTE: now we don't allow user to sign out.It is just for debugging.
+			if s.Session == nil {
+				continue
+			}
 
 			// Refresh the token
-			newSession, err := s.supabaseClient.RefreshToken(session.RefreshToken)
+			newSession, err := s.supabaseClient.RefreshToken(s.Session.RefreshToken)
 			if err != nil {
 				attempt++
 				if attempt <= 3 {
@@ -234,11 +246,11 @@ func (s *Service) EnableTokenAutoRefresh(session types.Session) {
 
 			// Update the session, reset the attempt counter, and update the expiresAt time
 			s.supabaseClient.UpdateAuthSession(newSession)
-			session = newSession
 			s.Session = &newSession
-			_ = SaveRefreshToken(session.RefreshToken)
+			wailsruntime.EventsEmit(s.wailsCtx, constants.EventForUserLoginInfo, s.GetLoginInfo())
+			_ = SaveRefreshToken(s.Session.RefreshToken)
 			attempt = 0
-			expiresAt = time.Now().Add(time.Duration(session.ExpiresIn) * time.Second)
+			expiresAt = time.Now().Add(time.Duration(s.Session.ExpiresIn) * time.Second)
 		}
 	}()
 }
@@ -248,12 +260,14 @@ func SaveRefreshToken(token string) error {
 		slog.Error("Error saving refresh token to keyring: %v", err)
 		return err
 	}
+	slog.Info("Refresh token saved to keyring")
 	return nil
 }
 
 func LoadRefreshToken() string {
 	secret, err := keyring.Get(serviceKey, refreshTokenKey)
 	if err != nil {
+		slog.Warn("Error loading refresh token from keyring: %v", err)
 		return ""
 	}
 	return secret
