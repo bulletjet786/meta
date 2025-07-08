@@ -1,12 +1,19 @@
 // import { userService } from "@/app/service/user";
 import { Button } from "antd";
 
-// https://github.com/vercel/next.js/discussions/72795
-// https://github.com/ant-design/ant-design/discussions/52505
-
 // userService.signInWithGoogleOAuth()
 
-export default function Page() {
+const container = document.getElementById('root')
+
+const root = createRoot(container!)
+
+root.render(
+    <React.StrictMode>
+        <Page/>
+    </React.StrictMode>
+)
+
+function Page() {
     return (
         <div>
             <Button onClick={() => {}}>

@@ -1,7 +1,17 @@
 import { useEffect } from "react";
 // import { userService } from "../..//service/user";
 
-export default function Page() {
+const container = document.getElementById('root')
+
+const root = createRoot(container!)
+
+root.render(
+    <React.StrictMode>
+        <Page/>
+    </React.StrictMode>
+)
+
+function Page() {
     // useEffect(() => {
     //     userService.authCallback()
     // }, [])
