@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import React from 'react'
 import {createRoot} from 'react-dom/client'
-// import { userService } from "../..//service/user";
+import {userService} from "../../service/user";
 
 const container = document.getElementById('root')
 
@@ -14,9 +14,9 @@ root.render(
 )
 
 function Page() {
-    // useEffect(() => {
-    //     userService.authCallback()
-    // }, [])
+    useEffect(() => {
+        userService.authCallback()
+    }, [])
 
     return (
         <div>

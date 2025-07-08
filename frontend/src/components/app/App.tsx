@@ -81,7 +81,7 @@ function App() {
                         justifyContent: 'space-between',
                     }}>
                         <Menu
-                            style={{height: '90%'}}
+                            style={{height: '100%'}}
                             defaultSelectedKeys={[menuSelect]}
                             mode="inline"
                             items={items}

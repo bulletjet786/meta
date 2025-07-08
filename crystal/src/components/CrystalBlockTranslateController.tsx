@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Button, ConfigProvider} from "antd";
+import {Button, Tooltip, ConfigProvider} from "antd";
 import r2wc from '@r2wc/react-to-web-component'
 import { defineWc } from './utils.ts'
 import {translateClient} from "../client/translate/translate.ts";
 import IconFont from "../icon/icon.ts";
-import React, from 'react';
-import { Button, Tooltip } from 'antd';
-import { GlobalOutlined } from '@ant-design/icons'; // 使用Ant Design内置的全球化图标，风格统一
+import { GlobalOutlined } from '@ant-design/icons';
 
 const pinkColorPrimary = "#722ed1"
 

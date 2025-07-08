@@ -32,7 +32,6 @@ func NewEmbedServer(options EmbedServerOptions) *EmbedServer {
 
 type EmbedServerOptions struct {
 	CrystalFs *embed.FS
-	BrowserFS *embed.FS
 }
 
 func (s *EmbedServer) embedServer() error {
@@ -40,12 +39,7 @@ func (s *EmbedServer) embedServer() error {
 	if err != nil {
 		return err
 	}
-	browserSub, err := fs.Sub(s.options.BrowserFS, "browser/out")
-	if err != nil {
-		return err
-	}
 	s.engine.StaticFS("/crystal", http.FS(crystalSub))
-	s.engine.StaticFS("/browser", http.FS(browserSub))
 
 	if s.engine.Run(ListenOn) != nil {
 		return err
