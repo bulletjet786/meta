@@ -1,25 +1,44 @@
+
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://crh5nk8g91hjuhhg05pg.baseapi.memfiredb.com'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiZXhwIjozMzAyOTEwNjczLCJpYXQiOjE3MjYxMTA2NzMsImlzcyI6InN1cGFiYXNlIn0.tjKhMaUfAP6uKXlZFFtw8OKDSBAYkbpkwoKBcj-yaqg'
-const supabaseClient = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = 'https://joincyfzsuvolyklirho.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaW5jeWZ6c3V2b2x5a2xpcmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5ODc2MjMsImV4cCI6MjA1NjU2MzYyM30.1MOumBy-Hatxd25iynOUJh2ggIWdZMEzQeUfzV1fsZE'
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    accessToken: async () => {
+        try {
+            const loginInfo = await getLoginInfo()
+            if (loginInfo.signIn && loginInfo.accessToken != "") {
+                return loginInfo.accessToken
+            }
+            return null
+        } catch {
+            return null
+        }
+    }
+})
 
 export default supabaseClient
 
-// function init() {
-//     const { accessToken, expiresIn } = getAuthAccessToken()
-//     startRefreshTokenBackgroundTask()
-// }
-//
-// function startRefreshTokenBackgroundTask() {
-//     const { accessToken, expiresIn } = getAuthAccessToken()
-//     supabaseClient.auth.setAuth(accessToken)
-//     timeout.setTimeout(() => {
-//         startRefreshTokenBackgroundTask()
-//     }, expiresIn * 1000)
-// }
-//
-// function getAuthAccessToken(): string {
-//     return "abc"
-// }
+interface LoginInfo {
+    signIn: true,
+    plan: string,
+    accessToken: string
+}
 
+async function getLoginInfo(): Promise<LoginInfo> {
+    const url = 'http://127.0.0.1:15637/api/user/auth/get_login_info';
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+}

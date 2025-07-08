@@ -33,11 +33,11 @@ export default function LoginPage() {
                         <Avatar size={64} icon={<LockOutlined />} style={{ backgroundColor: '#1677ff' }} />
 
                         <div style={{ marginBottom: 16 }}>
-                            <Title level={2} style={{ marginBottom: 8 }}>
-                                欢迎来到 SteamMeta
+                            <Title level={3} style={{ marginBottom: 8 }}>
+                                Welcome to SteamMeta.
                             </Title>
-                            <Text type="secondary">
-                                登录以解锁您的专属翻译与增强功能
+                            <Text>
+                                Sign in to enable Steam client translations.
                             </Text>
                         </div>
 

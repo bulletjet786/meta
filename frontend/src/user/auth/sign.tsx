@@ -1,9 +1,9 @@
-import { Button } from "antd";
 import React, {useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
 import { userService } from '../../service/user'
+import { Card, Typography, Spin } from "antd";
 
-// userService.signInWithGoogleOAuth()
+const { Title } = Typography;
 
 const container = document.getElementById('root')
 
@@ -17,17 +17,32 @@ root.render(
 
 export default function Page() {
     useEffect(() => {
-        userService.signInWithGoogleOAuth()
+        // 触发 OAuth 登录
+        userService.signInWithGoogleOAuth();
     }, []);
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4">
-            <div className="card w-full max-w-md shadow-xl bg-base-100 text-center transition hover:shadow-2xl">
-                <div className="card-body items-center">
-                    <span className="loading loading-spinner loading-lg text-primary"></span>
 
-                    <h1 className="text-2xl font-bold mt-4">Signing in...</h1>
-                </div>
-            </div>
+    return (
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px',
+            backgroundColor: '#f0f2f5'
+        }}>
+            <Card
+                style={{
+                    maxWidth: 480,
+                    width: '100%',
+                    textAlign: 'center',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                }}
+            >
+                <Spin size="large"/>
+                <Title level={2} style={{marginTop: 16}}>
+                    Signing in...
+                </Title>
+            </Card>
         </div>
-    )
+    );
 }
