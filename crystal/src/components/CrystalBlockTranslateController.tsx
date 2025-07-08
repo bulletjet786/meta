@@ -4,6 +4,9 @@ import r2wc from '@r2wc/react-to-web-component'
 import { defineWc } from './utils.ts'
 import {translateClient} from "../client/translate/translate.ts";
 import IconFont from "../icon/icon.ts";
+import React, from 'react';
+import { Button, Tooltip } from 'antd';
+import { GlobalOutlined } from '@ant-design/icons'; // 使用Ant Design内置的全球化图标，风格统一
 
 const pinkColorPrimary = "#722ed1"
 
@@ -109,3 +112,30 @@ export const CrystalTranslateControllerWc = r2wc(CrystalBlockTranslateController
 export function defineCrystalTranslateControllerWc() {
     defineWc(CrystalBlockTranslateControllerWcName, CrystalTranslateControllerWc)
 }
+
+// 假设这是包裹翻译按钮的组件
+const TranslateButton = ({ onClick, containerStyle }) => {
+
+  return (
+    // 使用 Tooltip 提供清晰的功能说明，这是非常好的UX实践
+    <Tooltip title="Translate to English" mouseEnterDelay={0.5}>
+      <Button
+        // type="text" 是关键，它提供了最干净的外观
+        type="text"
+        size="small"
+        // 使用内置图标，保证风格统一和高清显示
+        icon={<GlobalOutlined style={{ fontSize: '16px' }} />}
+        onClick={onClick}
+        // Ghost属性在某些背景下效果更好，可以尝试
+        // ghost 
+        style={{
+          // 微调样式，使其更完美地融入
+          color: '#8f98a0', // 尝试使用Steam现有的次要文字颜色
+          ...containerStyle
+        }}
+        // 增加一个aria-label，对屏幕阅读器友好
+        aria-label="Translate comment"
+      />
+    </Tooltip>
+  );
+};
