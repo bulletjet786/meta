@@ -26,7 +26,7 @@ import (
 	"meta/backend/service/user"
 )
 
-//go:embed crystal/dist/crystal
+//go:embed crystal/dist
 var crystalFs embed.FS
 
 //go:embed all:frontend/dist

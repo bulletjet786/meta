@@ -57,7 +57,7 @@ func NewUserService(options ServiceOptions) *Service {
 }
 
 func (s *Service) SignIn() {
-	wailsruntime.BrowserOpenURL(s.wailsCtx, "http://localhost:5173/user/auth/sign.html")
+	wailsruntime.BrowserOpenURL(s.wailsCtx, "http://localhost:15637/pages/user/auth/sign.html")
 }
 
 func (s *Service) SignOut() {

@@ -1,26 +1,9 @@
-import React, {useEffect} from 'react'
-import {createRoot} from 'react-dom/client'
-import { userService } from '../../service/user'
 import { Card, Typography, Spin } from "antd";
 
 const { Title } = Typography;
 
-const container = document.getElementById('root')
 
-const root = createRoot(container!)
-
-root.render(
-    <React.StrictMode>
-        <Page/>
-    </React.StrictMode>
-)
-
-export default function Page() {
-    useEffect(() => {
-        // 触发 OAuth 登录
-        userService.signInWithGoogleOAuth();
-    }, []);
-
+export default function Signing()  {
     return (
         <div style={{
             minHeight: '100vh',

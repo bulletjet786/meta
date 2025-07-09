@@ -4,13 +4,13 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build --mode development --config vite.config.ts",
+    "dev": "vite --config vite.sign.config.ts",
+    "build": "tsc -b && vite build --mode development --config vite.sign.config.ts",
     "lint": "eslint .",
     "test": "jest",
-    "preview": "vite preview",
-    "build:wc": "vite build --mode development --config vite.wc.config.ts",
-    "build:wc:prod": "vite build --mode production --config vite.wc.config.ts",
+    "preview": "vite preview --config vite.sign.config.ts",
+    "build:sign": "vite build --mode development --config vite.sign.config.ts",
+    "build:sign:prod": "vite build --mode production --config vite.sign.config.ts",
     "build:crystal": "vite build --mode development --config vite.crystal.config.ts",
     "build:crystal:prod": "vite build --mode production --config vite.crystal.config.ts"
   },

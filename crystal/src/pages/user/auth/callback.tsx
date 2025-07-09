@@ -1,8 +1,8 @@
 import {createRoot} from 'react-dom/client'
-import {userService} from "../../service/user";
+import { userService } from '../../../service/user'
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Spin, Button, Result } from 'antd';
-const { Title, Paragraph } = Typography;
+import { Card, Result } from 'antd';
+import Signing from "./signing.tsx";
 
 const container = document.getElementById('root')
 
@@ -22,7 +22,7 @@ export default function Page() {
     useEffect(() => {
         const handleAuth = async () => {
             try {
-                await userService.authCallback(); // 调用你的登录回调
+                await userService.authCallback();
                 setSuccess(true);
             } catch (error) {
                 console.error('登录失败:', error);
@@ -54,10 +54,7 @@ export default function Page() {
                 }}
             >
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                        <Spin size="large" />
-                        <Paragraph style={{ marginTop: 16 }}>正在验证您的身份...</Paragraph>
-                    </div>
+                    <Signing/>
                 ) : success ? (
                     <Result
                         status="success"
