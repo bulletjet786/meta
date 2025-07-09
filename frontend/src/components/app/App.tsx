@@ -47,7 +47,7 @@ function App() {
         { key: 'about', label: t('about.name') },
       ];
 
-    if (!loginInfo || !(loginInfo!).loggedIn) {
+    if (!loginInfo || !(loginInfo!).sign_in) {
         return <LoginPage/>
     }
 

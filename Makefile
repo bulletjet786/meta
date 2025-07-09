@@ -14,16 +14,12 @@ endif
 build_crystal:
 	cd crystal && pnpm run build:crystal
 
-.PHONY: build_browser
-build_browser:
-	cd browser && pnpm run build
-
 .PHONY: start
-start: build_crystal # build_browser
+start: build_crystal
 	wails dev -s -ldflags "-X meta/backend/constants.Version=$(VERSION)"
 
 .PHONY: build
-build: build_browser build_crystal
+build: build_crystal
 	rmdir /s /q build\bin || cmd /c "exit /b 0"
 	mkdir build\bin
 	wails build -nsis -ldflags "-X meta/backend/constants.Version=$(VERSION)"

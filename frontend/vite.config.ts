@@ -12,7 +12,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        sign: resolve(__dirname, 'user/auth/isgn.html'),
+        sign: resolve(__dirname, 'user/auth/sign.html'),
         callback: resolve(__dirname, 'user/auth/callback.html'),
       },
     },

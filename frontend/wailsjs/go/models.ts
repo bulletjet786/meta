@@ -243,7 +243,7 @@ export namespace setting {
 export namespace user {
 	
 	export class LoginInfo {
-	    loggedIn: boolean;
+	    sign_in: boolean;
 	    plan: string;
 	    access_token: string;
 	
@@ -253,7 +253,7 @@ export namespace user {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.loggedIn = source["loggedIn"];
+	        this.sign_in = source["sign_in"];
 	        this.plan = source["plan"];
 	        this.access_token = source["access_token"];
 	    }
