@@ -13,6 +13,19 @@
         }
     },
     "setting": {
+        "unlock": {
+            "title": "Unlock Premium Features",
+            "description_line1": "Join our QQ group at ",
+            "qq_group": "[Your QQ Group Number]",
+            "or": " or email us at ",
+            "email": "[Your Email Address]",
+            "description_line2": " to get a free unlock code and experience more accurate DeepL translation.",
+            "input_placeholder": "Enter your unlock code",
+            "button": "Unlock",
+            "please_enter_code": "Please enter the unlock code.",
+            "success_message": "Welcome, SuperFan! DeepL is now unlocked.",
+            "error_message": "Incorrect code. Please try again."
+        },
         "name": "Settings",
         "regular": {
             "title": "General",

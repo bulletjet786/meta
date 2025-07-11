@@ -47,9 +47,9 @@ function App() {
         { key: 'about', label: t('about.name') },
       ];
 
-    if (!loginInfo || !(loginInfo!).sign_in) {
-        return <LoginPage/>
-    }
+    // if (!loginInfo || !(loginInfo!).sign_in) {
+    //     return <LoginPage/>
+    // }
 
     let content = (<div></div>)
     switch (menuSelect) {

@@ -51,6 +51,8 @@ type TranslateSetting struct {
 	Provider string `yaml:"provider"`
 	// 母语
 	TargetLanguage string `yaml:"targetLanguage"`
+	// DeepLBeta
+	DeepLUnlocked bool `yaml:"deepUnlocked"`
 }
 
 type LowestPriceSetting struct {

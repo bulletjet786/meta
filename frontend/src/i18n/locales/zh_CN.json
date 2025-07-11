@@ -23,6 +23,19 @@
             "title": "翻译",
             "target_language": "目标语言",
             "engine_provider": "翻译引擎"
+        },
+        "unlock": {
+            "title": "解锁高级功能",
+            "description_line1": "加入我们的QQ群 ",
+            "qq_group": "[你的QQ群号]",
+            "or": " 或发送邮件至 ",
+            "email": "[你的邮箱地址]",
+            "description_line2": "，即可免费获取解锁代码，体验更精准的DeepL翻译。",
+            "input_placeholder": "在此输入您收到的解锁代码",
+            "button": "解锁",
+            "please_enter_code": "请输入解锁代码。",
+            "success_message": "欢迎你，SuperFan！DeepL功能现已解锁。",
+            "error_message": "代码不正确，请重试。"
         }
     },
     "about": {

@@ -20,7 +20,8 @@ const Setting = () => {
     const [uiLanguageSelect, setUiLanguageSelect] = useState<string>("en_US")
     const [autoRunEnabled, setAutoRunEnabled] = useState<boolean>(false)
     const [targetLanguage, setTargetLanguage] = useState<string>("en_US")
-    const [engineProvider, setEngineProvider] = useState<string>("BingFree")
+    const [engineProvider, setEngineProvider] = useState<string>("Bing")
+    const [engineDeepLUnlocked, setEngineDeepLUnlocked] = useState<boolean>>(false)
 
     useEffect(() => {
         SupportedLanguageLabels().then((languages) => {
@@ -35,6 +36,7 @@ const Setting = () => {
             setTargetLanguage(setting.Translate.TargetLanguage)
             setUiLanguageSelect(setting.Regular.UI.Language)
             setEngineProvider(setting.Translate.Provider)
+            setEngineDeepLUnlocked(setting.Translate.DeepLUnlocked)
         })
     }, []);
 
@@ -74,6 +76,25 @@ const Setting = () => {
                 setEngineProvider(select)
             })
         })
+    }
+
+    function handleUnlock() {
+        if (!unlockCode) {
+            message.warning(t('setting.unlock.please_enter_code'));
+            return;
+        }
+        setUnlocking(true);
+        UnlockFeatures(unlockCode).then(success => {
+            if (success) {
+                message.success(t('setting.unlock.success_message'));
+                setIsDeepLUnlocked(true); // 更新UI状态，隐藏解锁模块
+            } else {
+                message.error(t('setting.unlock.error_message'));
+            }
+        }).finally(() => {
+            setUnlocking(false);
+            setUnlockCode(""); // 清空输入框
+        });
     }
 
     function switchAutoRun(checked: boolean) {
@@ -187,10 +208,50 @@ const Setting = () => {
                             options={[
                                 {value: 'Bing', label: 'Bing'},
                                 {value: 'XiaoNiu', label: 'XiaoNiu'},
+                                {
+                                    value: 'DeepL',
+                                    label: (
+                                        <Space>
+                                            <span>DeepL</span>
+                                            {!isDeepLUnlocked && <LockOutlined/>}
+                                        </Space>
+                                    ),
+                                    disabled: !engineDeepLUnlocked
+                                },
                             ]}
                             onChange={(value) => updateTranslateProvider(value)}
                         />
                     </Col>
+
+                    {!isDeepLUnlocked && (
+                        <div style={{
+                            marginTop: 40,
+                            padding: 24,
+                            background: 'rgba(0,0,0,0.02)',
+                            borderRadius: 8,
+                            border: '1px solid rgba(0,0,0,0.06)'
+                        }}>
+                            <Title level={4}>{t('setting.unlock.title')}</Title>
+                            <Paragraph type="secondary">
+                                {t('setting.unlock.description_line1')}
+                                <Text strong>{t('setting.unlock.qq_group')}</Text>
+                                {t('setting.unlock.or')}
+                                <Text strong>{t('setting.unlock.email')}</Text>
+                                {t('setting.unlock.description_line2')}
+                            </Paragraph>
+                            <Space.Compact style={{width: '100%'}}>
+                                <Input
+                                    placeholder={t('setting.unlock.input_placeholder')}
+                                    value={unlockCode}
+                                    onChange={(e) => setUnlockCode(e.target.value)}
+                                    onPressEnter={handleUnlock}
+                                />
+                                <Button type="primary" onClick={handleUnlock} loading={unlocking}>
+                                    {t('setting.unlock.button')}
+                                </Button>
+                            </Space.Compact>
+                        </div>
+                    )}
                 </Row>
             </Space>
         </div>
