@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Col, Row, Select, Space, Switch, Typography} from "antd";
+import {Button, Col, Input, Row, Select, Space, Switch, Typography} from "antd";
 import {
     AutoRunDisable,
     AutoRunEnable,
@@ -10,8 +10,10 @@ import {
 } from "../../../wailsjs/go/setting/Service"
 import i18n from "../../i18n/i18n";
 import {useTranslation} from "react-i18next";
+import {LockOutlined} from "@ant-design/icons";
+import Paragraph from "antd/es/typography/Paragraph";
 
-const {Title} = Typography;
+const {Title, Text} = Typography;
 
 const Setting = () => {
 
@@ -21,7 +23,7 @@ const Setting = () => {
     const [autoRunEnabled, setAutoRunEnabled] = useState<boolean>(false)
     const [targetLanguage, setTargetLanguage] = useState<string>("en_US")
     const [engineProvider, setEngineProvider] = useState<string>("Bing")
-    const [engineDeepLUnlocked, setEngineDeepLUnlocked] = useState<boolean>>(false)
+    const [engineDeepLUnlocked, setEngineDeepLUnlocked] = useState<boolean>(false)
 
     useEffect(() => {
         SupportedLanguageLabels().then((languages) => {
@@ -76,25 +78,6 @@ const Setting = () => {
                 setEngineProvider(select)
             })
         })
-    }
-
-    function handleUnlock() {
-        if (!unlockCode) {
-            message.warning(t('setting.unlock.please_enter_code'));
-            return;
-        }
-        setUnlocking(true);
-        UnlockFeatures(unlockCode).then(success => {
-            if (success) {
-                message.success(t('setting.unlock.success_message'));
-                setIsDeepLUnlocked(true); // 更新UI状态，隐藏解锁模块
-            } else {
-                message.error(t('setting.unlock.error_message'));
-            }
-        }).finally(() => {
-            setUnlocking(false);
-            setUnlockCode(""); // 清空输入框
-        });
     }
 
     function switchAutoRun(checked: boolean) {
@@ -185,9 +168,9 @@ const Setting = () => {
                             options={[
                                 {value: 'en_US', label: 'English'},
                                 {value: 'zh_CN', label: '简体中文'},
-                                {value: 'zh_TW', label: '繁體中文'},
-                                {value: 'ja_JP', label: '日本語'},
-                                {value: 'ko_KR', label: '한국어'},
+                                // {value: 'zh_TW', label: '繁體中文'},
+                                // {value: 'ja_JP', label: '日本語'},
+                                // {value: 'ko_KR', label: '한국어'},
                             ]}
                             onChange={(value) => updateTargetLanguage(value)}
                         />
@@ -213,7 +196,7 @@ const Setting = () => {
                                     label: (
                                         <Space>
                                             <span>DeepL</span>
-                                            {!isDeepLUnlocked && <LockOutlined/>}
+                                            {!engineDeepLUnlocked && <LockOutlined/>}
                                         </Space>
                                     ),
                                     disabled: !engineDeepLUnlocked
@@ -222,36 +205,6 @@ const Setting = () => {
                             onChange={(value) => updateTranslateProvider(value)}
                         />
                     </Col>
-
-                    {!isDeepLUnlocked && (
-                        <div style={{
-                            marginTop: 40,
-                            padding: 24,
-                            background: 'rgba(0,0,0,0.02)',
-                            borderRadius: 8,
-                            border: '1px solid rgba(0,0,0,0.06)'
-                        }}>
-                            <Title level={4}>{t('setting.unlock.title')}</Title>
-                            <Paragraph type="secondary">
-                                {t('setting.unlock.description_line1')}
-                                <Text strong>{t('setting.unlock.qq_group')}</Text>
-                                {t('setting.unlock.or')}
-                                <Text strong>{t('setting.unlock.email')}</Text>
-                                {t('setting.unlock.description_line2')}
-                            </Paragraph>
-                            <Space.Compact style={{width: '100%'}}>
-                                <Input
-                                    placeholder={t('setting.unlock.input_placeholder')}
-                                    value={unlockCode}
-                                    onChange={(e) => setUnlockCode(e.target.value)}
-                                    onPressEnter={handleUnlock}
-                                />
-                                <Button type="primary" onClick={handleUnlock} loading={unlocking}>
-                                    {t('setting.unlock.button')}
-                                </Button>
-                            </Space.Compact>
-                        </div>
-                    )}
                 </Row>
             </Space>
         </div>

@@ -174,6 +174,7 @@ export namespace setting {
 	    Selection: SelectionTranslateSetting;
 	    Provider: string;
 	    TargetLanguage: string;
+	    DeepLUnlocked: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new TranslateSetting(source);
@@ -185,6 +186,7 @@ export namespace setting {
 	        this.Selection = this.convertValues(source["Selection"], SelectionTranslateSetting);
 	        this.Provider = source["Provider"];
 	        this.TargetLanguage = source["TargetLanguage"];
+	        this.DeepLUnlocked = source["DeepLUnlocked"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

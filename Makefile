@@ -12,8 +12,8 @@ endif
 
 .PHONY: build_crystal
 build_crystal:
-	cd crystal && pnpm run build:crystal
 	cd crystal && pnpm run build:sign
+	cd crystal && pnpm run build:crystal
 
 .PHONY: start
 start: build_crystal

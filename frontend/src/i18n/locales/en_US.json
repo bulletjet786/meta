@@ -14,7 +14,6 @@
     },
     "setting": {
         "unlock": {
-            "title": "Unlock Premium Features",
             "description_line1": "Join our QQ group at ",
             "qq_group": "[Your QQ Group Number]",
             "or": " or email us at ",
@@ -43,5 +42,13 @@
         "software_name": "Software Name: Steam Meta",
         "current_version": "Current Version",
         "software_description": "Steam Meta enhances the functionality of the Steam client, offering a smoother user experience."
+    },
+    "beta": {
+        "name": "Beta",
+        "title": "Unlock Beta Features",
+        "description": "Join our QQ group at 1044717281 or email us at 851234786@qq.com to get a free unlock code and experience more accurate DeepL translation.",
+        "input_placeholder": "Enter your unlock code",
+        "button_unlock": "Unlock",
+        "button_unlocked": "Unlocked"
     }
 }
