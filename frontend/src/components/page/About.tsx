@@ -40,10 +40,10 @@ const About = () => {
         {/*<Paragraph>© 2025 MyCompany. 保留所有权利。</Paragraph>*/}
 
         <Paragraph style={{ marginTop: 16 }}>
-            加入我们的QQ群：<Typography.Text code>1044717281</Typography.Text>
+            QQ Group：<Typography.Text code>1044717281</Typography.Text>
         </Paragraph>
         <Paragraph style={{ marginTop: 16 }}>
-            开发者电子邮件：<Typography.Text code>851234786@qq.com</Typography.Text>
+            Email：<Typography.Text code>851234786@qq.com</Typography.Text>
         </Paragraph>
     </div>
     )
