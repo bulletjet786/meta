@@ -23,8 +23,7 @@ export class UserService {
 
     static metaHost = "http://localhost:15637"
     static updateSessionUrl = "/api/user/auth/update_session"
-    static authCallbackUrl = "/browser/user/auth/callback.html"
-    static getAccessTokenUrl = "/user/auth/get_access_token"
+    static authCallbackUrl = "/pages/user/auth/callback.html"
     async updateSession(authResult: Session) {
         await fetch(UserService.metaHost + UserService.updateSessionUrl, {
             method: "POST",

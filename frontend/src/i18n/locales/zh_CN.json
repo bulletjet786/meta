@@ -30,5 +30,13 @@
         "software_name": "软件名称：Steam伴侣",
         "current_version": "当前版本",
         "software_description": "Steam伴侣 可以增强Steam客户端的功能，为用户带来更丝滑的用户体验。"
+    },
+    "beta": {
+        "name": "体验",
+        "title": "解锁体验特性",
+        "description": "加入QQ群：1044717281或发送电子邮件到：851234786@qq.com 获取解锁码，解锁 DeepL 翻译功能",
+        "input_placeholder": "输入解锁码",
+        "button_unlock": "解锁",
+        "button_unlocked": "已解锁"
     }
 }

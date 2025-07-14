@@ -4,7 +4,7 @@
 GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 DATETIME=$(shell echo %date:~0,4%%date:5,2%%date:8,2%%time:~3,2%%time:~6,2%)
-VERSION=0.0.6
+VERSION=0.0.7
 COS_BIN_URL=https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64
 ifeq ($(GOHOSTOS), windows)
 	COS_BIN_URL=https://cosbrowser.cloud.tencent.com/software/coscli/coscli-windows-amd64.exe
@@ -12,18 +12,15 @@ endif
 
 .PHONY: build_crystal
 build_crystal:
+	cd crystal && pnpm run build:sign
 	cd crystal && pnpm run build:crystal
 
-.PHONY: build_browser
-build_browser:
-	cd browser && pnpm run build
-
 .PHONY: start
-start: build_browser build_crystal
+start: build_crystal
 	wails dev -s -ldflags "-X meta/backend/constants.Version=$(VERSION)"
 
 .PHONY: build
-build: build_browser build_crystal
+build: build_crystal
 	rmdir /s /q build\bin || cmd /c "exit /b 0"
 	mkdir build\bin
 	wails build -nsis -ldflags "-X meta/backend/constants.Version=$(VERSION)"

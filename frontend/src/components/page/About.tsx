@@ -39,9 +39,12 @@ const About = () => {
         {/*<Paragraph style={{ marginTop: 16 }}>许可证：MIT License</Paragraph>*/}
         {/*<Paragraph>© 2025 MyCompany. 保留所有权利。</Paragraph>*/}
 
-        {/* <Paragraph style={{ marginTop: 16 }}>
-            加入我们的QQ群：<Typography.Text code>1044717281</Typography.Text>
-        </Paragraph> */}
+        <Paragraph style={{ marginTop: 16 }}>
+            QQ Group：<Typography.Text code>1044717281</Typography.Text>
+        </Paragraph>
+        <Paragraph style={{ marginTop: 16 }}>
+            Email：<Typography.Text code>851234786@qq.com</Typography.Text>
+        </Paragraph>
     </div>
     )
 };

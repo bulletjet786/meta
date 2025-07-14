@@ -3,6 +3,7 @@ package updater
 import (
 	"io"
 	"log/slog"
+	"time"
 
 	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"resty.dev/v3"
@@ -44,16 +45,16 @@ func NewUpdaterService(deviceId string, channel string) *UpdaterService {
 }
 
 func (s *UpdaterService) Start() {
-	//go func() {
-	//	t := time.NewTimer(10 * time.Minute)
-	//	<-t.C
-	//
-	//	if err := s.updater.BackgroundRun(); err != nil {
-	//		slog.Error("Start update background failed", "err", err)
-	//		return
-	//	}
-	//	slog.Info("Update binary completed")
-	//}()
+	go func() {
+		t := time.NewTimer(10 * time.Minute)
+		<-t.C
+
+		if err := s.updater.BackgroundRun(); err != nil {
+			slog.Error("Start update background failed", "err", err)
+			return
+		}
+		slog.Info("Update binary completed")
+	}()
 }
 
 type metaFetcher struct {

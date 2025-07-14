@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Col, Row, Select, Space, Switch, Typography} from "antd";
+import {Button, Col, Input, Row, Select, Space, Switch, Typography} from "antd";
 import {
     AutoRunDisable,
     AutoRunEnable,
@@ -10,8 +10,10 @@ import {
 } from "../../../wailsjs/go/setting/Service"
 import i18n from "../../i18n/i18n";
 import {useTranslation} from "react-i18next";
+import {LockOutlined} from "@ant-design/icons";
+import Paragraph from "antd/es/typography/Paragraph";
 
-const {Title} = Typography;
+const {Title, Text} = Typography;
 
 const Setting = () => {
 
@@ -20,7 +22,8 @@ const Setting = () => {
     const [uiLanguageSelect, setUiLanguageSelect] = useState<string>("en_US")
     const [autoRunEnabled, setAutoRunEnabled] = useState<boolean>(false)
     const [targetLanguage, setTargetLanguage] = useState<string>("en_US")
-    const [engineProvider, setEngineProvider] = useState<string>("BingFree")
+    const [engineProvider, setEngineProvider] = useState<string>("Bing")
+    const [engineDeepLUnlocked, setEngineDeepLUnlocked] = useState<boolean>(false)
 
     useEffect(() => {
         SupportedLanguageLabels().then((languages) => {
@@ -35,6 +38,7 @@ const Setting = () => {
             setTargetLanguage(setting.Translate.TargetLanguage)
             setUiLanguageSelect(setting.Regular.UI.Language)
             setEngineProvider(setting.Translate.Provider)
+            setEngineDeepLUnlocked(setting.Translate.DeepLUnlocked)
         })
     }, []);
 
@@ -164,9 +168,9 @@ const Setting = () => {
                             options={[
                                 {value: 'en_US', label: 'English'},
                                 {value: 'zh_CN', label: '简体中文'},
-                                {value: 'zh_TW', label: '繁體中文'},
-                                {value: 'ja_JP', label: '日本語'},
-                                {value: 'ko_KR', label: '한국어'},
+                                // {value: 'zh_TW', label: '繁體中文'},
+                                // {value: 'ja_JP', label: '日本語'},
+                                // {value: 'ko_KR', label: '한국어'},
                             ]}
                             onChange={(value) => updateTargetLanguage(value)}
                         />
@@ -187,6 +191,16 @@ const Setting = () => {
                             options={[
                                 {value: 'Bing', label: 'Bing'},
                                 {value: 'XiaoNiu', label: 'XiaoNiu'},
+                                {
+                                    value: 'DeepL',
+                                    label: (
+                                        <Space>
+                                            <span>DeepL</span>
+                                            {!engineDeepLUnlocked && <LockOutlined/>}
+                                        </Space>
+                                    ),
+                                    disabled: !engineDeepLUnlocked
+                                },
                             ]}
                             onChange={(value) => updateTranslateProvider(value)}
                         />

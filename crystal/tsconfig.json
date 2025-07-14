@@ -1,6 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.wc.json" }
+    { "path": "./tsconfig.crystal.json"}
   ]
 }

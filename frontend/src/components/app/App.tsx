@@ -11,6 +11,7 @@ import LoginInfo = user.LoginInfo;
 import LoginPage from "./Login";
 import {EventsOff, EventsOn} from "../../../wailsjs/runtime";
 import {UserLoginInfoEvent} from "../../constants/constants";
+import Beta from "../page/Beta";
 
 const { Sider, Content } = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -44,12 +45,13 @@ function App() {
     const items: MenuItem[] = [
         { key: 'guide', label: t('guide.name') },
         { key: 'setting', label: t('setting.name')},
+        { key: 'beta', label: t('beta.name')},
         { key: 'about', label: t('about.name') },
       ];
 
-    if (!loginInfo || !(loginInfo!).loggedIn) {
-        return <LoginPage/>
-    }
+    // if (!loginInfo || !(loginInfo!).sign_in) {
+    //     return <LoginPage/>
+    // }
 
     let content = (<div></div>)
     switch (menuSelect) {
@@ -59,6 +61,9 @@ function App() {
         case "setting":
             content = <Setting />
             break;
+        case "beta":
+            content = <Beta />
+            break
         case "about":
             content = <About />
             break;
@@ -81,7 +86,7 @@ function App() {
                         justifyContent: 'space-between',
                     }}>
                         <Menu
-                            style={{height: '90%'}}
+                            style={{height: '100%'}}
                             defaultSelectedKeys={[menuSelect]}
                             mode="inline"
                             items={items}

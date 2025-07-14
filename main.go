@@ -26,11 +26,8 @@ import (
 	"meta/backend/service/user"
 )
 
-//go:embed crystal/dist/crystal
+//go:embed crystal/dist
 var crystalFs embed.FS
-
-//go:embed all:browser/out
-var browserFs embed.FS
 
 //go:embed all:frontend/dist
 var assets embed.FS
@@ -64,7 +61,6 @@ func main() {
 
 	embedHttpServer := http.NewEmbedServer(http.EmbedServerOptions{
 		CrystalFs: &crystalFs,
-		BrowserFS: &browserFs,
 	})
 	embedHttpServer.AddRouter(userService.SignOutEndpoint(), userService.SignOutHandler())
 	embedHttpServer.AddRouter(userService.UpdateSessionEndpoint(), userService.UpdateSessionHandler())

@@ -174,6 +174,7 @@ export namespace setting {
 	    Selection: SelectionTranslateSetting;
 	    Provider: string;
 	    TargetLanguage: string;
+	    DeepLUnlocked: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new TranslateSetting(source);
@@ -185,6 +186,7 @@ export namespace setting {
 	        this.Selection = this.convertValues(source["Selection"], SelectionTranslateSetting);
 	        this.Provider = source["Provider"];
 	        this.TargetLanguage = source["TargetLanguage"];
+	        this.DeepLUnlocked = source["DeepLUnlocked"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -243,7 +245,7 @@ export namespace setting {
 export namespace user {
 	
 	export class LoginInfo {
-	    loggedIn: boolean;
+	    sign_in: boolean;
 	    plan: string;
 	    access_token: string;
 	
@@ -253,7 +255,7 @@ export namespace user {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.loggedIn = source["loggedIn"];
+	        this.sign_in = source["sign_in"];
 	        this.plan = source["plan"];
 	        this.access_token = source["access_token"];
 	    }

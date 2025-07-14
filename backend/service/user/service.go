@@ -45,6 +45,7 @@ func NewUserService(options ServiceOptions) *Service {
 		session, err := supabaseClient.RefreshToken(refreshToken)
 		if err != nil {
 			slog.Error("RefreshToken failed", "err", err)
+			service.Session = nil
 		} else {
 			slog.Info("RefreshToken success", "session", session)
 			service.Session = &session
@@ -56,7 +57,7 @@ func NewUserService(options ServiceOptions) *Service {
 }
 
 func (s *Service) SignIn() {
-	wailsruntime.BrowserOpenURL(s.wailsCtx, "http://localhost:15637/browser/user/auth/sign.html")
+	wailsruntime.BrowserOpenURL(s.wailsCtx, "http://localhost:15637/pages/user/auth/sign.html")
 }
 
 func (s *Service) SignOut() {
@@ -116,13 +117,13 @@ func (s *Service) GetLoginInfoHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if s.Session == nil {
 			c.JSON(http.StatusOK, LoginInfo{
-				LoggedIn: false,
+				SignIn: false,
 			})
 			return
 		}
 		c.JSON(http.StatusOK, LoginInfo{
-			LoggedIn:    true,
-			Plan:        "free",
+			SignIn:      true,
+			Plan:        "Free",
 			AccessToken: s.Session.AccessToken,
 		})
 	}
@@ -131,11 +132,11 @@ func (s *Service) GetLoginInfoHandler() gin.HandlerFunc {
 func (s *Service) GetLoginInfo() LoginInfo {
 	if s.Session == nil {
 		return LoginInfo{
-			LoggedIn: false,
+			SignIn: false,
 		}
 	}
 	return LoginInfo{
-		LoggedIn:    true,
+		SignIn:      true,
 		Plan:        "free",
 		AccessToken: s.Session.AccessToken,
 	}
@@ -201,7 +202,7 @@ func verifyLicense(productID, licenseKey string) (*GumroadResponse, error) {
 }
 
 type LoginInfo struct {
-	LoggedIn    bool   `json:"loggedIn"`
+	SignIn      bool   `json:"sign_in"`
 	Plan        string `json:"plan"`
 	AccessToken string `json:"access_token"`
 }
@@ -240,6 +241,7 @@ func (s *Service) enableTokenAutoRefresh() {
 				} else {
 					slog.Info("Error refreshing token, retrying every 30 seconds: %v", err)
 					time.Sleep(30 * time.Second)
+					s.Session = nil
 				}
 				continue
 			}
