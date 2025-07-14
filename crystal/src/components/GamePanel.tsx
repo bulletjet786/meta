@@ -13,7 +13,6 @@ type GamePanelProps = {
   gameName: string
 }
 
-const StudyResourceTab = "StudyResource"
 const LowestPriceTab = "LowestPrice"
 
 const countries = [
@@ -93,8 +92,6 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
     switch (tab) {
       case LowestPriceTab:
         return <LowestPriceTable lowestGamePriceInfos={lowestGamePriceInfos}></LowestPriceTable>
-      case StudyResourceTab:
-        return <StudyResourcePanel gameName={props.gameName}/>
     }
   }
 
@@ -114,24 +111,14 @@ const GamePanel: React.FC<GamePanelProps> = (props) => {
                   }}>
                     <div>
                       <span>史低价格</span>
-                      <Tooltip title="数据来源于：IsThereAnyDeal，Steam伴侣不对数据准确性负责">
+                      <Tooltip title="数据来源于：IsThereAnyDeal，SteamMeta不对数据准确性负责">
                         <InfoCircleOutlined />
                       </Tooltip>
                     </div>
                   </div>
                 ),
                 value: 'price',
-              },
-              {
-                label: (
-                  <div style={{padding: 4}} onClick={() => {
-                    changeTab(StudyResourceTab)
-                  }}>
-                    <div>学习研究</div>
-                  </div>
-                ),
-                value: 'study',
-              },
+              }
             ]}
         />
       </div>

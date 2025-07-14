@@ -17,7 +17,7 @@
         "regular": {
             "title": "常规",
             "language": "界面语言",
-            "auto_run": "开启启动"
+            "auto_run": "开机启动"
         },
         "translation": {
             "title": "翻译",
@@ -27,9 +27,9 @@
     },
     "about": {
         "name": "关于",
-        "software_name": "软件名称：Steam伴侣",
+        "software_name": "软件名称：SteamMeta",
         "current_version": "当前版本",
-        "software_description": "Steam伴侣 可以增强Steam客户端的功能，为用户带来更丝滑的用户体验。"
+        "software_description": "SteamMeta 可以增强Steam客户端的功能，为用户带来更丝滑的用户体验。"
     },
     "beta": {
         "name": "体验",
