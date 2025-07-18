@@ -7,7 +7,7 @@ SteamMeta 是一款专为 PC Steam 客户端设计的强大增强套件，旨在
 
 ## 🚀 下载安装
 
-下载地址：点击 [此处] (https://dl.g.deckz.fun/meta/0.0.8/meta-amd64-installer.exe) 从 GitHub Releases 下载 SteamMeta。
+下载地址：点击 [此处](https://dl.g.deckz.fun/meta/0.0.8/meta-amd64-installer.exe) 下载 SteamMeta。
 根据安装向导的提示完成安装，然后重新启动您的 Steam 客户端即可生效。
 
 ---
