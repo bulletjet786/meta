@@ -17,13 +17,16 @@
         "regular": {
             "title": "常规",
             "language": "界面语言",
-            "auto_run": "开机启动"
+            "auto_run": "开机自启"
         },
         "translation": {
             "title": "翻译",
             "target_language": "目标语言",
             "engine_provider": "翻译引擎"
         }
+    },
+    "library": {
+        "name": "库存"
     },
     "about": {
         "name": "关于",

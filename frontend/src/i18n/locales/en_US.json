@@ -37,6 +37,9 @@
             "engine_provider": "Engine Provider"
         }
     },
+    "library": {
+        "name": "Library"
+    },
     "about": {
         "name": "About",
         "software_name": "Software Name: Steam Meta",

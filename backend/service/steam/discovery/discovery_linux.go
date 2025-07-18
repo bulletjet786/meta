@@ -14,3 +14,8 @@ func LookUpSteamCEFDebuggingFilePath() (string, error) {
 
 	return homePath + "/.steam/steam/.cef-enable-remote-debugging", nil
 }
+
+func LookUpSteamInstallDir() (string, error) {
+	// TODO
+	return "", ErrorSteamNotFound
+}

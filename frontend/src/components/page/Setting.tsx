@@ -11,7 +11,6 @@ import {
 import i18n from "../../i18n/i18n";
 import {useTranslation} from "react-i18next";
 import {LockOutlined} from "@ant-design/icons";
-import Paragraph from "antd/es/typography/Paragraph";
 
 const {Title, Text} = Typography;
 
@@ -168,9 +167,9 @@ const Setting = () => {
                             options={[
                                 {value: 'en_US', label: 'English'},
                                 {value: 'zh_CN', label: '简体中文'},
-                                // {value: 'zh_TW', label: '繁體中文'},
-                                // {value: 'ja_JP', label: '日本語'},
-                                // {value: 'ko_KR', label: '한국어'},
+                                {value: 'zh_TW', label: '繁體中文'},
+                                {value: 'ja_JP', label: '日本語'},
+                                {value: 'ko_KR', label: '한국어'},
                             ]}
                             onChange={(value) => updateTargetLanguage(value)}
                         />

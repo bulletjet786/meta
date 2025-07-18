@@ -1,3 +1,49 @@
+export namespace appinfo {
+	
+	export class AppInfo {
+	    appid: number;
+	    state: number;
+	    // Go type: time
+	    last_update: any;
+	    access_token: number;
+	    change_number: number;
+	    extended: Record<string, any>;
+	
+	    static createFrom(source: any = {}) {
+	        return new AppInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.appid = source["appid"];
+	        this.state = source["state"];
+	        this.last_update = this.convertValues(source["last_update"], null);
+	        this.access_token = source["access_token"];
+	        this.change_number = source["change_number"];
+	        this.extended = source["extended"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+
+}
+
 export namespace common {
 	
 	export class Status {
@@ -238,6 +284,41 @@ export namespace setting {
 		    }
 		    return a;
 		}
+	}
+
+}
+
+export namespace steam {
+	
+	export class DisplayAppInfo {
+	    app_id: number;
+	    display_name: string;
+	    install_dir: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DisplayAppInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.app_id = source["app_id"];
+	        this.display_name = source["display_name"];
+	        this.install_dir = source["install_dir"];
+	    }
+	}
+	export class LibraryChange {
+	    app_id: number;
+	    display_name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LibraryChange(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.app_id = source["app_id"];
+	        this.display_name = source["display_name"];
+	    }
 	}
 
 }
