@@ -1,47 +1,62 @@
 # SteamMeta
 
-SteamMeta is a powerful enhancement suite designed for the PC Steam client, aimed at breaking down language barriers and elevating your browsing and interactive experience. Much like a browser extension, SteamMeta enriches your Steam client with a host of powerful and practical features.
+SteamMeta 是一款专为 PC Steam 客户端设计的强大增强套件，旨在打破语言壁垒，提升您的浏览与互动体验。
+它就像一个浏览器扩展，为您的 Steam 客户端注入一系列强大而实用的功能。
 
 ---
 
-## ✨ Core Features
+## 🚀 下载安装
 
-Using secure methods, SteamMeta injects a series of practical features into the Steam Store, Community, Reviews, and Guides pages, making your Steam experience more convenient than ever.
+下载地址：点击 [此处] (https://dl.g.deckz.fun/meta/0.0.8/meta-amd64-installer.exe) 从 GitHub Releases 下载 SteamMeta。
+根据安装向导的提示完成安装，然后重新启动您的 Steam 客户端即可生效。
 
-*   **🌐 Seamless Page Translation**
-    *   **Select-to-Translate**: Simply select text on any Steam web page to get an instant translation. No more copy-pasting!
-    *   **Area Translation**: One-click translation for entire review sections, guide paragraphs, or product descriptions, all while perfectly preserving the original layout.
+---
 
-*   **🧠 Multi-Engine Support**
-    *   We have integrated several top-tier translation service providers, allowing you to switch freely based on your needs and preferences:
-        *   **Bing Translate**
-        *   **NiuTrans**
+## ✨ 核心功能
+
+SteamMeta 通过安全的方式，将一系列实用功能注入到 Steam 商店、社区、评测以及指南等页面，让您的 Steam 体验从未如此便捷。
+
+*   **🌐 无缝页面翻译**
+    *   **划词翻译**：只需在任意 Steam 网页上选中文字，即可获得即时翻译。无需再复制粘贴！
+    *   **区域翻译**：一键翻译整个评测区、指南段落（开发中）或产品描述，同时完美保留原始排版。
+
+*   **🧠 多引擎支持**
+    *   我们集成了多个顶级的翻译服务提供商，让您可以根据自己的需求和偏好自由切换：
+        *   **必应翻译 (Bing Translate)**
+        *   **牛译 (NiuTrans)**
         *   **DeepL**
-        *   **Google Translate** (In development)
+        *   **谷歌翻译 (Google Translate)** (开发中)
 
-*   **🎨 More Enhancements to Come**
-    *   SteamMeta is an evolving platform and will bring you more exciting features in the future!
-
----
-
-## 🚀 Development Roadmap (Upcoming Features)
-
-We are actively developing the following new features. Stay tuned!
-
-*   **🤖 AI Avatar Generator**: Create unique Steam avatars using AI technology.
-*   **💹 Game Price History**: View historical price charts directly on the game's store page to help you make the best purchasing decisions.
-*   **💡 Web AI Assistant**: Summon an AI assistant within the Steam interface to help you summarize reviews and answer questions.
+*   **🎨 更多增强功能即将推出**
+    *   SteamMeta 是一个不断发展的平台，未来将为您带来更多激动人心的功能！
 
 ---
 
-## ⚖️ License
+## 🚀 开发路线图（即将推出）
 
-**Copyright (c) 2025 The SteamMeta Authors**
+我们正在积极开发以下新功能，敬请期待！
 
-This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
+🤖 AI 头像生成器：使用 AI 技术创建独一无二的 Steam 头像。
+💹 游戏价格历史：直接在游戏商店页面查看历史价格图表，助您做出最佳购买决策。
+💡 网页 AI 助手：在 Steam 界面内唤出 AI 助手，帮您总结评测、解答问题。
+📊 账号消费统计：分析您的购买历史，提供详细的消费报告。
+💱 货币转化：在商店页面实时显示多种货币价格，方便比价。
+✏️ 自定义游戏名称：为您库中的游戏设置个性化别名。
+📈 史低优化：美化史低信息的 UI 展示，并支持多地区史低价格查询。
+📖 视觉小说优化：集成 VNDB (The Visual Novel Database) 数据，提供更丰富的游戏信息。
+📢 更新公告翻译：一键翻译游戏的更新日志和社区公告。
+🧠 支持大模型翻译：允许用户填入自己的 API KEY，以使用更强大的第三方大语言模型进行翻译。
 
-In simple terms:
-*   ✅ **You are free to**: Use, modify, and distribute this software.
-*   ❌ **You are not allowed to**: Use this software for any commercial purpose or to develop products that compete with this project.
+---
 
-For the full license text, please see the `LICENSE.md` file. If you wish to use this software for commercial purposes, please contact us to obtain a commercial license.
+## ⚖️ 许可协议
+
+**版权所有 (c) 2025 The SteamMeta Authors**
+
+本项目基于 **PolyForm Noncommercial License 1.0.0** 许可协议。
+
+简单来说：
+*   ✅ **您可以**：自由使用、修改和分发本软件。
+*   ❌ **您不可以**：将本软件用于任何商业目的，或开发与本项目竞争的产品。
+
+完整的许可协议文本，请参阅 `LICENSE.md` 文件。如果您希望将本软件用于商业用途，请与我们联系以获取商业许可。
