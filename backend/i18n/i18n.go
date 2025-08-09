@@ -11,7 +11,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-//go:embed ./locales/active.*.json
+//go:embed locales
 var LocaleFS embed.FS
 var bundle *i18n.Bundle
 

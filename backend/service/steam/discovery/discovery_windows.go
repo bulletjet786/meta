@@ -19,6 +19,15 @@ var (
 )
 
 func LookUpSteamCEFDebuggingFilePath() (string, error) {
+	installPath, err := LookUpSteamInstallDir()
+	if err != nil {
+		return "", err
+	}
+
+	return installPath + "\\.cef-enable-remote-debugging", nil
+}
+
+func LookUpSteamInstallDir() (string, error) {
 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, steamSoftwareRegistryKeyForWindows, registry.QUERY_VALUE)
 	if err != nil {
 		slog.Error("open windows registry key failed", "key", steamSoftwareRegistryKeyForWindows)
@@ -35,7 +44,7 @@ func LookUpSteamCEFDebuggingFilePath() (string, error) {
 	}
 	slog.Info("found steam string path", "path", steamRegistry.InstallPath)
 
-	return steamRegistry.InstallPath + "\\.cef-enable-remote-debugging", nil
+	return steamRegistry.InstallPath, nil
 }
 
 type SteamSoftwareRegistryInfo struct {

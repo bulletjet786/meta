@@ -1,5 +1,7 @@
 import { StoreExtension, StoreExtensionOptions } from "./store"
 import { CommunityExtension, CommunityExtensionOptions } from "./community"
+import { SteamExtension, SteamExtensionOptions} from "./steam.ts";
+
 function runStore(options: StoreExtensionOptions) {
     console.log("Start to Store Extension ...")
     const storeExtension = new StoreExtension(options)
@@ -9,6 +11,12 @@ function runStore(options: StoreExtensionOptions) {
 function runCommunity(options: CommunityExtensionOptions) {
     console.log("Start to Store Extension ...")
     const storeExtension = new CommunityExtension(options)
+    storeExtension.init()
+}
+
+function runSteam(options: SteamExtensionOptions) {
+    console.log("Start to Steam Extension ...")
+    const storeExtension = new SteamExtension(options)
     storeExtension.init()
 }
 
@@ -22,5 +30,7 @@ export function run(extension: string, options: StoreExtensionOptions | Communit
         case "community":
             runCommunity(options as CommunityExtensionOptions)
             break;
+        case "steam":
+            runSteam(options as SteamExtensionOptions)
     }
 }

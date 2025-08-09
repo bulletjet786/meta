@@ -25,9 +25,6 @@ var (
 	supportedLanguageLabels = []LanguageLabel{
 		{Language: "en_US", Label: "English"},
 		{Language: "zh_CN", Label: "简体中文"},
-		{Language: "zh_TW", Label: "繁體中文"},
-		{Language: "ja_JP", Label: "日本語"},
-		{Language: "ko_KR", Label: "한국어"},
 	}
 )
 

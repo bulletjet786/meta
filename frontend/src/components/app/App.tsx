@@ -12,6 +12,7 @@ import LoginPage from "./Login";
 import {EventsOff, EventsOn} from "../../../wailsjs/runtime";
 import {UserLoginInfoEvent} from "../../constants/constants";
 import Beta from "../page/Beta";
+import {Library} from "../page/Library";
 
 const { Sider, Content } = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -45,6 +46,7 @@ function App() {
     const items: MenuItem[] = [
         { key: 'guide', label: t('guide.name') },
         { key: 'setting', label: t('setting.name')},
+        { key: 'library', label: t('library.name')},
         { key: 'beta', label: t('beta.name')},
         { key: 'about', label: t('about.name') },
       ];
@@ -60,6 +62,9 @@ function App() {
             break;
         case "setting":
             content = <Setting />
+            break;
+        case "library":
+            content = <Library />
             break;
         case "beta":
             content = <Beta />

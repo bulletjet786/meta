@@ -46,3 +46,7 @@ func LogsFile() string {
 func VarDir() string {
 	return MustAppDataLocalPath() + "\\var"
 }
+
+func LibraryChangesFile() string {
+	return VarDir() + "\\library_changes.json"
+}
