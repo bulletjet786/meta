@@ -8,7 +8,7 @@ Much like a browser extension, SteamMeta enriches your Steam client with a host 
 ## 🚀 Installation & Download
 
 How to Install：https://hulu.deckz.fun/archives/steam-meta
-Download Link: Click [here](https://dl.g.deckz.fun/meta/0.0.8/meta-amd64-installer.exe) to download SteamMeta.
+Download Link: Click [here](https://dl.g.deckz.fun/meta/0.0.9/meta-amd64-installer.exe) to download SteamMeta.
 Follow the instructions in the installation wizard to complete the setup, then restart your Steam client for the changes to take effect.
 
 ---
