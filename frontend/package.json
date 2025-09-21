@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.49.8",
     "antd": "^5.25.2",
     "i18next": "^25.2.0",
+    "jose": "^5.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.5.2",

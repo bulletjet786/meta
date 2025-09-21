@@ -8,7 +8,7 @@ import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2
  * Describes the file library/v1/library.proto.
  */
 export const file_library_v1_library = /*@__PURE__*/
-  fileDesc("ChhsaWJyYXJ5L3YxL2xpYnJhcnkucHJvdG8SCmxpYnJhcnkudjEiUwoQVHJhbnNsYXRlUmVxdWVzdBImCglsaWJyYXJpZXMYASADKAsyEy5saWJyYXJ5LnYxLkxpYnJhcnkSFwoPdGFyZ2V0X2xhbmd1YWdlGAIgASgJIkYKEVRyYW5zbGF0ZVJlc3BvbnNlEjEKCnRyYW5zbGF0ZWQYASADKAsyHS5saWJyYXJ5LnYxLkxpYnJhcnlUcmFuc2xhdGVkIicKB0xpYnJhcnkSDgoGYXBwX2lkGAEgASgFEgwKBG5hbWUYAiABKAkiSgoRTGlicmFyeVRyYW5zbGF0ZWQSDgoGYXBwX2lkGAEgASgFEgwKBG5hbWUYAiABKAkSFwoPdHJhbnNsYXRlZF9uYW1lGAMgASgJMloKDkxpYnJhcnlTZXJ2aWNlEkgKCVRyYW5zbGF0ZRIcLmxpYnJhcnkudjEuVHJhbnNsYXRlUmVxdWVzdBodLmxpYnJhcnkudjEuVHJhbnNsYXRlUmVzcG9uc2VCZwoOY29tLmxpYnJhcnkudjFCDExpYnJhcnlQcm90b1ABogIDTFhYqgIKTGlicmFyeS5WMcoCCkxpYnJhcnlcVjHiAhZMaWJyYXJ5XFYxXEdQQk1ldGFkYXRh6gILTGlicmFyeTo6VjFiBnByb3RvMw");
+  fileDesc("ChhsaWJyYXJ5L3YxL2xpYnJhcnkucHJvdG8SCmxpYnJhcnkudjEiUwoQVHJhbnNsYXRlUmVxdWVzdBImCglsaWJyYXJpZXMYASADKAsyEy5saWJyYXJ5LnYxLkxpYnJhcnkSFwoPdGFyZ2V0X2xhbmd1YWdlGAIgASgJIkYKEVRyYW5zbGF0ZVJlc3BvbnNlEjEKCnRyYW5zbGF0ZWQYASADKAsyHS5saWJyYXJ5LnYxLkxpYnJhcnlUcmFuc2xhdGVkIicKB0xpYnJhcnkSDgoGYXBwX2lkGAEgASgFEgwKBG5hbWUYAiABKAkiSgoRTGlicmFyeVRyYW5zbGF0ZWQSDgoGYXBwX2lkGAEgASgFEgwKBG5hbWUYAiABKAkSFwoPdHJhbnNsYXRlZF9uYW1lGAMgASgJIioKKFVwZGF0ZVRyYW5zbGF0ZWROYW1lRnJvbVhpYW9IZWlIZVJlcXVlc3QiTwopVXBkYXRlVHJhbnNsYXRlZE5hbWVGcm9tWGlhb0hlaUhlUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIRCglwcm9jZXNzZWQYAiABKAUiTwobQmF0Y2hVcGRhdGVMaWJyYXJpZXNSZXF1ZXN0EjAKCWxpYnJhcmllcxgBIAMoCzIdLmxpYnJhcnkudjEuTGlicmFyeVRyYW5zbGF0ZWQiHgocQmF0Y2hVcGRhdGVMaWJyYXJpZXNSZXNwb25zZTLYAgoOTGlicmFyeVNlcnZpY2USSAoJVHJhbnNsYXRlEhwubGlicmFyeS52MS5UcmFuc2xhdGVSZXF1ZXN0Gh0ubGlicmFyeS52MS5UcmFuc2xhdGVSZXNwb25zZRKQAQohVXBkYXRlVHJhbnNsYXRlZE5hbWVGcm9tWGlhb0hlaUhlEjQubGlicmFyeS52MS5VcGRhdGVUcmFuc2xhdGVkTmFtZUZyb21YaWFvSGVpSGVSZXF1ZXN0GjUubGlicmFyeS52MS5VcGRhdGVUcmFuc2xhdGVkTmFtZUZyb21YaWFvSGVpSGVSZXNwb25zZRJpChRCYXRjaFVwZGF0ZUxpYnJhcmllcxInLmxpYnJhcnkudjEuQmF0Y2hVcGRhdGVMaWJyYXJpZXNSZXF1ZXN0GigubGlicmFyeS52MS5CYXRjaFVwZGF0ZUxpYnJhcmllc1Jlc3BvbnNlQmcKDmNvbS5saWJyYXJ5LnYxQgxMaWJyYXJ5UHJvdG9QAaICA0xYWKoCCkxpYnJhcnkuVjHKAgpMaWJyYXJ5XFYx4gIWTGlicmFyeVxWMVxHUEJNZXRhZGF0YeoCC0xpYnJhcnk6OlYxYgZwcm90bzM");
 
 /**
  * Describes the message library.v1.TranslateRequest.
@@ -39,8 +39,35 @@ export const LibraryTranslatedSchema = /*@__PURE__*/
   messageDesc(file_library_v1_library, 3);
 
 /**
+ * Describes the message library.v1.UpdateTranslatedNameFromXiaoHeiHeRequest.
+ * Use `create(UpdateTranslatedNameFromXiaoHeiHeRequestSchema)` to create a new message.
+ */
+export const UpdateTranslatedNameFromXiaoHeiHeRequestSchema = /*@__PURE__*/
+  messageDesc(file_library_v1_library, 4);
+
+/**
+ * Describes the message library.v1.UpdateTranslatedNameFromXiaoHeiHeResponse.
+ * Use `create(UpdateTranslatedNameFromXiaoHeiHeResponseSchema)` to create a new message.
+ */
+export const UpdateTranslatedNameFromXiaoHeiHeResponseSchema = /*@__PURE__*/
+  messageDesc(file_library_v1_library, 5);
+
+/**
+ * Describes the message library.v1.BatchUpdateLibrariesRequest.
+ * Use `create(BatchUpdateLibrariesRequestSchema)` to create a new message.
+ */
+export const BatchUpdateLibrariesRequestSchema = /*@__PURE__*/
+  messageDesc(file_library_v1_library, 6);
+
+/**
+ * Describes the message library.v1.BatchUpdateLibrariesResponse.
+ * Use `create(BatchUpdateLibrariesResponseSchema)` to create a new message.
+ */
+export const BatchUpdateLibrariesResponseSchema = /*@__PURE__*/
+  messageDesc(file_library_v1_library, 7);
+
+/**
  * @generated from service library.v1.LibraryService
  */
 export const LibraryService = /*@__PURE__*/
   serviceDesc(file_library_v1_library, 0);
-

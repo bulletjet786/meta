@@ -26,6 +26,9 @@ importers:
       i18next:
         specifier: ^25.2.0
         version: 25.2.0(typescript@5.8.3)
+      jose:
+        specifier: ^5.10.0
+        version: 5.10.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -750,6 +753,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -1996,6 +2002,8 @@ snapshots:
       '@babel/runtime': 7.27.1
     optionalDependencies:
       typescript: 5.8.3
+
+  jose@5.10.0: {}
 
   js-tokens@4.0.0: {}
 

@@ -95,6 +95,69 @@ export declare type LibraryTranslated = Message<"library.v1.LibraryTranslated"> 
 export declare const LibraryTranslatedSchema: GenMessage<LibraryTranslated>;
 
 /**
+ * 空消息，表示触发任务
+ *
+ * @generated from message library.v1.UpdateTranslatedNameFromXiaoHeiHeRequest
+ */
+export declare type UpdateTranslatedNameFromXiaoHeiHeRequest = Message<"library.v1.UpdateTranslatedNameFromXiaoHeiHeRequest"> & {
+};
+
+/**
+ * Describes the message library.v1.UpdateTranslatedNameFromXiaoHeiHeRequest.
+ * Use `create(UpdateTranslatedNameFromXiaoHeiHeRequestSchema)` to create a new message.
+ */
+export declare const UpdateTranslatedNameFromXiaoHeiHeRequestSchema: GenMessage<UpdateTranslatedNameFromXiaoHeiHeRequest>;
+
+/**
+ * @generated from message library.v1.UpdateTranslatedNameFromXiaoHeiHeResponse
+ */
+export declare type UpdateTranslatedNameFromXiaoHeiHeResponse = Message<"library.v1.UpdateTranslatedNameFromXiaoHeiHeResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: int32 processed = 2;
+   */
+  processed: number;
+};
+
+/**
+ * Describes the message library.v1.UpdateTranslatedNameFromXiaoHeiHeResponse.
+ * Use `create(UpdateTranslatedNameFromXiaoHeiHeResponseSchema)` to create a new message.
+ */
+export declare const UpdateTranslatedNameFromXiaoHeiHeResponseSchema: GenMessage<UpdateTranslatedNameFromXiaoHeiHeResponse>;
+
+/**
+ * @generated from message library.v1.BatchUpdateLibrariesRequest
+ */
+export declare type BatchUpdateLibrariesRequest = Message<"library.v1.BatchUpdateLibrariesRequest"> & {
+  /**
+   * @generated from field: repeated library.v1.LibraryTranslated libraries = 1;
+   */
+  libraries: LibraryTranslated[];
+};
+
+/**
+ * Describes the message library.v1.BatchUpdateLibrariesRequest.
+ * Use `create(BatchUpdateLibrariesRequestSchema)` to create a new message.
+ */
+export declare const BatchUpdateLibrariesRequestSchema: GenMessage<BatchUpdateLibrariesRequest>;
+
+/**
+ * @generated from message library.v1.BatchUpdateLibrariesResponse
+ */
+export declare type BatchUpdateLibrariesResponse = Message<"library.v1.BatchUpdateLibrariesResponse"> & {
+};
+
+/**
+ * Describes the message library.v1.BatchUpdateLibrariesResponse.
+ * Use `create(BatchUpdateLibrariesResponseSchema)` to create a new message.
+ */
+export declare const BatchUpdateLibrariesResponseSchema: GenMessage<BatchUpdateLibrariesResponse>;
+
+/**
  * @generated from service library.v1.LibraryService
  */
 export declare const LibraryService: GenService<{
@@ -106,5 +169,20 @@ export declare const LibraryService: GenService<{
     input: typeof TranslateRequestSchema;
     output: typeof TranslateResponseSchema;
   },
+  /**
+   * @generated from rpc library.v1.LibraryService.UpdateTranslatedNameFromXiaoHeiHe
+   */
+  updateTranslatedNameFromXiaoHeiHe: {
+    methodKind: "unary";
+    input: typeof UpdateTranslatedNameFromXiaoHeiHeRequestSchema;
+    output: typeof UpdateTranslatedNameFromXiaoHeiHeResponseSchema;
+  },
+  /**
+   * @generated from rpc library.v1.LibraryService.BatchUpdateLibraries
+   */
+  batchUpdateLibraries: {
+    methodKind: "unary";
+    input: typeof BatchUpdateLibrariesRequestSchema;
+    output: typeof BatchUpdateLibrariesResponseSchema;
+  },
 }>;
-

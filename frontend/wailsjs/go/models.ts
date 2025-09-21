@@ -256,6 +256,7 @@ export namespace setting {
 	export class Setting {
 	    Translate: TranslateSetting;
 	    Regular: RegularSetting;
+	    AdminKey: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Setting(source);
@@ -265,6 +266,7 @@ export namespace setting {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Translate = this.convertValues(source["Translate"], TranslateSetting);
 	        this.Regular = this.convertValues(source["Regular"], RegularSetting);
+	        this.AdminKey = source["AdminKey"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
