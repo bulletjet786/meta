@@ -4,7 +4,10 @@ import { Button, Input, message, Modal, Space, Spin, Table } from 'antd';
 import { ChangeLibraries, GetDisplayApps, RevertLibraries } from '../../../wailsjs/go/steam/Service';
 import { steam } from '../../../wailsjs/go/models';
 import { connectClient } from '../../integration/supabase';
-import { TranslateRequest } from '../../gen/library/v1/library_pb';
+import { BatchUpdateLibrariesRequest, TranslateRequest } from '../../gen/library/v1/library_pb';
+import { hasPermission } from "../../integration/auth";
+import { GetSetting } from "../../../wailsjs/go/setting/Service";
+import { EventsOn } from "../../../wailsjs/runtime";
 import DisplayAppInfo = steam.DisplayAppInfo;
 import LibraryChange = steam.LibraryChange;
 
@@ -21,7 +24,10 @@ interface GameLibraryState {
     isEditMode: boolean;
     selectedRowKeys: React.Key[];
     loadingText: string | null;
+    searchTerm: string;
+    canSyncToCloud: boolean;
 
+    checkPermissions: () => void;
     load: () => void;
     enterEditMode: () => void;
     exitEditMode: () => void;
@@ -30,6 +36,8 @@ interface GameLibraryState {
     translateSelected: () => void;
     revertSelected: () => void;
     applyChanges: () => Promise<{ success: boolean, count: number }>;
+    setSearchTerm: (term: string) => void;
+    syncToCloud: () => void;
 }
 
 export const useGameLibraryState = create<GameLibraryState>((set, get) => ({
@@ -37,10 +45,20 @@ export const useGameLibraryState = create<GameLibraryState>((set, get) => ({
     isEditMode: false,
     selectedRowKeys: [],
     loadingText: null,
+    searchTerm: '',
+    canSyncToCloud: false,
+
+    checkPermissions: async () => {
+        const canSync = await hasPermission('library.sync_to_cloud');
+        set({ canSyncToCloud: canSync });
+    },
 
     load: async () => {
         set({ loadingText: '加载中...' });
         try {
+            // Fire off permission check but don't wait for it to show games
+            get().checkPermissions();
+
             const apps = await GetDisplayApps();
             set({
                 games: apps.map((app: DisplayAppInfo) => ({
@@ -174,6 +192,65 @@ export const useGameLibraryState = create<GameLibraryState>((set, get) => ({
             set({ loadingText: null });
         }
     },
+
+    setSearchTerm: (term: string) => set({ searchTerm: term }),
+
+    syncToCloud: async () => {
+        const canSync = await hasPermission('library.sync_to_cloud');
+        if (!canSync) {
+            message.error("密钥权限不足，无法同步到云端。");
+            return;
+        }
+
+        const { selectedRowKeys, games } = get();
+        if (selectedRowKeys.length === 0) {
+            message.info("请先选择需要同步的游戏");
+            return;
+        }
+
+        const gamesToSync = games
+            .filter(game => selectedRowKeys.includes(game.appId))
+            .filter(game => game.targetName !== undefined && game.currentName !== game.targetName)
+            .map(game => ({
+                appId: game.appId,
+                name: game.currentName,
+                translatedName: game.targetName!,
+            }));
+
+        if (gamesToSync.length === 0) {
+            message.info("选中的游戏没有需要同步的更改");
+            return;
+        }
+
+        set({ loadingText: '正在同步到云端...' });
+        try {
+            const setting = await GetSetting();
+            const adminKey = setting.AdminKey;
+
+            if (!adminKey) {
+                message.error("未找到管理密钥，请在 Beta 页面重新设置。");
+                return;
+            }
+
+            const request: BatchUpdateLibrariesRequest = {
+                // @ts-ignore
+                libraries: gamesToSync,
+            };
+
+            await connectClient.batchUpdateLibraries(request, {
+                headers: {
+                    "X_META_ADMIN_KEY": adminKey.trim()
+                }
+            });
+
+            message.success(`成功同步 ${gamesToSync.length} 个游戏名称到云端`);
+        } catch (error) {
+            console.error("Failed to sync to cloud:", error);
+            message.error(`同步失败: ${(error as Error).message}`);
+        } finally {
+            set({ loadingText: null });
+        }
+    },
 }));
 
 export const Library = () => {
@@ -182,6 +259,8 @@ export const Library = () => {
         isEditMode,
         selectedRowKeys,
         loadingText,
+        searchTerm,
+        canSyncToCloud,
         load,
         enterEditMode,
         exitEditMode,
@@ -190,11 +269,32 @@ export const Library = () => {
         translateSelected,
         revertSelected,
         applyChanges,
+        setSearchTerm,
+        syncToCloud,
     } = useGameLibraryState();
 
     useEffect(() => {
         load();
+
+        // Listen for an event from the Beta page to re-check permissions
+        const unsubscribe = EventsOn("adminKeyUpdated", () => {
+            useGameLibraryState.getState().checkPermissions();
+        });
+
+        return () => {
+            // Clean up the event listener on component unmount
+            unsubscribe();
+        };
     }, []);
+
+    const filteredGames = games.filter(game => {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        if (isEditMode) {
+            const displayValue = game.targetName ?? game.currentName;
+            return displayValue.toLowerCase().includes(lowerCaseSearchTerm);
+        }
+        return game.currentName.toLowerCase().includes(lowerCaseSearchTerm);
+    });
 
     const handleExitEditMode = () => {
         const hasChanges = games.some(g => g.targetName !== undefined);
@@ -282,6 +382,12 @@ export const Library = () => {
     const renderActionBar = () => (
         <div style={{marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <Space>
+                <Input.Search
+                    placeholder="搜索游戏"
+                    allowClear
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ width: isEditMode ? 150 : 240 }}
+                />
                 {isEditMode && (
                     <>
                         <Button
@@ -291,11 +397,18 @@ export const Library = () => {
                         >
                             AI翻译
                         </Button>
+                        {canSyncToCloud && <Button
+                            type="primary"
+                            onClick={syncToCloud}
+                            disabled={selectedRowKeys.length === 0}
+                        >
+                            同步云端
+                        </Button>}
                         <Button
                             onClick={revertSelected}
                             disabled={selectedRowKeys.length === 0}
                         >
-                            撤销修改
+                            撤销
                         </Button>
                     </>
                 )}
@@ -304,7 +417,7 @@ export const Library = () => {
                 {isEditMode ? (
                     <>
                         <Button type="primary" onClick={handleApplyChanges}>
-                            应用更改
+                            更新
                         </Button>
                         <Button danger onClick={handleExitEditMode}>
                             退出编辑
@@ -330,7 +443,7 @@ export const Library = () => {
                     rowKey="appId"
                     rowSelection={isEditMode ? rowSelection : undefined}
                     columns={columns}
-                    dataSource={games}
+                    dataSource={filteredGames}
                     pagination={false}
                     size={'small'}
                     bordered

@@ -35,8 +35,8 @@ type ASetting struct {
 
 type Setting struct {
 	Translate TranslateSetting `yaml:"translate"` // 翻译设置
-
-	Regular RegularSetting `yaml:"regular"`
+	Regular   RegularSetting   `yaml:"regular"`
+	AdminKey  string           `yaml:"adminKey,omitempty"`
 }
 
 type TranslateSetting struct {
